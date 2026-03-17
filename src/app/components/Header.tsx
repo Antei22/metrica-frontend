@@ -52,7 +52,7 @@ export function Header() {
           <span className="block text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">
             Онлайн-платформа
           </span>
-          <span className="block text-2xl font-semibold text-slate-900">METRICA</span>
+          <span className="block text-2xl font-semibold text-slate-900">МЕТРИКА</span>
         </button>
 
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">

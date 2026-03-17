@@ -5,52 +5,13 @@ import { resolveApiUrl } from "../api/client";
 import { getStudentLesson, submitStudentHomework } from "../api/lessons";
 import { AppLayout } from "../components/AppLayout";
 import { EmptyState, ErrorState, LoadingState } from "../components/DataState";
+import { LessonFilesCard } from "../components/LessonFilesCard";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { formatDate, formatDateTime } from "../lib/format";
 import { getErrorMessage } from "../lib/errors";
-import type { Lesson, LessonMaterial } from "../types/domain";
-
-function FileList({
-  files,
-  title,
-}: {
-  files: LessonMaterial[];
-  title: string;
-}) {
-  return (
-    <Card className="rounded-3xl border-slate-200 shadow-sm">
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {files.length === 0 ? (
-          <p className="text-sm text-slate-500">Пока нет прикрепленных файлов.</p>
-        ) : (
-          files.map((file) => (
-            <div
-              key={file.id}
-              className="flex flex-col gap-3 rounded-2xl border border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div>
-                <p className="font-medium text-slate-900">{file.name}</p>
-                <p className="mt-1 text-sm text-slate-500">{file.kind}</p>
-              </div>
-              {file.url ? (
-                <Button asChild variant="outline">
-                  <a href={resolveApiUrl(file.url)} rel="noreferrer" target="_blank">
-                    Открыть
-                  </a>
-                </Button>
-              ) : null}
-            </div>
-          ))
-        )}
-      </CardContent>
-    </Card>
-  );
-}
+import type { Lesson } from "../types/domain";
 
 export function LessonDetails() {
   const navigate = useNavigate();
@@ -178,8 +139,8 @@ export function LessonDetails() {
           </Card>
 
           <div className="grid gap-6 xl:grid-cols-2">
-            <FileList files={lesson.materials} title="Материалы занятия" />
-            <FileList files={lesson.homeworkTaskFiles} title="Файлы для домашнего задания" />
+            <LessonFilesCard files={lesson.materials} title="Материалы занятия" />
+            <LessonFilesCard files={lesson.homeworkTaskFiles} title="Файлы для домашнего задания" />
           </div>
 
           <Card className="rounded-3xl border-slate-200 shadow-sm">

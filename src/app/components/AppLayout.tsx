@@ -21,7 +21,7 @@ export function AppLayout({
         <section className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-2">
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-400">
-              Metrica
+              МЕТРИКА
             </p>
             <h1 className="text-3xl font-semibold text-slate-900">{title}</h1>
             {description ? (

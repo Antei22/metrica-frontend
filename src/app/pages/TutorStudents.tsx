@@ -16,6 +16,7 @@ import {
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { getErrorMessage } from "../lib/errors";
+import { FIELD_LIMITS, validateEmail } from "../lib/formValidation";
 import type { TutorStudent } from "../types/domain";
 
 function getStatusBadge(status: TutorStudent["lastSubmissionStatus"]) {
@@ -49,6 +50,7 @@ export function TutorStudents() {
   const [error, setError] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [studentEmail, setStudentEmail] = useState("");
+  const [studentEmailError, setStudentEmailError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -86,16 +88,28 @@ export function TutorStudents() {
 
   async function handleAddStudent(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    const validationError = validateEmail(studentEmail);
+
+    if (validationError) {
+      setStudentEmailError(validationError);
+      return;
+    }
+
     setIsSubmitting(true);
+    setStudentEmailError(null);
 
     try {
-      const createdStudent = await addTutorStudent(studentEmail);
+      const createdStudent = await addTutorStudent(studentEmail.trim());
       setStudents((currentStudents) => [createdStudent, ...currentStudents]);
       setStudentEmail("");
+      setStudentEmailError(null);
       setIsDialogOpen(false);
       toast.success("Ученик добавлен");
     } catch (submitError) {
-      toast.error(getErrorMessage(submitError, "Не удалось добавить ученика."));
+      const errorMessage = getErrorMessage(submitError, "Не удалось добавить ученика.");
+      setStudentEmailError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -121,13 +135,23 @@ export function TutorStudents() {
                 <Label htmlFor="student-email">Email ученика</Label>
                 <Input
                   id="student-email"
+                  maxLength={FIELD_LIMITS.email}
                   placeholder="student@example.com"
                   type="email"
                   value={studentEmail}
-                  onChange={(event) => setStudentEmail(event.target.value)}
+                  onChange={(event) => {
+                    setStudentEmail(event.target.value);
+                    setStudentEmailError(null);
+                  }}
                   required
                 />
               </div>
+
+              {studentEmailError ? (
+                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {studentEmailError}
+                </div>
+              ) : null}
 
               <div className="flex justify-end gap-3">
                 <Button

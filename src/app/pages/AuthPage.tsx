@@ -2,6 +2,13 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useAuth } from "../auth/AuthContext";
 import { getErrorMessage } from "../lib/errors";
+import {
+  FIELD_LIMITS,
+  validateEmail,
+  validateFirstName,
+  validateLastName,
+  validatePassword,
+} from "../lib/formValidation";
 import { getHomePathForRole } from "../lib/routes";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -36,10 +43,19 @@ export function AuthPage() {
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoginError(null);
+
+    const loginValidationError =
+      validateEmail(loginEmail) || validatePassword(loginPassword);
+
+    if (loginValidationError) {
+      setLoginError(loginValidationError);
+      return;
+    }
+
     setSubmitMode("login");
 
     try {
-      const user = await login(loginEmail, loginPassword);
+      const user = await login(loginEmail.trim(), loginPassword);
       navigate(redirectPath || getHomePathForRole(user.role), { replace: true });
     } catch (error) {
       setLoginError(getErrorMessage(error, "Не удалось войти в аккаунт."));
@@ -51,14 +67,26 @@ export function AuthPage() {
   async function handleRegister(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setRegisterError(null);
+
+    const registerValidationError =
+      validateFirstName(registerFirstName) ||
+      validateLastName(registerLastName) ||
+      validateEmail(registerEmail) ||
+      validatePassword(registerPassword);
+
+    if (registerValidationError) {
+      setRegisterError(registerValidationError);
+      return;
+    }
+
     setSubmitMode("register");
 
     try {
       const user = await register({
-        email: registerEmail,
+        email: registerEmail.trim(),
         password: registerPassword,
-        firstName: registerFirstName,
-        lastName: registerLastName,
+        firstName: registerFirstName.trim(),
+        lastName: registerLastName.trim(),
         role: registerRole,
       });
       navigate(getHomePathForRole(user.role), { replace: true });
@@ -78,7 +106,7 @@ export function AuthPage() {
               <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">
                 Онлайн-платформа
               </p>
-              <h1 className="mt-4 text-5xl font-semibold leading-tight">METRICA</h1>
+              <h1 className="mt-4 text-5xl font-semibold leading-tight">МЕТРИКА</h1>
               <p className="mt-6 max-w-md text-base text-slate-300">
                 Личный кабинет для репетитора и ученика с расписанием, материалами
                 занятия и проверкой домашних заданий.
@@ -106,7 +134,7 @@ export function AuthPage() {
               <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">
                 Онлайн-платформа
               </p>
-              <h1 className="mt-3 text-3xl font-semibold text-slate-900">METRICA</h1>
+              <h1 className="mt-3 text-3xl font-semibold text-slate-900">МЕТРИКА</h1>
             </div>
 
             <Tabs className="w-full" defaultValue="login">
@@ -126,10 +154,14 @@ export function AuthPage() {
                     <Input
                       id="login-email"
                       autoComplete="email"
+                      maxLength={FIELD_LIMITS.email}
                       placeholder="you@example.com"
                       type="email"
                       value={loginEmail}
-                      onChange={(event) => setLoginEmail(event.target.value)}
+                      onChange={(event) => {
+                        setLoginEmail(event.target.value);
+                        setLoginError(null);
+                      }}
                       required
                     />
                   </div>
@@ -139,10 +171,14 @@ export function AuthPage() {
                     <Input
                       id="login-password"
                       autoComplete="current-password"
+                      maxLength={FIELD_LIMITS.password}
                       placeholder="Введите пароль"
                       type="password"
                       value={loginPassword}
-                      onChange={(event) => setLoginPassword(event.target.value)}
+                      onChange={(event) => {
+                        setLoginPassword(event.target.value);
+                        setLoginError(null);
+                      }}
                       required
                     />
                   </div>
@@ -188,9 +224,13 @@ export function AuthPage() {
                       <Label htmlFor="register-first-name">Имя</Label>
                       <Input
                         id="register-first-name"
+                        maxLength={FIELD_LIMITS.personName}
                         placeholder="Анна"
                         value={registerFirstName}
-                        onChange={(event) => setRegisterFirstName(event.target.value)}
+                        onChange={(event) => {
+                          setRegisterFirstName(event.target.value);
+                          setRegisterError(null);
+                        }}
                         required
                       />
                     </div>
@@ -198,9 +238,13 @@ export function AuthPage() {
                       <Label htmlFor="register-last-name">Фамилия</Label>
                       <Input
                         id="register-last-name"
+                        maxLength={FIELD_LIMITS.personName}
                         placeholder="Иванова"
                         value={registerLastName}
-                        onChange={(event) => setRegisterLastName(event.target.value)}
+                        onChange={(event) => {
+                          setRegisterLastName(event.target.value);
+                          setRegisterError(null);
+                        }}
                         required
                       />
                     </div>
@@ -211,10 +255,14 @@ export function AuthPage() {
                     <Input
                       id="register-email"
                       autoComplete="email"
+                      maxLength={FIELD_LIMITS.email}
                       placeholder="you@example.com"
                       type="email"
                       value={registerEmail}
-                      onChange={(event) => setRegisterEmail(event.target.value)}
+                      onChange={(event) => {
+                        setRegisterEmail(event.target.value);
+                        setRegisterError(null);
+                      }}
                       required
                     />
                   </div>
@@ -224,10 +272,15 @@ export function AuthPage() {
                     <Input
                       id="register-password"
                       autoComplete="new-password"
+                      maxLength={FIELD_LIMITS.password}
+                      minLength={6}
                       placeholder="Минимум 6 символов"
                       type="password"
                       value={registerPassword}
-                      onChange={(event) => setRegisterPassword(event.target.value)}
+                      onChange={(event) => {
+                        setRegisterPassword(event.target.value);
+                        setRegisterError(null);
+                      }}
                       required
                     />
                   </div>

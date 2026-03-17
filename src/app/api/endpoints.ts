@@ -10,6 +10,7 @@ export const apiConfig = {
   tutor: {
     students: "/tutor/students",
     lessons: "/tutor/lessons",
+    lessonById: (lessonId: number | string) => `/tutor/lessons/${lessonId}`,
     pendingSubmissions: "/tutor/submissions/pending",
     checkSubmission: (submissionId: number) =>
       `/tutor/submissions/${submissionId}/check`,
