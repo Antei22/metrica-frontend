@@ -44,62 +44,18 @@ import {
   getNearestUpcomingLesson,
   getWeekDays,
 } from "../lib/lesson-schedule";
+import {
+  appendFiles,
+  buildLessonPayload,
+  collectPersistedFileIds,
+  getDefaultCreateLessonFormValues,
+  getLessonFormValues,
+  mergeFileIds,
+  removeFileAtIndex,
+  storeMeetLink,
+} from "../lib/tutorLessonForm";
 import { validateLessonForm } from "../lib/formValidation";
-import type { Lesson, LessonCollection, LessonMaterial, TutorStudent } from "../types/domain";
-
-function getFileKey(file: File) {
-  return `${file.name}-${file.size}-${file.lastModified}`;
-}
-
-function appendFiles(currentFiles: File[], nextFiles: File[]) {
-  const knownFiles = new Set(currentFiles.map(getFileKey));
-  const appendedFiles = [...currentFiles];
-
-  for (const file of nextFiles) {
-    const fileKey = getFileKey(file);
-
-    if (!knownFiles.has(fileKey)) {
-      knownFiles.add(fileKey);
-      appendedFiles.push(file);
-    }
-  }
-
-  return appendedFiles;
-}
-
-function removeFileAtIndex(files: File[], index: number) {
-  return files.filter((_, fileIndex) => fileIndex !== index);
-}
-
-function collectPersistedFileIds(files: LessonMaterial[]) {
-  const ids = files
-    .map((file) => file.fileId)
-    .filter((fileId): fileId is number => fileId !== null && fileId > 0);
-
-  return ids.length > 0 ? Array.from(new Set(ids)) : undefined;
-}
-
-function mergeFileIds(existingIds: number[] | undefined, uploadedIds: number[]) {
-  const mergedIds = [...(existingIds || []), ...uploadedIds].filter((id) => id > 0);
-  return mergedIds.length > 0 ? Array.from(new Set(mergedIds)) : undefined;
-}
-
-function buildLessonPayload(
-  form: LessonFormValues,
-  materialFileIds: number[] | undefined,
-  homeworkTaskFileIds: number[] | undefined,
-) {
-  return {
-    tutorStudentId: Number(form.tutorStudentId),
-    date: form.date,
-    time: form.time,
-    topic: form.topic.trim(),
-    meetLink: form.meetLink.trim(),
-    homeworkDeadline: form.homeworkDeadline,
-    materialFileIds,
-    homeworkTaskFileIds,
-  };
-}
+import type { Lesson, LessonCollection, TutorStudent } from "../types/domain";
 
 function formatMonthLabel(value: Date) {
   const formattedValue = format(value, "LLLL yyyy", { locale: ru });
@@ -119,7 +75,9 @@ export function TutorDashboard() {
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isCreateSubmitting, setIsCreateSubmitting] = useState(false);
-  const [createForm, setCreateForm] = useState<LessonFormValues>(initialLessonFormValues);
+  const [createForm, setCreateForm] = useState<LessonFormValues>(() =>
+    getDefaultCreateLessonFormValues(),
+  );
   const [createFormError, setCreateFormError] = useState<string | null>(null);
   const [createMaterialFiles, setCreateMaterialFiles] = useState<File[]>([]);
   const [createHomeworkFiles, setCreateHomeworkFiles] = useState<File[]>([]);
@@ -204,7 +162,7 @@ export function TutorDashboard() {
   }
 
   function resetCreateState() {
-    setCreateForm(initialLessonFormValues);
+    setCreateForm(getDefaultCreateLessonFormValues());
     setCreateFormError(null);
     setCreateMaterialFiles([]);
     setCreateHomeworkFiles([]);
@@ -257,6 +215,7 @@ export function TutorDashboard() {
         ),
       );
 
+      storeMeetLink(createForm.meetLink);
       closeCreateDialog(false);
       await loadDashboardData();
       toast.success("Занятие создано");
@@ -276,14 +235,7 @@ export function TutorDashboard() {
   function handleOpenEditDialog(lesson: Lesson) {
     setSelectedLesson(null);
     setEditingLesson(lesson);
-    setEditForm({
-      tutorStudentId: String(lesson.tutorStudentId || ""),
-      date: lesson.date || "",
-      time: lesson.time || "",
-      topic: lesson.topic || "",
-      meetLink: lesson.meetLink || "",
-      homeworkDeadline: lesson.homeworkDeadline || "",
-    });
+    setEditForm(getLessonFormValues(lesson));
     setEditFormError(null);
     setEditMaterialFiles([]);
     setEditHomeworkFiles([]);

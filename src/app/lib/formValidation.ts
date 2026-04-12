@@ -7,6 +7,7 @@ export const FIELD_LIMITS = {
 } as const;
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const TIME_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
 function normalize(value: string) {
   return value.trim();
@@ -112,6 +113,20 @@ export function validateMeetLink(value: string) {
   return null;
 }
 
+export function validateLessonTime(value: string) {
+  const normalized = normalize(value);
+
+  if (!normalized) {
+    return "Р’С‹Р±РµСЂРёС‚Рµ РІСЂРµРјСЏ Р·Р°РЅСЏС‚РёСЏ.";
+  }
+
+  if (!TIME_PATTERN.test(normalized)) {
+    return "Р’РІРµРґРёС‚Рµ РєРѕСЂСЂРµРєС‚РЅРѕРµ РІСЂРµРјСЏ РІ С„РѕСЂРјР°С‚Рµ ЧЧ:ММ.";
+  }
+
+  return null;
+}
+
 export function validateLessonForm(input: {
   tutorStudentId: string;
   date: string;
@@ -131,5 +146,5 @@ export function validateLessonForm(input: {
     return "Выберите время занятия.";
   }
 
-  return validateLessonTopic(input.topic) || validateMeetLink(input.meetLink);
+  return validateLessonTime(input.time) || validateLessonTopic(input.topic) || validateMeetLink(input.meetLink);
 }

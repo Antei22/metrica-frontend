@@ -8,6 +8,7 @@ import { StudentDashboard } from "./pages/StudentDashboard";
 import { StudentLessons } from "./pages/StudentLessons";
 import { TutorDashboard } from "./pages/TutorDashboard";
 import { TutorHomework } from "./pages/TutorHomework";
+import { TutorStudentProgress } from "./pages/TutorStudentProgress";
 import { TutorStudents } from "./pages/TutorStudents";
 
 function PublicEntry() {
@@ -43,6 +44,10 @@ export const router = createBrowserRouter([
       {
         path: "/tutor/students",
         Component: TutorStudents,
+      },
+      {
+        path: "/tutor/students/:id",
+        Component: TutorStudentProgress,
       },
       {
         path: "/tutor/homework",

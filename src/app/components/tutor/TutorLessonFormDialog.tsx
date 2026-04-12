@@ -2,6 +2,8 @@ import { X } from "lucide-react";
 import { resolveApiUrl } from "../../api/client";
 import { FIELD_LIMITS } from "../../lib/formValidation";
 import type { LessonMaterial, TutorStudent } from "../../types/domain";
+import { DateInputWithCalendar } from "./DateInputWithCalendar";
+import { TimeInput } from "./TimeInput";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -221,22 +223,20 @@ export function TutorLessonFormDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="lesson-date">Дата</Label>
-              <Input
+              <DateInputWithCalendar
                 id="lesson-date"
-                onChange={(event) => onFormChange("date", event.target.value)}
+                onChange={(value) => onFormChange("date", value)}
                 required
-                type="date"
                 value={form.date}
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="lesson-time">Время</Label>
-              <Input
+              <TimeInput
                 id="lesson-time"
-                onChange={(event) => onFormChange("time", event.target.value)}
+                onChange={(value) => onFormChange("time", value)}
                 required
-                type="time"
                 value={form.time}
               />
             </div>
@@ -309,10 +309,9 @@ export function TutorLessonFormDialog({
 
           <div className="space-y-2">
             <Label htmlFor="lesson-deadline">Дедлайн домашнего задания</Label>
-            <Input
+            <DateInputWithCalendar
               id="lesson-deadline"
-              onChange={(event) => onFormChange("homeworkDeadline", event.target.value)}
-              type="date"
+              onChange={(value) => onFormChange("homeworkDeadline", value)}
               value={form.homeworkDeadline}
             />
           </div>
