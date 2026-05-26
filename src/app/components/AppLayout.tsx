@@ -4,7 +4,7 @@ import { Footer } from "./Footer";
 
 interface AppLayoutProps extends PropsWithChildren {
   title: string;
-  description?: string;
+  description?: ReactNode;
   actions?: ReactNode;
 }
 
@@ -24,9 +24,11 @@ export function AppLayout({
               МЕТРИКА
             </p>
             <h1 className="text-3xl font-semibold text-slate-900">{title}</h1>
-            {description ? (
+            {typeof description === "string" ? (
               <p className="max-w-2xl text-sm text-slate-500">{description}</p>
-            ) : null}
+            ) : (
+              description
+            )}
           </div>
           {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
         </section>

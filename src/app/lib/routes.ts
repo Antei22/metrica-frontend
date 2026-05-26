@@ -1,9 +1,21 @@
 import type { UserRole } from "../types/domain";
 
 export function getHomePathForRole(role: UserRole) {
-  return role === "tutor" ? "/tutor/dashboard" : "/student/lessons";
+  if (role === "tutor") {
+    return "/tutor/dashboard";
+  }
+
+  if (role === "parent") {
+    return "/parent/dashboard";
+  }
+
+  return "/student/dashboard";
 }
 
 export function getRoleLabel(role: UserRole) {
-  return role === "tutor" ? "Репетитор" : "Ученик";
+  if (role === "tutor") {
+    return "Репетитор";
+  }
+
+  return role === "parent" ? "Родитель" : "Ученик";
 }

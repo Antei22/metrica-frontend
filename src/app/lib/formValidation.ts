@@ -1,5 +1,6 @@
 export const FIELD_LIMITS = {
   lessonTopic: 100,
+  lessonSubject: 30,
   personName: 100,
   email: 254,
   password: 255,
@@ -89,6 +90,16 @@ export function validateLessonTopic(value: string) {
   return null;
 }
 
+export function validateLessonSubject(value: string) {
+  const normalized = normalize(value);
+
+  if (normalized.length > FIELD_LIMITS.lessonSubject) {
+    return "Введите более короткий предмет.";
+  }
+
+  return null;
+}
+
 export function validateMeetLink(value: string) {
   const normalized = normalize(value);
 
@@ -97,17 +108,17 @@ export function validateMeetLink(value: string) {
   }
 
   if (normalized.length > FIELD_LIMITS.meetLink) {
-    return "Ссылка на созвон слишком длинная.";
+    return "Ссылка на звонок слишком длинная.";
   }
 
   try {
     const url = new URL(normalized);
 
     if (url.protocol !== "http:" && url.protocol !== "https:") {
-      return "Введите корректную ссылку на созвон.";
+      return "Введите корректную ссылку на звонок.";
     }
   } catch {
-    return "Введите корректную ссылку на созвон.";
+    return "Введите корректную ссылку на звонок.";
   }
 
   return null;
@@ -117,11 +128,11 @@ export function validateLessonTime(value: string) {
   const normalized = normalize(value);
 
   if (!normalized) {
-    return "Р’С‹Р±РµСЂРёС‚Рµ РІСЂРµРјСЏ Р·Р°РЅСЏС‚РёСЏ.";
+    return "Выберите время занятия.";
   }
 
   if (!TIME_PATTERN.test(normalized)) {
-    return "Р’РІРµРґРёС‚Рµ РєРѕСЂСЂРµРєС‚РЅРѕРµ РІСЂРµРјСЏ РІ С„РѕСЂРјР°С‚Рµ ЧЧ:ММ.";
+    return "Введите корректное время в формате ЧЧ:ММ.";
   }
 
   return null;
@@ -132,6 +143,7 @@ export function validateLessonForm(input: {
   date: string;
   time: string;
   topic: string;
+  subject?: string;
   meetLink: string;
 }) {
   if (!input.tutorStudentId) {
@@ -146,5 +158,10 @@ export function validateLessonForm(input: {
     return "Выберите время занятия.";
   }
 
-  return validateLessonTime(input.time) || validateLessonTopic(input.topic) || validateMeetLink(input.meetLink);
+  return (
+    validateLessonTime(input.time) ||
+    validateLessonSubject(input.subject || "") ||
+    validateLessonTopic(input.topic) ||
+    validateMeetLink(input.meetLink)
+  );
 }

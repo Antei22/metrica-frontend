@@ -1,9 +1,18 @@
 import { ChevronDown } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
+import { listStudentGamification } from "../api/gamification";
 import { useAuth } from "../auth/AuthContext";
 import { getHomePathForRole, getRoleLabel } from "../lib/routes";
 import { Avatar, AvatarFallback } from "./ui/avatar";
+import { StarValue } from "./StarValue";
 import { Button } from "./ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +24,39 @@ export function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const [studentRewards, setStudentRewards] = useState<Awaited<
+    ReturnType<typeof listStudentGamification>
+  >>([]);
+  const [isRewardsDialogOpen, setIsRewardsDialogOpen] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (user?.role !== "student") {
+      setStudentRewards([]);
+      return () => {
+        isMounted = false;
+      };
+    }
+
+    listStudentGamification()
+      .then((items) => {
+        if (!isMounted) {
+          return;
+        }
+
+        setStudentRewards(items);
+      })
+      .catch(() => {
+        if (isMounted) {
+          setStudentRewards([]);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.id, user?.role]);
 
   if (!user) {
     return null;
@@ -27,7 +69,12 @@ export function Header() {
           { label: "Ученики", path: "/tutor/students" },
           { label: "Проверка ДЗ", path: "/tutor/homework" },
         ]
-      : [{ label: "Мои занятия", path: "/student/lessons" }];
+      : user.role === "parent"
+        ? [{ label: "Кабинет", path: "/parent/dashboard" }]
+        : [
+          { label: "Кабинет", path: "/student/dashboard" },
+          { label: "История занятий", path: "/student/lessons" },
+        ];
 
   const initials = user.fullName
     .split(" ")
@@ -35,6 +82,12 @@ export function Header() {
     .join("")
     .slice(0, 2)
     .toUpperCase();
+  const activeStudentRewards = studentRewards.filter(
+    (item) => item.starRewardsEnabled && item.starGoal,
+  );
+  const studentStars = activeStudentRewards.reduce((sum, item) => sum + item.earnedStars, 0);
+  const studentGoal = activeStudentRewards.reduce((sum, item) => sum + (item.starGoal || 0), 0);
+  const studentProgress = studentGoal ? Math.min(100, (studentStars / studentGoal) * 100) : 0;
 
   async function handleLogout() {
     await logout();
@@ -76,6 +129,15 @@ export function Header() {
                 </Button>
               );
             })}
+            {user.role === "student" && activeStudentRewards.length > 0 ? (
+              <button
+                aria-label="Открыть прогресс накопления"
+                onClick={() => setIsRewardsDialogOpen(true)}
+                type="button"
+              >
+                <StarValue className="h-9 px-4 text-sm" value={studentStars} />
+              </button>
+            ) : null}
           </nav>
 
           <DropdownMenu>
@@ -102,6 +164,44 @@ export function Header() {
           </DropdownMenu>
         </div>
       </div>
+      <Dialog open={isRewardsDialogOpen} onOpenChange={setIsRewardsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Прогресс накопления</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+              <p className="text-sm text-amber-800">Накоплено</p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">
+                {studentStars.toLocaleString("ru-RU")} / {studentGoal.toLocaleString("ru-RU")}
+              </p>
+              <div className="mt-4 h-2 overflow-hidden rounded-full bg-white">
+                <div
+                  className="h-full rounded-full bg-amber-400"
+                  style={{ width: `${studentProgress}%` }}
+                />
+              </div>
+            </div>
+            {activeStudentRewards.map((item) => (
+              <div
+                className="rounded-2xl border border-slate-200 p-4 text-sm text-slate-600"
+                key={item.tutorStudentId}
+              >
+                <p className="font-medium text-slate-900">
+                  {item.tutorName || "Репетитор"}
+                </p>
+                <p className="mt-1">
+                  {item.earnedStars.toLocaleString("ru-RU")} /{" "}
+                  {(item.starGoal || 0).toLocaleString("ru-RU")}
+                </p>
+                {item.starRewardTitle ? (
+                  <p className="mt-1">Награда: {item.starRewardTitle}</p>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </header>
   );
 }

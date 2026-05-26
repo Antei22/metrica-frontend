@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import { resolveApiUrl } from "../../api/client";
 import { FIELD_LIMITS } from "../../lib/formValidation";
+import { HOMEWORK_FILE_ACCEPT } from "../../lib/homework";
 import type { LessonMaterial, TutorStudent } from "../../types/domain";
 import { DateInputWithCalendar } from "./DateInputWithCalendar";
 import { TimeInput } from "./TimeInput";
@@ -20,6 +21,7 @@ export interface LessonFormValues {
   tutorStudentId: string;
   date: string;
   time: string;
+  subject: string;
   topic: string;
   meetLink: string;
   homeworkDeadline: string;
@@ -29,6 +31,7 @@ export const initialLessonFormValues: LessonFormValues = {
   tutorStudentId: "",
   date: "",
   time: "",
+  subject: "",
   topic: "",
   meetLink: "",
   homeworkDeadline: "",
@@ -244,6 +247,22 @@ export function TutorLessonFormDialog({
 
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-3">
+              <Label htmlFor="lesson-subject">Предмет</Label>
+              <span className="text-xs text-slate-400">
+                {form.subject.trim().length}/{FIELD_LIMITS.lessonSubject}
+              </span>
+            </div>
+            <Input
+              id="lesson-subject"
+              maxLength={FIELD_LIMITS.lessonSubject}
+              onChange={(event) => onFormChange("subject", event.target.value)}
+              placeholder="Например, алгебра"
+              value={form.subject}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-3">
               <Label htmlFor="lesson-topic">Тема занятия</Label>
               <span className="text-xs text-slate-400">
                 {form.topic.trim().length}/{FIELD_LIMITS.lessonTopic}
@@ -260,7 +279,7 @@ export function TutorLessonFormDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="lesson-link">Ссылка на созвон</Label>
+            <Label htmlFor="lesson-link">Ссылка на звонок</Label>
             <Input
               id="lesson-link"
               maxLength={FIELD_LIMITS.meetLink}
@@ -274,7 +293,13 @@ export function TutorLessonFormDialog({
           <div className="space-y-3 rounded-3xl border border-slate-200 p-4">
             <div className="space-y-2">
               <Label htmlFor="lesson-materials">Материалы занятия</Label>
-              <Input id="lesson-materials" multiple onChange={handleMaterialFilesChange} type="file" />
+              <Input
+                accept={HOMEWORK_FILE_ACCEPT}
+                id="lesson-materials"
+                multiple
+                onChange={handleMaterialFilesChange}
+                type="file"
+              />
               <p className="text-xs text-slate-500">
                 Можно добавлять файлы в несколько подходов: новые файлы будут дополнять текущий список.
               </p>
@@ -290,9 +315,10 @@ export function TutorLessonFormDialog({
 
           <div className="space-y-3 rounded-3xl border border-slate-200 p-4">
             <div className="space-y-2">
-              <Label htmlFor="lesson-homework-files">Файлы домашнего задания</Label>
+              <Label htmlFor="lesson-homework-files">Материалы домашнего задания</Label>
               <Input
                 id="lesson-homework-files"
+                accept={HOMEWORK_FILE_ACCEPT}
                 multiple
                 onChange={handleHomeworkFilesChange}
                 type="file"

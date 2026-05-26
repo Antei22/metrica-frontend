@@ -29,7 +29,12 @@ export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    const fallbackPath = user.role === "tutor" ? "/tutor/dashboard" : "/student/lessons";
+    const fallbackPath =
+      user.role === "tutor"
+        ? "/tutor/dashboard"
+        : user.role === "parent"
+          ? "/parent/dashboard"
+          : "/student/dashboard";
     return <Navigate to={fallbackPath} replace />;
   }
 

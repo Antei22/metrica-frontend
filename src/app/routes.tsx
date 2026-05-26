@@ -4,6 +4,8 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { getHomePathForRole } from "./lib/routes";
 import { AuthPage } from "./pages/AuthPage";
 import { LessonDetails } from "./pages/LessonDetails";
+import { ParentDashboard } from "./pages/ParentDashboard";
+import { ParentLessonDetails } from "./pages/ParentLessonDetails";
 import { StudentDashboard } from "./pages/StudentDashboard";
 import { StudentLessons } from "./pages/StudentLessons";
 import { TutorDashboard } from "./pages/TutorDashboard";
@@ -69,6 +71,19 @@ export const router = createBrowserRouter([
       {
         path: "/student/lessons/:id",
         Component: LessonDetails,
+      },
+    ],
+  },
+  {
+    element: <ProtectedRoute allowedRoles={["parent"]} />,
+    children: [
+      {
+        path: "/parent/dashboard",
+        Component: ParentDashboard,
+      },
+      {
+        path: "/parent/lessons/:id",
+        Component: ParentLessonDetails,
       },
     ],
   },

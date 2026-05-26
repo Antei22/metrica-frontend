@@ -7,6 +7,7 @@ export interface TutorLessonInput {
   tutorStudentId: number;
   date: string;
   time: string;
+  subject: string;
   topic: string;
   meetLink: string;
   homeworkDeadline: string;
@@ -55,6 +56,7 @@ function buildLessonPayload(input: TutorLessonInput) {
     tutor_student_id: input.tutorStudentId,
     date: input.date,
     time: input.time,
+    subject: input.subject || null,
     topic: input.topic,
     meet_link: input.meetLink || null,
     homework_deadline: input.homeworkDeadline || null,
@@ -145,6 +147,21 @@ export async function deleteTutorLesson(lessonId: number | string) {
   }
 }
 
+export async function updateTutorLessonParentMessage(
+  lessonId: number | string,
+  input: { comment: string; fileIds: number[] },
+) {
+  const payload = await apiRequest(apiConfig.tutor.parentLessonMessage(lessonId), {
+    method: "POST",
+    body: JSON.stringify({
+      comment: input.comment,
+      file_ids: input.fileIds,
+    }),
+  });
+
+  return mapLesson(payload);
+}
+
 export async function listStudentLessons() {
   const payload = await apiRequest(apiConfig.student.lessons);
   return mapLessonCollection(payload);
@@ -155,9 +172,20 @@ export async function getStudentLesson(lessonId: number | string) {
   return mapLesson(payload);
 }
 
-export async function submitStudentHomework(lessonId: number | string, file: File) {
+export async function submitStudentHomework(
+  lessonId: number | string,
+  files: File[],
+  existingFileIds: number[] = [],
+  comment = "",
+) {
   const formData = new FormData();
-  formData.append("file", file);
+  existingFileIds.forEach((fileId) => {
+    formData.append("existing_file_ids", String(fileId));
+  });
+  files.forEach((file) => {
+    formData.append("files", file);
+  });
+  formData.append("comment", comment);
 
   return apiRequest(apiConfig.student.submitHomework(lessonId), {
     method: "POST",

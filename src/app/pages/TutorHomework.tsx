@@ -1,9 +1,15 @@
+import { CheckCircle2, FileUp, X } from "lucide-react";
+import type { ChangeEvent } from "react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { checkSubmission, listPendingSubmissions } from "../api/homework";
 import { resolveApiUrl } from "../api/client";
+import { uploadTutorFile } from "../api/files";
+import { checkSubmission, listSubmissions } from "../api/homework";
 import { AppLayout } from "../components/AppLayout";
 import { EmptyState, ErrorState, LoadingState } from "../components/DataState";
+import { FileLinkButton } from "../components/FileLinkButton";
+import { StarRatingInput } from "../components/StarRatingInput";
+import { StarValue } from "../components/StarValue";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import {
@@ -12,70 +18,277 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../components/ui/dialog";
+import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Textarea } from "../components/ui/textarea";
-import { formatDate } from "../lib/format";
 import { getErrorMessage } from "../lib/errors";
-import type { HomeworkReview } from "../types/domain";
+import { formatDate, formatDateClock } from "../lib/format";
+import { HOMEWORK_FILE_ACCEPT, isSubmittedAfterHomeworkDeadline } from "../lib/homework";
+import type { HomeworkReview, LessonMaterial } from "../types/domain";
+
+function getPendingFileKey(file: File) {
+  return `${file.name}-${file.size}-${file.lastModified}`;
+}
+
+function formatFileSize(file: File) {
+  return `${(file.size / 1024).toFixed(1)} KB`;
+}
+
+function SubmissionFilesBlock({
+  homeworkDeadline,
+  homeworkDeadlineMissed,
+  files,
+  submittedAt,
+  title,
+}: {
+  homeworkDeadline?: string | null;
+  homeworkDeadlineMissed?: boolean;
+  files: LessonMaterial[];
+  submittedAt?: string | null;
+  title: string;
+}) {
+  if (files.length === 0) {
+    return null;
+  }
+
+  const submittedTime = formatDateClock(submittedAt);
+  const submittedLate = isSubmittedAfterHomeworkDeadline(
+    homeworkDeadline,
+    submittedAt,
+    homeworkDeadlineMissed,
+  );
+
+  return (
+    <div className="space-y-2">
+      {homeworkDeadline !== undefined ? (
+        <p className="text-sm text-slate-500">
+          Дедлайн ДЗ: {homeworkDeadline ? formatDate(homeworkDeadline) : "не задан"}
+        </p>
+      ) : null}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
+        <p className="font-medium text-slate-900">{title}:</p>
+        {submittedTime ? (
+          <p className={submittedLate ? "font-medium text-rose-600" : undefined}>
+            Отправлено в {submittedTime}
+          </p>
+        ) : null}
+      </div>
+      <div className="flex max-w-full flex-col items-start gap-2">
+        {files.map((file) => (
+          <FileLinkButton file={file} fallback="Открыть файл" key={file.id} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function TutorHomework() {
   const [pendingSubmissions, setPendingSubmissions] = useState<HomeworkReview[]>([]);
   const [checkedSubmissions, setCheckedSubmissions] = useState<HomeworkReview[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedSubmission, setSelectedSubmission] = useState<HomeworkReview | null>(null);
+  const [selectedSubmission, setSelectedSubmission] = useState<HomeworkReview | null>(
+    null,
+  );
   const [comment, setComment] = useState("");
+  const [grade, setGrade] = useState<number | null>(null);
+  const [retainedReviewFiles, setRetainedReviewFiles] = useState<LessonMaterial[]>([]);
+  const [reviewFiles, setReviewFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  async function loadPendingSubmissions() {
+  async function loadSubmissions() {
     setLoading(true);
     setError(null);
 
     try {
-      setPendingSubmissions(await listPendingSubmissions());
+      const [pending, checked] = await Promise.all([
+        listSubmissions("submitted"),
+        listSubmissions("checked"),
+      ]);
+      setPendingSubmissions(pending);
+      setCheckedSubmissions(checked);
     } catch (loadError) {
-      setError(getErrorMessage(loadError, "Не удалось загрузить домашние задания."));
+      setError(
+        getErrorMessage(loadError, "Не удалось загрузить домашние задания."),
+      );
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    void loadPendingSubmissions();
+    void loadSubmissions();
   }, []);
+
+  function openReviewDialog(submission: HomeworkReview) {
+    setSelectedSubmission(submission);
+    setComment(submission.comment || "");
+    setGrade(submission.grade);
+    setRetainedReviewFiles(submission.checkedFiles);
+    setReviewFiles([]);
+  }
+
+  function closeReviewDialog() {
+    setSelectedSubmission(null);
+    setComment("");
+    setGrade(null);
+    setRetainedReviewFiles([]);
+    setReviewFiles([]);
+  }
+
+  function handleAddReviewFiles(event: ChangeEvent<HTMLInputElement>) {
+    const nextFiles = Array.from(event.target.files || []);
+
+    if (nextFiles.length > 0) {
+      setReviewFiles((currentFiles) => [...currentFiles, ...nextFiles]);
+    }
+
+    event.target.value = "";
+  }
+
+  function removeRetainedReviewFile(fileId: string) {
+    setRetainedReviewFiles((currentFiles) =>
+      currentFiles.filter((file) => file.id !== fileId),
+    );
+  }
+
+  function removeReviewFile(index: number) {
+    setReviewFiles((currentFiles) =>
+      currentFiles.filter((_, fileIndex) => fileIndex !== index),
+    );
+  }
 
   async function handleCheckSubmission() {
     if (!selectedSubmission) {
       return;
     }
 
+    if (!grade) {
+      toast.error("Выберите оценку за ДЗ.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const reviewedSubmission = await checkSubmission(selectedSubmission.id, comment);
+      const checkedFileRefs = await Promise.all(
+        reviewFiles.map((file) => uploadTutorFile(file)),
+      );
+      const retainedReviewFileIds = retainedReviewFiles
+        .map((file) => file.fileId)
+        .filter((fileId): fileId is number => typeof fileId === "number");
+      const reviewedSubmission = await checkSubmission(selectedSubmission.id, {
+        comment,
+        grade,
+        checkedFileIds: [
+          ...retainedReviewFileIds,
+          ...checkedFileRefs.map((file) => file.fileId),
+        ],
+      });
+
       setPendingSubmissions((currentItems) =>
         currentItems.filter((item) => item.id !== reviewedSubmission.id),
       );
-      setCheckedSubmissions((currentItems) => [reviewedSubmission, ...currentItems]);
-      setSelectedSubmission(null);
-      setComment("");
+      setCheckedSubmissions((currentItems) => [
+        reviewedSubmission,
+        ...currentItems.filter((item) => item.id !== reviewedSubmission.id),
+      ]);
+      closeReviewDialog();
       toast.success("Домашнее задание проверено");
     } catch (submitError) {
-      toast.error(getErrorMessage(submitError, "Не удалось сохранить проверку."));
+      toast.error(
+        getErrorMessage(submitError, "Не удалось сохранить проверку."),
+      );
     } finally {
       setIsSubmitting(false);
     }
   }
 
+  function renderSubmissionCard(submission: HomeworkReview, checked: boolean) {
+    return (
+      <Card
+        key={submission.id}
+        className={`rounded-3xl shadow-sm ${
+          checked ? "border-emerald-200 bg-emerald-50" : "border-slate-200 bg-white"
+        }`}
+      >
+        <CardHeader className="gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <CardTitle>{submission.student}</CardTitle>
+              <p className="mt-2 text-sm text-slate-500">
+                {submission.lessonTopic || "Тема занятия не указана"}
+              </p>
+            </div>
+            {checked ? (
+              <StarValue value={submission.grade} />
+            ) : (
+              <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700">
+                На проверке
+              </span>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div className="space-y-2 text-sm text-slate-600">
+            <p>Дата занятия: {formatDate(submission.lessonDate)}</p>
+            {submission.files.length > 0 ? (
+              <SubmissionFilesBlock
+                files={submission.files}
+                homeworkDeadline={submission.homeworkDeadline}
+                homeworkDeadlineMissed={submission.homeworkDeadlineMissed}
+                submittedAt={submission.submittedAt}
+                title="Решение ученика"
+              />
+            ) : (
+              <p>Файл решения не прикреплен.</p>
+            )}
+            {submission.checkedFiles.length > 0 ? (
+              <SubmissionFilesBlock
+                files={submission.checkedFiles}
+                title="Проверенные файлы репетитором"
+              />
+            ) : null}
+            {submission.studentComment ? (
+              <p className="rounded-2xl bg-white/80 p-3 text-slate-600">
+                {submission.studentComment}
+              </p>
+            ) : null}
+            {submission.comment ? (
+              <p className="rounded-2xl bg-white/80 p-3 text-slate-600">
+                {submission.comment}
+              </p>
+            ) : null}
+          </div>
+
+          <Button
+            className={
+              checked
+                ? "rounded-full"
+                : "rounded-full bg-slate-900 text-white hover:bg-slate-800"
+            }
+            onClick={() => openReviewDialog(submission)}
+            variant={checked ? "outline" : "default"}
+          >
+            {checked ? (
+              <>
+                <CheckCircle2 className="size-4" />
+                Изменить проверку
+              </>
+            ) : (
+              "Проверить"
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <AppLayout
       title="Проверка домашних заданий"
-      description="Здесь собраны работы, которые ученики уже отправили и которые ждут вашего комментария."
-      actions={
-        <Button variant="outline" onClick={() => void loadPendingSubmissions()}>
-          Обновить
-        </Button>
-      }
+      description="Работы учеников, комментарии, проверенные файлы и оценки за ДЗ."
     >
       {loading ? <LoadingState title="Загружаем домашние задания..." /> : null}
 
@@ -84,123 +297,61 @@ export function TutorHomework() {
           title="Не удалось загрузить работы"
           description={error}
           actionLabel="Повторить"
-          onAction={() => void loadPendingSubmissions()}
+          onAction={() => void loadSubmissions()}
         />
       ) : null}
 
       {!loading && !error ? (
-        <>
-          {pendingSubmissions.length === 0 && checkedSubmissions.length === 0 ? (
-            <EmptyState
-              title="Нет работ на проверке"
-              description="Как только ученики отправят решения, они появятся в этом разделе."
-            />
-          ) : null}
+        pendingSubmissions.length === 0 && checkedSubmissions.length === 0 ? (
+          <EmptyState
+            title="Нет работ на проверке"
+            description="Как только ученики отправят решения, они появятся в этом разделе."
+          />
+        ) : (
+          <Tabs className="w-full" defaultValue="pending">
+            <TabsList className="w-full justify-start rounded-full bg-slate-100 p-1 sm:w-auto">
+              <TabsTrigger className="rounded-full" value="pending">
+                На проверке ({pendingSubmissions.length})
+              </TabsTrigger>
+              <TabsTrigger className="rounded-full" value="checked">
+                Проверено ({checkedSubmissions.length})
+              </TabsTrigger>
+            </TabsList>
 
-          {pendingSubmissions.length > 0 ? (
-            <section className="space-y-4">
-              <div>
-                <h2 className="text-xl font-semibold text-slate-900">На проверке</h2>
-                <p className="mt-1 text-sm text-slate-500">
-                  {pendingSubmissions.length} {pendingSubmissions.length === 1 ? "работа" : "работ"}
-                </p>
-              </div>
+            <TabsContent className="mt-6 space-y-4" value="pending">
+              {pendingSubmissions.length === 0 ? (
+                <EmptyState
+                  title="Все работы проверены"
+                  description="Сейчас нет новых отправок, ожидающих комментария."
+                />
+              ) : (
+                pendingSubmissions.map((submission) =>
+                  renderSubmissionCard(submission, false),
+                )
+              )}
+            </TabsContent>
 
-              <div className="grid gap-4">
-                {pendingSubmissions.map((submission) => (
-                  <Card key={submission.id} className="rounded-3xl border-slate-200 shadow-sm">
-                    <CardHeader className="gap-3">
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                        <div>
-                          <CardTitle>{submission.student}</CardTitle>
-                          <p className="mt-2 text-sm text-slate-500">
-                            {submission.lessonTopic || "Тема занятия не указана"}
-                          </p>
-                        </div>
-                        <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700">
-                          На проверке
-                        </span>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
-                      <div className="space-y-2 text-sm text-slate-600">
-                        <p>Дата занятия: {formatDate(submission.lessonDate)}</p>
-                        {submission.fileUrl ? (
-                          <a
-                            className="inline-flex text-sm font-medium text-slate-900 underline underline-offset-4"
-                            href={resolveApiUrl(submission.fileUrl)}
-                            rel="noreferrer"
-                            target="_blank"
-                          >
-                            Открыть файл{submission.fileName ? `: ${submission.fileName}` : ""}
-                          </a>
-                        ) : (
-                          <p>Файл не прикреплён.</p>
-                        )}
-                      </div>
-
-                      <Button
-                        className="rounded-full bg-slate-900 text-white hover:bg-slate-800"
-                        onClick={() => {
-                          setSelectedSubmission(submission);
-                          setComment(submission.comment || "");
-                        }}
-                      >
-                        Проверить
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          {checkedSubmissions.length > 0 ? (
-            <section className="space-y-4">
-              <div>
-                <h2 className="text-xl font-semibold text-slate-900">Проверено в этой сессии</h2>
-                <p className="mt-1 text-sm text-slate-500">
-                  Эти работы уже получили ваш комментарий.
-                </p>
-              </div>
-
-              <div className="grid gap-4">
-                {checkedSubmissions.map((submission) => (
-                  <Card key={submission.id} className="rounded-3xl border-emerald-200 bg-emerald-50 shadow-sm">
-                    <CardContent className="grid gap-3 p-6">
-                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <p className="font-semibold text-slate-900">{submission.student}</p>
-                          <p className="text-sm text-slate-600">
-                            {submission.lessonTopic || "Тема занятия не указана"}
-                          </p>
-                        </div>
-                        <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700">
-                          Проверено
-                        </span>
-                      </div>
-
-                      <div className="rounded-2xl bg-white p-4 text-sm text-slate-600">
-                        <p className="font-medium text-slate-900">Комментарий</p>
-                        <p className="mt-2">
-                          {submission.comment || "Комментарий не был добавлен."}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
-          ) : null}
-        </>
+            <TabsContent className="mt-6 space-y-4" value="checked">
+              {checkedSubmissions.length === 0 ? (
+                <EmptyState
+                  title="Проверенных работ пока нет"
+                  description="После проверки работы будут сохраняться здесь."
+                />
+              ) : (
+                checkedSubmissions.map((submission) =>
+                  renderSubmissionCard(submission, true),
+                )
+              )}
+            </TabsContent>
+          </Tabs>
+        )
       ) : null}
 
       <Dialog
         open={Boolean(selectedSubmission)}
         onOpenChange={(isOpen) => {
           if (!isOpen) {
-            setSelectedSubmission(null);
-            setComment("");
+            closeReviewDialog();
           }
         }}
       >
@@ -212,9 +363,119 @@ export function TutorHomework() {
           {selectedSubmission ? (
             <div className="space-y-4">
               <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
-                <p className="font-medium text-slate-900">{selectedSubmission.student}</p>
-                <p className="mt-1">{selectedSubmission.lessonTopic || "Тема занятия не указана"}</p>
-                <p className="mt-1">Дата занятия: {formatDate(selectedSubmission.lessonDate)}</p>
+                <p className="font-medium text-slate-900">
+                  {selectedSubmission.student}
+                </p>
+                <p className="mt-1">
+                  {selectedSubmission.lessonTopic || "Тема занятия не указана"}
+                </p>
+                <p className="mt-1">
+                  Дата занятия: {formatDate(selectedSubmission.lessonDate)}
+                </p>
+                {selectedSubmission.files.length > 0 ? (
+                  <div className="mt-3">
+                    <SubmissionFilesBlock
+                      files={selectedSubmission.files}
+                      homeworkDeadline={selectedSubmission.homeworkDeadline}
+                      homeworkDeadlineMissed={selectedSubmission.homeworkDeadlineMissed}
+                      submittedAt={selectedSubmission.submittedAt}
+                      title="Решение ученика"
+                    />
+                  </div>
+                ) : null}
+                {selectedSubmission.studentComment ? (
+                  <p className="mt-3 rounded-2xl bg-white p-3 text-sm text-slate-600">
+                    {selectedSubmission.studentComment}
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="submission-grade">Оценка за ДЗ</Label>
+                <StarRatingInput id="submission-grade" value={grade} onChange={setGrade} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="submission-review-file">
+                  Проверенный файл с правками
+                </Label>
+                <Input
+                  accept={HOMEWORK_FILE_ACCEPT}
+                  id="submission-review-file"
+                  multiple
+                  type="file"
+                  onChange={handleAddReviewFiles}
+                />
+                <p className="text-xs text-slate-500">
+                  Можно добавлять файлы в несколько подходов. Лишние файлы можно убрать перед сохранением проверки.
+                </p>
+
+                {retainedReviewFiles.length > 0 ? (
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+                      Уже прикрепленные проверенные файлы
+                    </p>
+                    {retainedReviewFiles.map((file) => (
+                      <div
+                        key={file.id}
+                        className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-slate-900">
+                            {file.name}
+                          </p>
+                          <p className="text-xs text-slate-500">Будет сохранен в проверке</p>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-2">
+                          {file.url ? (
+                            <Button asChild size="sm" type="button" variant="outline">
+                              <a href={resolveApiUrl(file.url)} rel="noreferrer" target="_blank">
+                                Открыть
+                              </a>
+                            </Button>
+                          ) : null}
+                          <Button
+                            onClick={() => removeRetainedReviewFile(file.id)}
+                            size="icon"
+                            type="button"
+                            variant="ghost"
+                          >
+                            <X className="size-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+
+                {reviewFiles.length > 0 ? (
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+                      Новые проверенные файлы
+                    </p>
+                    {reviewFiles.map((file, index) => (
+                      <div
+                        key={getPendingFileKey(file)}
+                        className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-slate-900">
+                            {file.name}
+                          </p>
+                          <p className="text-xs text-slate-500">{formatFileSize(file)}</p>
+                        </div>
+                        <Button
+                          onClick={() => removeReviewFile(index)}
+                          size="icon"
+                          type="button"
+                          variant="ghost"
+                        >
+                          <X className="size-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
               </div>
 
               <div className="space-y-2">
@@ -229,14 +490,7 @@ export function TutorHomework() {
               </div>
 
               <div className="flex justify-end gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setSelectedSubmission(null);
-                    setComment("");
-                  }}
-                >
+                <Button type="button" variant="outline" onClick={closeReviewDialog}>
                   Отмена
                 </Button>
                 <Button
@@ -244,7 +498,8 @@ export function TutorHomework() {
                   disabled={isSubmitting}
                   onClick={handleCheckSubmission}
                 >
-                  {isSubmitting ? "Сохраняем..." : "Отправить проверку"}
+                  <FileUp className="size-4" />
+                  {isSubmitting ? "Сохраняем..." : "Сохранить проверку"}
                 </Button>
               </div>
             </div>

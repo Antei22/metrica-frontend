@@ -25,6 +25,8 @@
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   --ring: oklch(0.708 0 0);
+  --metrica-radius-surface: 34px;
+  --metrica-radius-control: 14px;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -177,5 +179,51 @@
     font-size: var(--text-base);
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
+  }
+}
+
+@layer components {
+  [data-slot='card'],
+  [data-slot='dialog-content'],
+  [data-slot='alert-dialog-content'],
+  [data-slot='popover-content'],
+  [data-slot='select-content'],
+  [data-slot='sheet-content'],
+  [data-slot='dropdown-menu-content'],
+  [data-slot='dropdown-menu-sub-content'],
+  [data-slot='context-menu-content'],
+  [data-slot='context-menu-sub-content'],
+  [data-slot='hover-card-content'],
+  [data-slot='menubar-content'],
+  [data-slot='menubar-sub-content'],
+  [data-slot='navigation-menu-content'],
+  [data-slot='navigation-menu-viewport'],
+  [data-slot='drawer-content'],
+  [data-slot='command'],
+  section[class*='rounded-'][class*='border'],
+  div[class*='rounded-'][class*='border'][class*='bg-white'] {
+    border-radius: var(--metrica-radius-surface) !important;
+  }
+
+  [data-slot='button'],
+  [data-slot='input'],
+  [data-slot='textarea'],
+  [data-slot='select-trigger'],
+  [data-slot='tabs-list'],
+  [data-slot='tabs-trigger'],
+  [data-slot='alert-dialog-action'],
+  [data-slot='alert-dialog-cancel'],
+  input,
+  select,
+  textarea {
+    border-radius: var(--metrica-radius-control) !important;
+  }
+
+  [data-slot='card'],
+  [data-slot='dialog-content'],
+  [data-slot='alert-dialog-content'] {
+    box-shadow:
+      0 18px 45px rgba(15, 23, 42, 0.08),
+      0 2px 10px rgba(15, 23, 42, 0.04);
   }
 }

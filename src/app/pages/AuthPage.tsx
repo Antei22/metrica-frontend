@@ -27,7 +27,7 @@ export function AuthPage() {
   const [loginPassword, setLoginPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
 
-  const [registerRole, setRegisterRole] = useState<"student" | "tutor">("student");
+  const [registerRole, setRegisterRole] = useState<"student" | "tutor" | "parent">("student");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerFirstName, setRegisterFirstName] = useState("");
   const [registerLastName, setRegisterLastName] = useState("");
@@ -101,19 +101,19 @@ export function AuthPage() {
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(15,23,42,0.08),_transparent_45%),linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-10">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-5xl items-center justify-center">
         <div className="grid w-full overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_30px_80px_-40px_rgba(15,23,42,0.45)] lg:grid-cols-[1.1fr_0.9fr]">
-          <section className="hidden flex-col justify-between bg-slate-900 p-10 text-white lg:flex">
-            <div>
+          <section className="hidden flex-col bg-slate-900 p-10 text-white lg:flex">
+            <div className="-mt-2">
               <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">
                 Онлайн-платформа
               </p>
               <h1 className="mt-4 text-5xl font-semibold leading-tight">МЕТРИКА</h1>
               <p className="mt-6 max-w-md text-base text-slate-300">
-                Личный кабинет для репетитора и ученика с расписанием, материалами
-                занятия и проверкой домашних заданий.
+                Личный кабинет для репетитора, ученика и родителя с расписанием,
+                материалами занятия и проверкой домашних заданий.
               </p>
             </div>
 
-            <div className="grid gap-4">
+            <div className="mt-7 grid gap-4">
               <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
                 <p className="text-sm font-medium text-white">Для репетитора</p>
                 <p className="mt-2 text-sm text-slate-300">
@@ -124,6 +124,12 @@ export function AuthPage() {
                 <p className="text-sm font-medium text-white">Для ученика</p>
                 <p className="mt-2 text-sm text-slate-300">
                   Просмотр занятий, доступ к материалам и отправка выполненных работ.
+                </p>
+              </div>
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <p className="text-sm font-medium text-white">Для родителя</p>
+                <p className="mt-2 text-sm text-slate-300">
+                  Последние оценки, история занятий и расписание ребенка.
                 </p>
               </div>
             </div>
@@ -204,9 +210,11 @@ export function AuthPage() {
                   <div className="space-y-2">
                     <Label>Роль</Label>
                     <RadioGroup
-                      className="grid gap-3 sm:grid-cols-2"
+                      className="grid gap-3 sm:grid-cols-3"
                       value={registerRole}
-                      onValueChange={(value) => setRegisterRole(value as "student" | "tutor")}
+                      onValueChange={(value) =>
+                        setRegisterRole(value as "student" | "tutor" | "parent")
+                      }
                     >
                       <label className="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm">
                         <RadioGroupItem id="role-student" value="student" />
@@ -215,6 +223,10 @@ export function AuthPage() {
                       <label className="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm">
                         <RadioGroupItem id="role-tutor" value="tutor" />
                         <span>Репетитор</span>
+                      </label>
+                      <label className="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm">
+                        <RadioGroupItem id="role-parent" value="parent" />
+                        <span>Родитель</span>
                       </label>
                     </RadioGroup>
                   </div>

@@ -1,11 +1,28 @@
+import { Plus, Search, Settings, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { uploadTutorFile } from "../api/files";
 import { createTutorLesson, listTutorLessons } from "../api/lessons";
-import { addTutorStudent, listTutorStudents } from "../api/students";
+import {
+  addTutorStudent,
+  deleteTutorStudent,
+  listTutorStudents,
+  updateTutorStudent,
+} from "../api/students";
 import { AppLayout } from "../components/AppLayout";
 import { EmptyState, ErrorState, LoadingState } from "../components/DataState";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../components/ui/alert-dialog";
 import {
   type LessonFormValues,
   TutorLessonFormDialog,
@@ -17,13 +34,18 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "../components/ui/dialog";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { getErrorMessage } from "../lib/errors";
-import { FIELD_LIMITS, validateEmail, validateLessonForm } from "../lib/formValidation";
+import {
+  FIELD_LIMITS,
+  validateEmail,
+  validateFirstName,
+  validateLessonForm,
+} from "../lib/formValidation";
 import { formatDateTime } from "../lib/format";
+import { isHomeworkDeadlineMissed } from "../lib/homework";
 import {
   getLatestPastLesson,
   getNearestUpcomingLesson,
@@ -38,28 +60,58 @@ import {
 } from "../lib/tutorLessonForm";
 import type { Lesson, LessonCollection, TutorStudent } from "../types/domain";
 
-function getStatusBadge(status: TutorStudent["lastSubmissionStatus"]) {
-  if (status === "checked") {
-    return "bg-emerald-100 text-emerald-700";
-  }
+type HomeworkStatusView = {
+  label: string;
+  className: string;
+  isPendingReview: boolean;
+};
 
-  if (status === "pending") {
-    return "bg-amber-100 text-amber-700";
-  }
-
-  return "bg-slate-100 text-slate-600";
+function hasHomeworkTask(lesson: Lesson) {
+  return Boolean(lesson.homeworkDeadline || lesson.homeworkTaskFiles.length > 0);
 }
 
-function getStatusLabel(status: TutorStudent["lastSubmissionStatus"]) {
-  if (status === "checked") {
-    return "Проверено";
+function getLatestHomeworkLesson(lessons: Lesson[]) {
+  for (let index = lessons.length - 1; index >= 0; index -= 1) {
+    const lesson = lessons[index];
+
+    if (hasHomeworkTask(lesson)) {
+      return lesson;
+    }
   }
 
-  if (status === "pending") {
-    return "На проверке";
+  return null;
+}
+
+function getHomeworkStatusView(lesson: Lesson | null): HomeworkStatusView {
+  if (lesson?.homeworkStatus === "checked") {
+    return {
+      label: "Проверено",
+      className: "bg-emerald-100 text-emerald-700",
+      isPendingReview: false,
+    };
   }
 
-  return "Нет отправок";
+  if (lesson?.homeworkStatus === "sent") {
+    return {
+      label: "На проверке",
+      className: "bg-amber-100 text-amber-700",
+      isPendingReview: true,
+    };
+  }
+
+  if (lesson && isHomeworkDeadlineMissed(lesson)) {
+    return {
+      label: "Еще не отправлено",
+      className: "bg-rose-50 text-rose-600",
+      isPendingReview: false,
+    };
+  }
+
+  return {
+    label: "Еще не отправлено",
+    className: "bg-slate-100 text-slate-600",
+    isPendingReview: false,
+  };
 }
 
 export function TutorStudents() {
@@ -77,6 +129,15 @@ export function TutorStudents() {
   const [studentEmailError, setStudentEmailError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingStudentId, setEditingStudentId] = useState<number | null>(null);
+  const [editFirstName, setEditFirstName] = useState("");
+  const [editLastName, setEditLastName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editClassInfo, setEditClassInfo] = useState("");
+  const [editStudentError, setEditStudentError] = useState<string | null>(null);
+  const [isEditSubmitting, setIsEditSubmitting] = useState(false);
+  const [isDeletingStudent, setIsDeletingStudent] = useState(false);
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isCreateSubmitting, setIsCreateSubmitting] = useState(false);
@@ -95,7 +156,7 @@ export function TutorStudents() {
     }
 
     return students.filter((student) =>
-      [student.fullName, student.subject, student.classInfo]
+      [student.fullName, student.classInfo]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
@@ -123,6 +184,10 @@ export function TutorStudents() {
   const createDialogStudent = useMemo(
     () => students.find((student) => String(student.id) === createForm.tutorStudentId) || null,
     [createForm.tutorStudentId, students],
+  );
+  const editingStudent = useMemo(
+    () => students.find((student) => student.id === editingStudentId) || null,
+    [editingStudentId, students],
   );
 
   async function loadStudentsPageData() {
@@ -183,6 +248,32 @@ export function TutorStudents() {
     setIsCreateDialogOpen(true);
   }
 
+  function openEditStudentDialog(student?: TutorStudent) {
+    const studentToEdit = student || students[0];
+
+    if (!studentToEdit) {
+      return;
+    }
+
+    setEditingStudentId(studentToEdit.id);
+    setEditFirstName(studentToEdit.firstName || studentToEdit.fullName.split(" ")[0] || "");
+    setEditLastName(studentToEdit.lastName || "");
+    setEditEmail(studentToEdit.email || "");
+    setEditClassInfo(studentToEdit.classInfo || "");
+    setEditStudentError(null);
+    setIsEditDialogOpen(true);
+  }
+
+  function selectEditingStudent(studentId: number) {
+    const student = students.find((item) => item.id === studentId);
+    setEditingStudentId(studentId);
+    setEditFirstName(student?.firstName || student?.fullName.split(" ")[0] || "");
+    setEditLastName(student?.lastName || "");
+    setEditEmail(student?.email || "");
+    setEditClassInfo(student?.classInfo || "");
+    setEditStudentError(null);
+  }
+
   function handleCardKeyDown(
     event: React.KeyboardEvent<HTMLDivElement>,
     studentId: number,
@@ -221,6 +312,81 @@ export function TutorStudents() {
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  async function handleUpdateStudent(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!editingStudentId) {
+      return;
+    }
+
+    const firstNameError = validateFirstName(editFirstName);
+
+    if (firstNameError) {
+      setEditStudentError(firstNameError);
+      return;
+    }
+
+    const emailError = validateEmail(editEmail);
+
+    if (emailError) {
+      setEditStudentError(emailError);
+      return;
+    }
+
+    if (editLastName.trim().length > FIELD_LIMITS.personName) {
+      setEditStudentError("Введите более короткую фамилию.");
+      return;
+    }
+
+    setIsEditSubmitting(true);
+    setEditStudentError(null);
+
+    try {
+      const updatedStudent = await updateTutorStudent(editingStudentId, {
+        email: editEmail.trim(),
+        firstName: editFirstName.trim(),
+        lastName: editLastName.trim() || null,
+        subject: null,
+        classInfo: editClassInfo.trim() || null,
+      });
+      setStudents((currentStudents) =>
+        currentStudents.map((student) =>
+          student.id === updatedStudent.id ? updatedStudent : student,
+        ),
+      );
+      setIsEditDialogOpen(false);
+      toast.success("Данные ученика обновлены");
+    } catch (submitError) {
+      const errorMessage = getErrorMessage(submitError, "Не удалось обновить данные ученика.");
+      setEditStudentError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setIsEditSubmitting(false);
+    }
+  }
+
+  async function handleDeleteStudent() {
+    if (!editingStudentId) {
+      return;
+    }
+
+    setIsDeletingStudent(true);
+    setEditStudentError(null);
+
+    try {
+      await deleteTutorStudent(editingStudentId);
+      setIsEditDialogOpen(false);
+      await loadStudentsPageData();
+      toast.success("Ученик удален из списка");
+    } catch (deleteError) {
+      const errorMessage = getErrorMessage(deleteError, "Не удалось удалить ученика.");
+      setEditStudentError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setIsDeletingStudent(false);
     }
   }
 
@@ -268,57 +434,188 @@ export function TutorStudents() {
     <AppLayout
       title="Мои ученики"
       description="Нажмите на карточку ученика, чтобы открыть отдельный экран с прогрессом занятий."
-      actions={
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="rounded-full bg-slate-900 text-white hover:bg-slate-800">
-              Добавить ученика
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Добавить ученика</DialogTitle>
-            </DialogHeader>
-            <form className="space-y-4" onSubmit={handleAddStudent}>
+    >
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Добавить ученика</DialogTitle>
+          </DialogHeader>
+          <form className="space-y-4" onSubmit={handleAddStudent}>
+            <div className="space-y-2">
+              <Label htmlFor="student-email">Email ученика</Label>
+              <Input
+                id="student-email"
+                maxLength={FIELD_LIMITS.email}
+                placeholder="student@example.com"
+                type="email"
+                value={studentEmail}
+                onChange={(event) => {
+                  setStudentEmail(event.target.value);
+                  setStudentEmailError(null);
+                }}
+                required
+              />
+            </div>
+
+            {studentEmailError ? (
+              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {studentEmailError}
+              </div>
+            ) : null}
+
+            <div className="flex justify-end gap-3">
+              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                Отмена
+              </Button>
+              <Button
+                className="bg-slate-900 text-white hover:bg-slate-800"
+                disabled={isSubmitting}
+                type="submit"
+              >
+                {isSubmitting ? "Добавляем..." : "Добавить"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Настройки ученика</DialogTitle>
+          </DialogHeader>
+          <form className="space-y-4" onSubmit={handleUpdateStudent}>
+            <div className="space-y-2">
+              <Label htmlFor="edit-student">Ученик</Label>
+              <select
+                className="border-input bg-input-background flex h-10 w-full rounded-md border px-3 text-sm outline-none"
+                id="edit-student"
+                value={editingStudentId ?? ""}
+                onChange={(event) => selectEditingStudent(Number(event.target.value))}
+              >
+                {students.map((student) => (
+                  <option key={student.id} value={student.id}>
+                    {student.fullName}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="student-email">Email ученика</Label>
+                <Label htmlFor="edit-first-name">Имя</Label>
                 <Input
-                  id="student-email"
-                  maxLength={FIELD_LIMITS.email}
-                  placeholder="student@example.com"
-                  type="email"
-                  value={studentEmail}
+                  id="edit-first-name"
+                  maxLength={FIELD_LIMITS.personName}
+                  value={editFirstName}
                   onChange={(event) => {
-                    setStudentEmail(event.target.value);
-                    setStudentEmailError(null);
+                    setEditFirstName(event.target.value);
+                    setEditStudentError(null);
                   }}
                   required
                 />
               </div>
 
-              {studentEmailError ? (
-                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                  {studentEmailError}
-                </div>
-              ) : null}
+              <div className="space-y-2">
+                <Label htmlFor="edit-last-name">Фамилия</Label>
+                <Input
+                  id="edit-last-name"
+                  maxLength={FIELD_LIMITS.personName}
+                  value={editLastName}
+                  onChange={(event) => {
+                    setEditLastName(event.target.value);
+                    setEditStudentError(null);
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-email">Email</Label>
+              <Input
+                id="edit-email"
+                maxLength={FIELD_LIMITS.email}
+                type="email"
+                value={editEmail}
+                onChange={(event) => {
+                  setEditEmail(event.target.value);
+                  setEditStudentError(null);
+                }}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-class-info">Класс/группа</Label>
+              <Input
+                id="edit-class-info"
+                maxLength={500}
+                placeholder="Например, 7 класс"
+                value={editClassInfo}
+                onChange={(event) => setEditClassInfo(event.target.value)}
+              />
+            </div>
+
+            {editStudentError ? (
+              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {editStudentError}
+              </div>
+            ) : null}
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    className="text-red-600 hover:text-red-700"
+                    disabled={!editingStudent || isDeletingStudent}
+                    type="button"
+                    variant="ghost"
+                  >
+                    <Trash2 className="size-4" />
+                    Удалить ученика
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Удалить ученика?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Ученик будет удален из вашего списка вместе с его занятиями у вас. Аккаунт ученика не удаляется.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Отмена</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-red-600 text-white hover:bg-red-700"
+                      disabled={isDeletingStudent}
+                      onClick={() => void handleDeleteStudent()}
+                      type="button"
+                    >
+                      {isDeletingStudent ? "Удаляем..." : "Удалить"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
 
               <div className="flex justify-end gap-3">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <Button
+                  onClick={() => setIsEditDialogOpen(false)}
+                  type="button"
+                  variant="outline"
+                >
                   Отмена
                 </Button>
                 <Button
                   className="bg-slate-900 text-white hover:bg-slate-800"
-                  disabled={isSubmitting}
+                  disabled={!editingStudent || isEditSubmitting}
                   type="submit"
                 >
-                  {isSubmitting ? "Добавляем..." : "Добавить"}
+                  {isEditSubmitting ? "Сохраняем..." : "Сохранить"}
                 </Button>
               </div>
-            </form>
-          </DialogContent>
-        </Dialog>
-      }
-    >
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
       <TutorLessonFormDialog
         description={
           createDialogStudent
@@ -367,17 +664,44 @@ export function TutorStudents() {
         <>
           <Card className="rounded-3xl border-slate-200 shadow-sm">
             <CardContent className="p-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                   <p className="text-sm text-slate-500">Всего учеников</p>
                   <p className="text-3xl font-semibold text-slate-900">{students.length}</p>
                 </div>
-                <div className="w-full sm:max-w-xs">
-                  <Input
-                    placeholder="Поиск по имени, предмету или классу"
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                  />
+                <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:max-w-2xl">
+                  <div className="relative min-w-0 flex-1">
+                    <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-slate-400" />
+                    <Input
+                      className="h-11 rounded-full border-slate-200 bg-slate-100 pl-11 pr-4 text-base shadow-none placeholder:text-slate-400 focus:bg-white"
+                      placeholder="Поиск"
+                      value={searchQuery}
+                      onChange={(event) => setSearchQuery(event.target.value)}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      aria-label="Добавить ученика"
+                      className="rounded-full bg-slate-900 text-white hover:bg-slate-800"
+                      onClick={() => setIsDialogOpen(true)}
+                      size="icon"
+                      type="button"
+                    >
+                      <Plus className="size-5" />
+                    </Button>
+                    <Button
+                      aria-label="Настройки учеников"
+                      className="rounded-full"
+                      disabled={students.length === 0}
+                      onClick={() => openEditStudentDialog()}
+                      size="icon"
+                      title="Настройки учеников"
+                      type="button"
+                      variant="outline"
+                    >
+                      <Settings className="size-5" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -411,6 +735,8 @@ export function TutorStudents() {
                 const studentLessons = lessonsByStudent.get(student.id) || [];
                 const nearestLesson = getNearestUpcomingLesson(studentLessons);
                 const lastPastLesson = getLatestPastLesson(studentLessons);
+                const latestHomeworkLesson = getLatestHomeworkLesson(studentLessons);
+                const homeworkStatus = getHomeworkStatusView(latestHomeworkLesson);
 
                 return (
                   <Card
@@ -425,21 +751,21 @@ export function TutorStudents() {
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div>
                           <CardTitle>{student.fullName}</CardTitle>
-                          <p className="mt-2 text-sm text-slate-500">
-                            {student.subject || "Предмет не указан"}
-                            {student.classInfo ? ` • ${student.classInfo}` : ""}
-                          </p>
+                          {student.classInfo ? (
+                            <p className="mt-2 text-sm text-slate-500">
+                              {student.classInfo}
+                            </p>
+                          ) : null}
                         </div>
                         <span
-                          className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusBadge(student.lastSubmissionStatus)}`}
+                          className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${homeworkStatus.className}`}
                         >
-                          {getStatusLabel(student.lastSubmissionStatus)}
+                          {homeworkStatus.label}
                         </span>
                       </div>
                     </CardHeader>
                     <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                       <div className="space-y-2">
-                        <p className="text-sm text-slate-500">Связь с учеником: #{student.id}</p>
                         <div className="flex flex-wrap gap-2">
                           <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
                             {studentLessons.length > 0
@@ -469,7 +795,7 @@ export function TutorStudents() {
                         >
                           Создать занятие
                         </Button>
-                        {student.lastSubmissionStatus === "pending" ? (
+                        {homeworkStatus.isPendingReview ? (
                           <Button
                             className="bg-slate-900 text-white hover:bg-slate-800"
                             onClick={(event) => {
