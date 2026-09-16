@@ -62,14 +62,14 @@ function SubmissionFilesBlock({
   return (
     <div className="space-y-2">
       {homeworkDeadline !== undefined ? (
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           Дедлайн ДЗ: {homeworkDeadline ? formatDate(homeworkDeadline) : "не задан"}
         </p>
       ) : null}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
-        <p className="font-medium text-slate-900">{title}:</p>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+        <p className="font-medium text-foreground">{title}:</p>
         {submittedTime ? (
-          <p className={submittedLate ? "font-medium text-rose-600" : undefined}>
+          <p className={submittedLate ? "font-medium text-danger" : undefined}>
             Отправлено в {submittedTime}
           </p>
         ) : null}
@@ -209,29 +209,29 @@ export function TutorHomework() {
     return (
       <Card
         key={submission.id}
-        className={`rounded-3xl shadow-sm ${
-          checked ? "border-emerald-200 bg-emerald-50" : "border-slate-200 bg-white"
+        className={`${
+          checked ? "border-success/20 bg-success-soft" : "border-border bg-white"
         }`}
       >
         <CardHeader className="gap-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <CardTitle>{submission.student}</CardTitle>
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 text-sm text-muted-foreground">
                 {submission.lessonTopic || "Тема занятия не указана"}
               </p>
             </div>
             {checked ? (
               <StarValue value={submission.grade} />
             ) : (
-              <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700">
+              <span className="inline-flex rounded-full bg-warning-soft px-3 py-1 text-xs font-medium text-warning">
                 На проверке
               </span>
             )}
           </div>
         </CardHeader>
         <CardContent className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
-          <div className="space-y-2 text-sm text-slate-600">
+          <div className="space-y-2 text-sm text-muted-foreground">
             <p>Дата занятия: {formatDate(submission.lessonDate)}</p>
             {submission.files.length > 0 ? (
               <SubmissionFilesBlock
@@ -251,12 +251,12 @@ export function TutorHomework() {
               />
             ) : null}
             {submission.studentComment ? (
-              <p className="rounded-2xl bg-white/80 p-3 text-slate-600">
+              <p className="rounded-2xl bg-white/80 p-3 text-muted-foreground">
                 {submission.studentComment}
               </p>
             ) : null}
             {submission.comment ? (
-              <p className="rounded-2xl bg-white/80 p-3 text-slate-600">
+              <p className="rounded-2xl bg-white/80 p-3 text-muted-foreground">
                 {submission.comment}
               </p>
             ) : null}
@@ -266,7 +266,7 @@ export function TutorHomework() {
             className={
               checked
                 ? "rounded-full"
-                : "rounded-full bg-slate-900 text-white hover:bg-slate-800"
+                : "rounded-full"
             }
             onClick={() => openReviewDialog(submission)}
             variant={checked ? "outline" : "default"}
@@ -309,7 +309,7 @@ export function TutorHomework() {
           />
         ) : (
           <Tabs className="w-full" defaultValue="pending">
-            <TabsList className="w-full justify-start rounded-full bg-slate-100 p-1 sm:w-auto">
+            <TabsList className="w-full justify-start rounded-full bg-panel p-1 sm:w-auto">
               <TabsTrigger className="rounded-full" value="pending">
                 На проверке ({pendingSubmissions.length})
               </TabsTrigger>
@@ -362,8 +362,8 @@ export function TutorHomework() {
 
           {selectedSubmission ? (
             <div className="space-y-4">
-              <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
-                <p className="font-medium text-slate-900">
+              <div className="rounded-2xl bg-canvas p-4 text-sm text-muted-foreground">
+                <p className="font-medium text-foreground">
                   {selectedSubmission.student}
                 </p>
                 <p className="mt-1">
@@ -384,7 +384,7 @@ export function TutorHomework() {
                   </div>
                 ) : null}
                 {selectedSubmission.studentComment ? (
-                  <p className="mt-3 rounded-2xl bg-white p-3 text-sm text-slate-600">
+                  <p className="mt-3 rounded-2xl bg-white p-3 text-sm text-muted-foreground">
                     {selectedSubmission.studentComment}
                   </p>
                 ) : null}
@@ -406,25 +406,25 @@ export function TutorHomework() {
                   type="file"
                   onChange={handleAddReviewFiles}
                 />
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   Можно добавлять файлы в несколько подходов. Лишние файлы можно убрать перед сохранением проверки.
                 </p>
 
                 {retainedReviewFiles.length > 0 ? (
                   <div className="space-y-2">
-                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-quiet">
                       Уже прикрепленные проверенные файлы
                     </p>
                     {retainedReviewFiles.map((file) => (
                       <div
                         key={file.id}
-                        className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
+                        className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-canvas px-4 py-3"
                       >
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-medium text-slate-900">
+                          <p className="truncate text-sm font-medium text-foreground">
                             {file.name}
                           </p>
-                          <p className="text-xs text-slate-500">Будет сохранен в проверке</p>
+                          <p className="text-xs text-muted-foreground">Будет сохранен в проверке</p>
                         </div>
                         <div className="flex shrink-0 items-center gap-2">
                           {file.url ? (
@@ -450,19 +450,19 @@ export function TutorHomework() {
 
                 {reviewFiles.length > 0 ? (
                   <div className="space-y-2">
-                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-quiet">
                       Новые проверенные файлы
                     </p>
                     {reviewFiles.map((file, index) => (
                       <div
                         key={getPendingFileKey(file)}
-                        className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3"
+                        className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-quiet/40 bg-canvas px-4 py-3"
                       >
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-medium text-slate-900">
+                          <p className="truncate text-sm font-medium text-foreground">
                             {file.name}
                           </p>
-                          <p className="text-xs text-slate-500">{formatFileSize(file)}</p>
+                          <p className="text-xs text-muted-foreground">{formatFileSize(file)}</p>
                         </div>
                         <Button
                           onClick={() => removeReviewFile(index)}
@@ -494,7 +494,6 @@ export function TutorHomework() {
                   Отмена
                 </Button>
                 <Button
-                  className="bg-slate-900 text-white hover:bg-slate-800"
                   disabled={isSubmitting}
                   onClick={handleCheckSubmission}
                 >

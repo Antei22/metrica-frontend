@@ -55,14 +55,14 @@ export function getHomeworkStatusLabel(status: HomeworkStatus | SubmissionStatus
 
 export function getHomeworkStatusClasses(status: HomeworkStatus | SubmissionStatus) {
   if (status === "checked") {
-    return "bg-emerald-100 text-emerald-700";
+    return "bg-success-soft text-success";
   }
 
   if (status === "sent" || status === "submitted") {
-    return "bg-amber-100 text-amber-700";
+    return "bg-warning-soft text-warning";
   }
 
-  return "bg-slate-100 text-slate-600";
+  return "bg-panel text-muted-foreground";
 }
 
 function getDateOnlyTimestamp(value: string | null | undefined) {

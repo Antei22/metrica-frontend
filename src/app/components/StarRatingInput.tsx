@@ -34,7 +34,7 @@ export function StarRatingInput({
           return (
             <button
               aria-label={`Поставить ${starValue} из 5`}
-              className="group relative flex size-9 items-center justify-center rounded-full outline-none transition focus-visible:ring-2 focus-visible:ring-slate-300 disabled:pointer-events-none disabled:opacity-60"
+              className="group relative flex size-9 items-center justify-center rounded-full outline-none transition focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-60"
               disabled={disabled}
               key={starValue}
               onClick={(event) => {
@@ -45,12 +45,12 @@ export function StarRatingInput({
               type="button"
             >
               <span className="relative flex size-7">
-                <Star className="size-7 text-slate-300 transition group-hover:text-amber-300" />
+                <Star className="size-7 text-quiet transition group-hover:text-star" />
                 <span
                   className="absolute inset-0 overflow-hidden"
                   style={{ width: `${fill * 100}%` }}
                 >
-                  <Star className="size-7 fill-amber-400 text-amber-400" />
+                  <Star className="size-7 fill-star text-star" />
                 </span>
               </span>
             </button>
@@ -61,7 +61,7 @@ export function StarRatingInput({
       <span
         className={cn(
           "rounded-full px-3 py-1 text-sm font-medium",
-          value == null ? "bg-slate-100 text-slate-500" : "bg-amber-100 text-amber-700",
+          value == null ? "bg-panel text-muted-foreground" : "bg-warning-soft text-warning",
         )}
       >
         {formatRating(value)}

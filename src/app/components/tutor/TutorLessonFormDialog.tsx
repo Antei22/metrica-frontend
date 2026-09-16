@@ -82,16 +82,16 @@ function PendingFiles({
 
   return (
     <div className="space-y-2">
-      <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">{title}</p>
+      <p className="text-xs font-medium uppercase tracking-[0.2em] text-quiet">{title}</p>
       <div className="space-y-2">
         {files.map((file, index) => (
           <div
             key={getPendingFileKey(file)}
-            className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3"
+            className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-quiet/40 bg-canvas px-4 py-3"
           >
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-slate-900">{file.name}</p>
-              <p className="text-xs text-slate-500">
+              <p className="truncate text-sm font-medium text-foreground">{file.name}</p>
+              <p className="text-xs text-muted-foreground">
                 {(file.size / 1024).toFixed(1)} KB
               </p>
             </div>
@@ -124,16 +124,16 @@ function ExistingFiles({
 
   return (
     <div className="space-y-2">
-      <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">{title}</p>
+      <p className="text-xs font-medium uppercase tracking-[0.2em] text-quiet">{title}</p>
       <div className="space-y-2">
         {files.map((file) => (
           <div
             key={file.id}
-            className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 px-4 py-3"
+            className="flex items-center justify-between gap-3 rounded-2xl border border-border px-4 py-3"
           >
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-slate-900">{file.name}</p>
-              <p className="text-xs text-slate-500">Уже прикреплено к занятию</p>
+              <p className="truncate text-sm font-medium text-foreground">{file.name}</p>
+              <p className="text-xs text-muted-foreground">Уже прикреплено к занятию</p>
             </div>
             {file.url ? (
               <Button asChild size="sm" type="button" variant="outline">
@@ -201,7 +201,7 @@ export function TutorLessonFormDialog({
 
         <form className="space-y-5" onSubmit={onSubmit}>
           {formError ? (
-            <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-danger">
               {formError}
             </div>
           ) : null}
@@ -248,7 +248,7 @@ export function TutorLessonFormDialog({
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-3">
               <Label htmlFor="lesson-subject">Предмет</Label>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-quiet">
                 {form.subject.trim().length}/{FIELD_LIMITS.lessonSubject}
               </span>
             </div>
@@ -264,7 +264,7 @@ export function TutorLessonFormDialog({
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-3">
               <Label htmlFor="lesson-topic">Тема занятия</Label>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-quiet">
                 {form.topic.trim().length}/{FIELD_LIMITS.lessonTopic}
               </span>
             </div>
@@ -290,7 +290,7 @@ export function TutorLessonFormDialog({
             />
           </div>
 
-          <div className="space-y-3 rounded-3xl border border-slate-200 p-4">
+          <div className="space-y-3 rounded-2xl border border-border p-4">
             <div className="space-y-2">
               <Label htmlFor="lesson-materials">Материалы занятия</Label>
               <Input
@@ -300,7 +300,7 @@ export function TutorLessonFormDialog({
                 onChange={handleMaterialFilesChange}
                 type="file"
               />
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Можно добавлять файлы в несколько подходов: новые файлы будут дополнять текущий список.
               </p>
             </div>
@@ -313,7 +313,7 @@ export function TutorLessonFormDialog({
             />
           </div>
 
-          <div className="space-y-3 rounded-3xl border border-slate-200 p-4">
+          <div className="space-y-3 rounded-2xl border border-border p-4">
             <div className="space-y-2">
               <Label htmlFor="lesson-homework-files">Материалы домашнего задания</Label>
               <Input
@@ -346,7 +346,7 @@ export function TutorLessonFormDialog({
             <Button onClick={() => onOpenChange(false)} type="button" variant="outline">
               Отмена
             </Button>
-            <Button className="bg-slate-900 text-white hover:bg-slate-800" disabled={isSubmitting} type="submit">
+            <Button disabled={isSubmitting} type="submit">
               {isSubmitting ? submittingLabel : submitLabel}
             </Button>
           </DialogFooter>

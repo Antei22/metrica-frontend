@@ -23,8 +23,8 @@ interface LessonProgressTimelineProps {
 
 function getTimelineNodeClass(isNearest: boolean) {
   return isNearest
-    ? "size-6 border-slate-900 bg-slate-900 shadow-[0_0_0_6px_rgba(15,23,42,0.08)]"
-    : "size-4 border-slate-300 bg-white";
+    ? "size-6 border-primary bg-primary shadow-[0_0_0_6px_rgba(7,26,49,0.08)]"
+    : "size-4 border-quiet/40 bg-white";
 }
 
 function getHomeworkSummary(lesson: Lesson) {
@@ -79,12 +79,12 @@ export function LessonProgressTimeline({
         </div>
 
         <button
-          className="flex-1 rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-4 text-left transition hover:border-slate-900 hover:shadow-sm"
+          className="flex-1 rounded-2xl border border-dashed border-quiet/40 bg-white px-4 py-4 text-left transition hover:border-primary hover:shadow-soft"
           onClick={onCreateLesson}
           type="button"
         >
-          <p className="text-sm font-semibold text-slate-900">{createTitle}</p>
-          <p className="mt-1 text-sm text-slate-500">{description}</p>
+          <p className="text-sm font-semibold text-foreground">{createTitle}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         </button>
       </div>
     );
@@ -94,8 +94,8 @@ export function LessonProgressTimeline({
     return (
       <div>
         {renderCreateAction(emptyDescription) || (
-          <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500">
-            <p className="font-medium text-slate-700">{emptyTitle}</p>
+          <div className="rounded-2xl border border-dashed border-quiet/40 px-4 py-6 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">{emptyTitle}</p>
             <p className="mt-1">{emptyDescription}</p>
           </div>
         )}
@@ -107,7 +107,7 @@ export function LessonProgressTimeline({
 
   return (
     <div className="relative">
-      <span className="absolute top-4 bottom-0 left-5 w-px -translate-x-1/2 bg-slate-200" />
+      <span className="absolute top-4 bottom-0 left-5 w-px -translate-x-1/2 bg-panel" />
 
       {onCreateLesson ? <div className="pb-4">{renderCreateAction(createDescription)}</div> : null}
 
@@ -125,24 +125,24 @@ export function LessonProgressTimeline({
         );
         const cardClassName = cn(
           "flex-1 rounded-2xl border bg-white px-4 py-4 text-left transition",
-          onLessonClick ? "hover:-translate-y-0.5 hover:shadow-sm" : "",
+          onLessonClick ? "hover:-translate-y-0.5 hover:shadow-soft" : "",
           isNearest
-            ? "border-slate-900 shadow-sm"
-            : "border-slate-200 hover:border-slate-300",
+            ? "border-primary shadow-soft"
+            : "border-border hover:border-quiet/60",
         );
         const content = (
           <>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   {formatDateTime(lesson.date, lesson.time)}
                 </p>
-                <p className="mt-1 text-base font-semibold text-slate-900">
+                <p className="mt-1 text-base font-semibold text-foreground">
                   {formatLessonTitle(lesson.subject, lesson.topic, "Тема не указана")}
                 </p>
               </div>
               {isNearest ? (
-                <span className="inline-flex rounded-full bg-slate-900 px-3 py-1 text-xs font-medium text-white">
+                <span className="inline-flex rounded-full bg-primary px-3 py-1 text-xs font-medium text-white">
                   Ближайшее занятие
                 </span>
               ) : null}
@@ -152,10 +152,10 @@ export function LessonProgressTimeline({
             </div>
 
             {lessonMeta ? (
-              <p className="mt-3 text-sm text-slate-500">{lessonMeta}</p>
+              <p className="mt-3 text-sm text-muted-foreground">{lessonMeta}</p>
             ) : null}
             {showDeadlineMissed && isDeadlineMissed ? (
-              <p className="mt-2 text-sm font-semibold text-rose-600">
+              <p className="mt-2 text-sm font-semibold text-danger">
                 Дедлайн ДЗ был просрочен
               </p>
             ) : null}

@@ -43,7 +43,7 @@ function DetailLine({
 }) {
   return (
     <p>
-      <span className="font-semibold text-slate-900">{label}:</span>{" "}
+      <span className="font-semibold text-foreground">{label}:</span>{" "}
       <span>{children}</span>
     </p>
   );
@@ -81,8 +81,8 @@ export function TutorLessonDetailsDialog({
         </DialogHeader>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-            <p className="font-semibold text-slate-900">Основная информация</p>
+          <div className="rounded-2xl border border-border bg-canvas p-4 text-sm text-muted-foreground">
+            <p className="font-semibold text-foreground">Основная информация</p>
             <div className="mt-3 space-y-2">
               <DetailLine label="Ученик">{lesson.studentName || "Не указан"}</DetailLine>
               <DetailLine label="Дата и время">
@@ -98,8 +98,8 @@ export function TutorLessonDetailsDialog({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-            <p className="font-semibold text-slate-900">Что доступно по занятию</p>
+          <div className="rounded-2xl border border-border bg-canvas p-4 text-sm text-muted-foreground">
+            <p className="font-semibold text-foreground">Что доступно по занятию</p>
             <div className="mt-3 space-y-2">
               <DetailLine label="Материалов">{lesson.materials.length}</DetailLine>
               <DetailLine label="Материалов домашнего задания">
@@ -134,15 +134,15 @@ export function TutorLessonDetailsDialog({
           />
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4">
+        <div className="rounded-2xl border border-border bg-white p-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <p className="font-semibold text-slate-900">Домашнее задание</p>
+            <p className="font-semibold text-foreground">Домашнее задание</p>
             <StarValue value={lesson.homeworkGrade} />
           </div>
 
           <div className="mt-4 grid gap-3 md:grid-cols-2">
-            <div className="rounded-2xl border border-slate-200 p-4">
-              <p className="text-sm font-medium text-slate-900">Решение ученика</p>
+            <div className="rounded-2xl border border-border p-4">
+              <p className="text-sm font-medium text-foreground">Решение ученика</p>
               {lesson.submission?.fileUrl ? (
                 <Button asChild className="mt-3" variant="outline">
                   <a
@@ -154,12 +154,12 @@ export function TutorLessonDetailsDialog({
                   </a>
                 </Button>
               ) : (
-                <p className="mt-2 text-sm text-slate-500">Файл еще не отправлен.</p>
+                <p className="mt-2 text-sm text-muted-foreground">Файл еще не отправлен.</p>
               )}
             </div>
 
-            <div className="rounded-2xl border border-slate-200 p-4">
-              <p className="text-sm font-medium text-slate-900">Проверенный файл</p>
+            <div className="rounded-2xl border border-border p-4">
+              <p className="text-sm font-medium text-foreground">Проверенный файл</p>
               {lesson.checkedFile?.url ? (
                 <Button asChild className="mt-3" variant="outline">
                   <a
@@ -171,14 +171,14 @@ export function TutorLessonDetailsDialog({
                   </a>
                 </Button>
               ) : (
-                <p className="mt-2 text-sm text-slate-500">Проверенный файл не прикреплен.</p>
+                <p className="mt-2 text-sm text-muted-foreground">Проверенный файл не прикреплен.</p>
               )}
             </div>
           </div>
 
           {lesson.submission?.comment ? (
-            <div className="mt-4 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
-              <p className="font-medium text-slate-900">Комментарий репетитора</p>
+            <div className="mt-4 rounded-2xl bg-canvas p-4 text-sm text-muted-foreground">
+              <p className="font-medium text-foreground">Комментарий репетитора</p>
               <p className="mt-2">{lesson.submission.comment}</p>
             </div>
           ) : null}
@@ -187,7 +187,7 @@ export function TutorLessonDetailsDialog({
         <div className="flex flex-wrap justify-end gap-3">
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button className="text-red-600 hover:text-red-700" type="button" variant="ghost">
+              <Button className="text-danger hover:text-danger" type="button" variant="ghost">
                 <Trash2 className="size-4" />
                 Удалить занятие
               </Button>
@@ -202,7 +202,7 @@ export function TutorLessonDetailsDialog({
               <AlertDialogFooter>
                 <AlertDialogCancel>Отмена</AlertDialogCancel>
                 <AlertDialogAction
-                  className="bg-red-600 text-white hover:bg-red-700"
+                  className="bg-danger text-white hover:bg-danger/90"
                   disabled={isDeleting}
                   onClick={() => onDelete(lesson)}
                 >

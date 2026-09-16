@@ -86,7 +86,7 @@ function getHomeworkStatusView(lesson: Lesson | null): HomeworkStatusView {
   if (lesson?.homeworkStatus === "checked") {
     return {
       label: "Проверено",
-      className: "bg-emerald-100 text-emerald-700",
+      className: "bg-success-soft text-success",
       isPendingReview: false,
     };
   }
@@ -94,7 +94,7 @@ function getHomeworkStatusView(lesson: Lesson | null): HomeworkStatusView {
   if (lesson?.homeworkStatus === "sent") {
     return {
       label: "На проверке",
-      className: "bg-amber-100 text-amber-700",
+      className: "bg-warning-soft text-warning",
       isPendingReview: true,
     };
   }
@@ -102,14 +102,14 @@ function getHomeworkStatusView(lesson: Lesson | null): HomeworkStatusView {
   if (lesson && isHomeworkDeadlineMissed(lesson)) {
     return {
       label: "Еще не отправлено",
-      className: "bg-rose-50 text-rose-600",
+      className: "bg-danger-soft text-danger",
       isPendingReview: false,
     };
   }
 
   return {
     label: "Еще не отправлено",
-    className: "bg-slate-100 text-slate-600",
+    className: "bg-panel text-muted-foreground",
     isPendingReview: false,
   };
 }
@@ -458,7 +458,7 @@ export function TutorStudents() {
             </div>
 
             {studentEmailError ? (
-              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-danger">
                 {studentEmailError}
               </div>
             ) : null}
@@ -468,7 +468,6 @@ export function TutorStudents() {
                 Отмена
               </Button>
               <Button
-                className="bg-slate-900 text-white hover:bg-slate-800"
                 disabled={isSubmitting}
                 type="submit"
               >
@@ -557,7 +556,7 @@ export function TutorStudents() {
             </div>
 
             {editStudentError ? (
-              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-danger">
                 {editStudentError}
               </div>
             ) : null}
@@ -566,7 +565,7 @@ export function TutorStudents() {
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
-                    className="text-red-600 hover:text-red-700"
+                    className="text-danger hover:text-danger"
                     disabled={!editingStudent || isDeletingStudent}
                     type="button"
                     variant="ghost"
@@ -585,7 +584,7 @@ export function TutorStudents() {
                   <AlertDialogFooter>
                     <AlertDialogCancel>Отмена</AlertDialogCancel>
                     <AlertDialogAction
-                      className="bg-red-600 text-white hover:bg-red-700"
+                      className="bg-danger text-white hover:bg-danger/90"
                       disabled={isDeletingStudent}
                       onClick={() => void handleDeleteStudent()}
                       type="button"
@@ -605,7 +604,6 @@ export function TutorStudents() {
                   Отмена
                 </Button>
                 <Button
-                  className="bg-slate-900 text-white hover:bg-slate-800"
                   disabled={!editingStudent || isEditSubmitting}
                   type="submit"
                 >
@@ -662,18 +660,18 @@ export function TutorStudents() {
 
       {!loading && !error ? (
         <>
-          <Card className="rounded-3xl border-slate-200 shadow-sm">
+          <Card>
             <CardContent className="p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <p className="text-sm text-slate-500">Всего учеников</p>
-                  <p className="text-3xl font-semibold text-slate-900">{students.length}</p>
+                  <p className="text-sm text-muted-foreground">Всего учеников</p>
+                  <p className="text-3xl font-semibold text-foreground">{students.length}</p>
                 </div>
                 <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:max-w-2xl">
                   <div className="relative min-w-0 flex-1">
-                    <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-slate-400" />
+                    <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-quiet" />
                     <Input
-                      className="h-11 rounded-full border-slate-200 bg-slate-100 pl-11 pr-4 text-base shadow-none placeholder:text-slate-400 focus:bg-white"
+                      className="h-11 rounded-full border-border bg-panel pl-11 pr-4 text-base shadow-none placeholder:text-quiet focus:bg-white"
                       placeholder="Поиск"
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
@@ -682,7 +680,7 @@ export function TutorStudents() {
                   <div className="flex gap-2">
                     <Button
                       aria-label="Добавить ученика"
-                      className="rounded-full bg-slate-900 text-white hover:bg-slate-800"
+                      className="rounded-full"
                       onClick={() => setIsDialogOpen(true)}
                       size="icon"
                       type="button"
@@ -708,8 +706,8 @@ export function TutorStudents() {
           </Card>
 
           {lessonsWarning ? (
-            <Card className="rounded-3xl border-amber-200 bg-amber-50 shadow-sm">
-              <CardContent className="p-6 text-sm text-amber-800">{lessonsWarning}</CardContent>
+            <Card className="border-warning/20 bg-warning-soft">
+              <CardContent className="p-6 text-sm text-warning">{lessonsWarning}</CardContent>
             </Card>
           ) : null}
 
@@ -741,7 +739,7 @@ export function TutorStudents() {
                 return (
                   <Card
                     key={student.id}
-                    className="rounded-3xl border-slate-200 shadow-sm transition-transform hover:-translate-y-0.5"
+                    className="transition-transform hover:-translate-y-0.5"
                     onClick={() => navigate(`/tutor/students/${student.id}`)}
                     onKeyDown={(event) => handleCardKeyDown(event, student.id)}
                     role="button"
@@ -752,7 +750,7 @@ export function TutorStudents() {
                         <div>
                           <CardTitle>{student.fullName}</CardTitle>
                           {student.classInfo ? (
-                            <p className="mt-2 text-sm text-slate-500">
+                            <p className="mt-2 text-sm text-muted-foreground">
                               {student.classInfo}
                             </p>
                           ) : null}
@@ -767,17 +765,17 @@ export function TutorStudents() {
                     <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                       <div className="space-y-2">
                         <div className="flex flex-wrap gap-2">
-                          <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                          <span className="inline-flex rounded-full bg-panel px-3 py-1 text-xs font-medium text-muted-foreground">
                             {studentLessons.length > 0
                               ? `Занятий: ${studentLessons.length}`
                               : "Создать занятие"}
                           </span>
                           {nearestLesson ? (
-                            <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                            <span className="inline-flex rounded-full bg-panel px-3 py-1 text-xs font-medium text-muted-foreground">
                               Ближайшее: {formatDateTime(nearestLesson.date, nearestLesson.time)}
                             </span>
                           ) : lastPastLesson ? (
-                            <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                            <span className="inline-flex rounded-full bg-panel px-3 py-1 text-xs font-medium text-muted-foreground">
                               Последнее: {formatDateTime(lastPastLesson.date, lastPastLesson.time)}
                             </span>
                           ) : null}
@@ -797,7 +795,6 @@ export function TutorStudents() {
                         </Button>
                         {homeworkStatus.isPendingReview ? (
                           <Button
-                            className="bg-slate-900 text-white hover:bg-slate-800"
                             onClick={(event) => {
                               event.stopPropagation();
                               navigate("/tutor/homework");

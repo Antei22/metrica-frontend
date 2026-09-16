@@ -119,16 +119,16 @@ export function LessonDetails() {
   const pageTitle = lesson ? formatLessonTitle(lesson.subject, lesson.topic, "Карточка занятия") : "Карточка занятия";
   const pageDescription = lesson
     ? (
-      <div className="flex max-w-3xl flex-wrap items-center gap-2 text-sm text-slate-600">
-        <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-900">
+      <div className="flex max-w-3xl flex-wrap items-center gap-2 text-sm text-muted-foreground">
+        <span className="rounded-full bg-panel px-3 py-1 font-semibold text-foreground">
           {formatDateTime(lesson.date, lesson.time)}
         </span>
         {lesson.tutorName ? <span>{lesson.tutorName}</span> : null}
         {lesson.subject ? (
-          <span className="rounded-full bg-slate-100 px-3 py-1">{lesson.subject}</span>
+          <span className="rounded-full bg-panel px-3 py-1">{lesson.subject}</span>
         ) : null}
         {lesson.classInfo ? (
-          <span className="rounded-full bg-slate-100 px-3 py-1">{lesson.classInfo}</span>
+          <span className="rounded-full bg-panel px-3 py-1">{lesson.classInfo}</span>
         ) : null}
       </div>
     )
@@ -188,30 +188,30 @@ export function LessonDetails() {
             <LessonFilesCard files={lesson.homeworkTaskFiles} title="Материалы домашнего задания" />
           </div>
 
-          <Card className="rounded-3xl border-slate-200 shadow-sm">
+          <Card>
             <CardHeader>
               <CardTitle>Домашнее задание</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {lesson.homeworkStatus === "checked" ? (
-                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
-                  <p className="font-medium text-emerald-800">Работа проверена</p>
-                  <p className="mt-2 text-sm text-emerald-700">
+                <div className="rounded-2xl border border-success/20 bg-success-soft p-5">
+                  <p className="font-medium text-success">Работа проверена</p>
+                  <p className="mt-2 text-sm text-success">
                     {lesson.submission?.comment ||
                       "Комментарий преподавателя пока не добавлен."}
                   </p>
                   {submittedFiles.length > 0 ? (
                     <div className="mt-4 space-y-2">
-                      <p className="text-sm text-emerald-700">
+                      <p className="text-sm text-success">
                         Дедлайн ДЗ:{" "}
                         {lesson.homeworkDeadline ? formatDate(lesson.homeworkDeadline) : "не задан"}
                       </p>
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-emerald-700">
-                        <p className="font-semibold text-emerald-800">Решение ученика:</p>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-success">
+                        <p className="font-semibold text-success">Решение ученика:</p>
                         {lesson.submission?.submittedAt ? (
                           <p
                             className={
-                              homeworkSubmittedLate ? "font-medium text-rose-600" : undefined
+                              homeworkSubmittedLate ? "font-medium text-danger" : undefined
                             }
                           >
                             Отправлено в {formatDateClock(lesson.submission.submittedAt)}
@@ -224,14 +224,14 @@ export function LessonDetails() {
                         ))}
                       </div>
                       {lesson.submission?.studentComment ? (
-                        <p className="rounded-2xl bg-white/80 p-3 text-sm text-emerald-700">
+                        <p className="rounded-2xl bg-white/80 p-3 text-sm text-success">
                           {lesson.submission.studentComment}
                         </p>
                       ) : null}
                     </div>
                   ) : null}
                   <div className="mt-4 space-y-2">
-                    <p className="text-sm font-semibold text-emerald-800">
+                    <p className="text-sm font-semibold text-success">
                       Проверенные файлы репетитором:
                     </p>
                     <div className="flex flex-col items-start gap-2">
@@ -245,17 +245,17 @@ export function LessonDetails() {
               ) : null}
 
               {lesson.homeworkStatus === "sent" ? (
-                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
-                  <p className="font-medium text-amber-800">Работа отправлена на проверку</p>
-                  <p className="mt-2 text-sm text-amber-700">
+                <div className="rounded-2xl border border-warning/20 bg-warning-soft p-5">
+                  <p className="font-medium text-warning">Работа отправлена на проверку</p>
+                  <p className="mt-2 text-sm text-warning">
                     Ожидайте комментарий от преподавателя или измените файлы до проверки.
                   </p>
                 </div>
               ) : null}
 
               {lesson.homeworkStatus !== "checked" ? (
-                <div className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                  <p className="text-sm text-slate-600">
+                <div className="space-y-4 rounded-2xl border border-border bg-canvas p-5">
+                  <p className="text-sm text-muted-foreground">
                     Прикрепите PDF, изображение или документ с выполненным домашним заданием.
                   </p>
                   <Input
@@ -264,22 +264,22 @@ export function LessonDetails() {
                     type="file"
                     onChange={handleAddSelectedFiles}
                   />
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     Можно добавлять файлы в несколько подходов. Лишние файлы можно убрать перед отправкой.
                   </p>
 
                   {retainedSubmittedFiles.length > 0 ? (
                     <div className="space-y-2">
-                      <p className="text-sm text-slate-500">
+                      <p className="text-sm text-muted-foreground">
                         Дедлайн ДЗ:{" "}
                         {lesson.homeworkDeadline ? formatDate(lesson.homeworkDeadline) : "не задан"}
                       </p>
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
-                        <p className="font-medium text-slate-900">Решение ученика:</p>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+                        <p className="font-medium text-foreground">Решение ученика:</p>
                         {lesson.submission?.submittedAt ? (
                           <p
                             className={
-                              homeworkSubmittedLate ? "font-medium text-rose-600" : undefined
+                              homeworkSubmittedLate ? "font-medium text-danger" : undefined
                             }
                           >
                             Отправлено в {formatDateClock(lesson.submission.submittedAt)}
@@ -302,7 +302,7 @@ export function LessonDetails() {
                         ))}
                       </div>
                       {lesson.submission?.studentComment ? (
-                        <p className="rounded-2xl bg-white p-3 text-sm text-slate-600">
+                        <p className="rounded-2xl bg-white p-3 text-sm text-muted-foreground">
                           {lesson.submission.studentComment}
                         </p>
                       ) : null}
@@ -311,19 +311,19 @@ export function LessonDetails() {
 
                   {selectedFiles.length > 0 ? (
                     <div className="space-y-2">
-                      <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+                      <p className="text-xs font-medium uppercase tracking-[0.2em] text-quiet">
                         Новые файлы для отправки
                       </p>
                       {selectedFiles.map((file, index) => (
                         <div
                           key={getPendingFileKey(file)}
-                          className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-3"
+                          className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-quiet/40 bg-white px-4 py-3"
                         >
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-medium text-slate-900">
+                            <p className="truncate text-sm font-medium text-foreground">
                               {file.name}
                             </p>
-                            <p className="text-xs text-slate-500">{formatFileSize(file)}</p>
+                            <p className="text-xs text-muted-foreground">{formatFileSize(file)}</p>
                           </div>
                           <Button
                             onClick={() => removeSelectedFile(index)}
@@ -340,7 +340,7 @@ export function LessonDetails() {
 
                   <div className="space-y-2">
                     <label
-                      className="text-sm font-medium text-slate-900"
+                      className="text-sm font-medium text-foreground"
                       htmlFor="lesson-homework-comment"
                     >
                       Комментарий к ДЗ
@@ -356,7 +356,6 @@ export function LessonDetails() {
                   </div>
 
                   <Button
-                    className="bg-slate-900 text-white hover:bg-slate-800"
                     disabled={
                       selectedFiles.length + retainedSubmittedFiles.length === 0 ||
                       isSubmitting

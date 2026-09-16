@@ -70,9 +70,9 @@ export function StudentLessons() {
           ) : null}
 
           {totalLessons > 0 ? (
-            <section className="rounded-[32px] border border-slate-200 bg-white shadow-sm">
-              <div className="border-b border-slate-200 px-6 py-5">
-                <p className="text-lg font-semibold text-slate-900">История занятий</p>
+            <section className="rounded-2xl border border-border bg-white shadow-soft">
+              <div className="border-b border-border px-6 py-5">
+                <p className="text-lg font-semibold text-foreground">История занятий</p>
               </div>
               <div className="p-6">
                 <LessonProgressTimeline

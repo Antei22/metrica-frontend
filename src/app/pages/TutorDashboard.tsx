@@ -435,7 +435,7 @@ export function TutorDashboard() {
           <section className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)]">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 lg:grid-rows-2">
               <Card
-                className="min-h-[116px] cursor-pointer rounded-[28px] border-slate-200 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
+                className="min-h-[116px] cursor-pointer rounded-2xl transition hover:-translate-y-0.5 hover:border-quiet/60 hover:shadow-soft"
                 onClick={() => navigate("/tutor/students")}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" || event.key === " ") {
@@ -447,13 +447,13 @@ export function TutorDashboard() {
                 tabIndex={0}
               >
                 <CardContent className="flex h-full flex-col justify-center p-6">
-                  <p className="text-lg font-semibold text-slate-400">Всего учеников</p>
-                  <p className="mt-3 text-3xl font-semibold text-slate-900">{students.length}</p>
+                  <p className="text-lg font-semibold text-quiet">Всего учеников</p>
+                  <p className="mt-3 text-3xl font-semibold text-foreground">{students.length}</p>
                 </CardContent>
               </Card>
 
               <Card
-                className="min-h-[116px] cursor-pointer rounded-[28px] border-slate-200 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
+                className="min-h-[116px] cursor-pointer rounded-2xl transition hover:-translate-y-0.5 hover:border-quiet/60 hover:shadow-soft"
                 onClick={handleShowTodayInCalendar}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" || event.key === " ") {
@@ -465,11 +465,11 @@ export function TutorDashboard() {
                 tabIndex={0}
               >
                 <CardContent className="flex h-full flex-col justify-center p-6">
-                  <p className="text-lg font-semibold text-slate-400">Запланировано занятий на сегодня</p>
+                  <p className="text-lg font-semibold text-quiet">Запланировано занятий на сегодня</p>
                   {todayLessonsCount > 0 ? (
-                    <p className="mt-3 text-3xl font-semibold text-slate-900">{todayLessonsCount}</p>
+                    <p className="mt-3 text-3xl font-semibold text-foreground">{todayLessonsCount}</p>
                   ) : (
-                    <p className="mt-3 text-lg font-semibold text-slate-900">
+                    <p className="mt-3 text-lg font-semibold text-foreground">
                       Нет запланированных занятий на сегодня
                     </p>
                   )}
@@ -477,39 +477,39 @@ export function TutorDashboard() {
               </Card>
             </div>
 
-            <Card className="min-h-[248px] rounded-[28px] border-slate-200 shadow-sm lg:h-full">
+            <Card className="min-h-[248px] rounded-2xl lg:h-full">
               <CardContent className="flex h-full flex-col justify-center p-6">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                   <div className="min-w-0">
-                    <p className="text-lg font-semibold text-slate-400">Ближайшее занятие</p>
+                    <p className="text-lg font-semibold text-quiet">Ближайшее занятие</p>
                     {nearestLesson ? (
                       <>
                         <button
-                          className="mt-3 block text-left text-2xl font-semibold text-slate-900 transition hover:-translate-y-0.5 hover:text-slate-700"
+                          className="mt-3 block text-left text-2xl font-semibold text-foreground transition hover:-translate-y-0.5 hover:text-foreground"
                           onClick={() => navigate(`/tutor/students/${nearestLesson.tutorStudentId}`)}
                           type="button"
                         >
                           {nearestLesson.studentName || "Ученик не указан"}
                         </button>
-                        <p className="mt-2 text-sm text-slate-500">
+                        <p className="mt-2 text-sm text-muted-foreground">
                           {formatLessonTitle(nearestLesson.subject, nearestLesson.topic)}
                         </p>
                         <div className="mt-4 flex flex-wrap gap-3">
-                          <span className="inline-flex items-center gap-2 text-base font-semibold text-slate-900">
-                            <Clock3 className="size-4 text-slate-500" />
+                          <span className="inline-flex items-center gap-2 text-base font-semibold text-foreground">
+                            <Clock3 className="size-4 text-muted-foreground" />
                             {formatDate(nearestLesson.date)} в {formatTime(nearestLesson.time)}
                           </span>
-                          <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-sm text-emerald-700">
+                          <span className="inline-flex rounded-full bg-success-soft px-3 py-1 text-sm text-success">
                             Еще занятий в расписании: {upcomingLessons.length}
                           </span>
                         </div>
                       </>
                     ) : (
                       <>
-                        <p className="mt-3 text-2xl font-semibold text-slate-900">
+                        <p className="mt-3 text-2xl font-semibold text-foreground">
                           Пока нет будущих занятий
                         </p>
-                        <p className="mt-2 max-w-xl text-sm text-slate-500">
+                        <p className="mt-2 max-w-xl text-sm text-muted-foreground">
                           Запланированные занятия появятся в календаре ниже.
                         </p>
                       </>
@@ -547,17 +547,17 @@ export function TutorDashboard() {
           ) : null}
 
           {lessonsWarning ? (
-            <Card className="rounded-3xl border-amber-200 bg-amber-50 shadow-sm">
-              <CardContent className="p-6 text-sm text-amber-800">{lessonsWarning}</CardContent>
+            <Card className="border-warning/20 bg-warning-soft">
+              <CardContent className="p-6 text-sm text-warning">{lessonsWarning}</CardContent>
             </Card>
           ) : null}
 
           {students.length > 0 ? (
             <section
-              className="overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm"
+              className="overflow-hidden rounded-2xl border border-border bg-white shadow-soft"
               ref={calendarSectionRef}
             >
-              <div className="flex flex-col gap-4 border-b border-slate-200 bg-slate-50 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-col gap-4 border-b border-border bg-canvas px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex items-center gap-3">
                   <Button
                     onClick={() => setCalendarWeekOffset((current) => current - 1)}
@@ -568,11 +568,11 @@ export function TutorDashboard() {
                   </Button>
 
                   <div>
-                    <p className="text-sm text-slate-500">Календарь занятий</p>
-                    <h2 className="text-xl font-semibold text-slate-900">
+                    <p className="text-sm text-muted-foreground">Календарь занятий</p>
+                    <h2 className="text-xl font-semibold text-foreground">
                       {formatMonthLabel(calendarWeekStart)}
                     </h2>
-                    <p className="mt-1 text-sm text-slate-500">
+                    <p className="mt-1 text-sm text-muted-foreground">
                       {formatWeekLabel(calendarWeekStart)}
                     </p>
                   </div>
@@ -601,15 +601,15 @@ export function TutorDashboard() {
                     return (
                       <div
                         key={day.toISOString()}
-                        className={`min-h-[340px] border-r border-slate-200 px-4 py-5 transition last:border-r-0 ${
+                        className={`min-h-[340px] border-r border-border px-4 py-5 transition last:border-r-0 ${
                           isCurrentDay && isTodayHighlighted
-                            ? "bg-sky-50 ring-4 ring-inset ring-sky-200"
+                            ? "bg-accent ring-4 ring-inset ring-primary/20"
                             : ""
                         }`}
                       >
                         <div
                           className={`rounded-2xl px-3 py-3 ${
-                            isCurrentDay ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-900"
+                            isCurrentDay ? "bg-primary text-white" : "bg-canvas text-foreground"
                           }`}
                         >
                           <p className="text-xs uppercase tracking-[0.2em] opacity-70">
@@ -622,7 +622,7 @@ export function TutorDashboard() {
 
                         <div className="mt-4 space-y-3">
                           {calendarTimeSlots.length === 0 ? (
-                            <div className="min-h-[88px] rounded-2xl border border-dashed border-slate-300 px-3 py-6 text-center text-sm text-slate-400">
+                            <div className="min-h-[88px] rounded-2xl border border-dashed border-quiet/40 px-3 py-6 text-center text-sm text-quiet">
                               Свободно
                             </div>
                           ) : (
@@ -632,7 +632,7 @@ export function TutorDashboard() {
                               if (slotLessons.length === 0) {
                                 return dayLessons.length === 0 && index === 0 ? (
                                   <div
-                                    className="min-h-[88px] rounded-2xl border border-dashed border-slate-300 px-3 py-6 text-center text-sm text-slate-400"
+                                    className="min-h-[88px] rounded-2xl border border-dashed border-quiet/40 px-3 py-6 text-center text-sm text-quiet"
                                     key={timeSlot}
                                   >
                                     Свободно
@@ -660,14 +660,14 @@ export function TutorDashboard() {
                                 {slotLessons.map((lesson) => (
                                   <button
                                     key={lesson.id}
-                                    className="min-h-[88px] w-full rounded-2xl border border-slate-200 bg-white px-2.5 py-3 text-left transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-sm"
+                                    className="min-h-[88px] w-full rounded-2xl border border-border bg-white px-2.5 py-3 text-left transition hover:-translate-y-0.5 hover:border-quiet/60 hover:shadow-soft"
                                     onClick={() => handleOpenLessonDetails(lesson)}
                                     type="button"
                                   >
-                                    <p className="text-sm font-semibold text-slate-900">
+                                    <p className="text-sm font-semibold text-foreground">
                                       {formatTime(lesson.time)}
                                     </p>
-                                    <p className="mt-2 line-clamp-2 text-sm font-semibold leading-snug text-slate-900">
+                                    <p className="mt-2 line-clamp-2 text-sm font-semibold leading-snug text-foreground">
                                       {lesson.studentName || "Ученик"}
                                     </p>
                                   </button>

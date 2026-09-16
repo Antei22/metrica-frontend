@@ -162,18 +162,18 @@ export function ParentDashboard() {
 
           {children.length > 0 ? (
             <>
-              <Card className="rounded-3xl border-slate-200 shadow-sm">
+              <Card>
                 <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-sm text-slate-500">Дети в кабинете</p>
-                    <p className="mt-2 text-3xl font-semibold text-slate-900">
+                    <p className="text-sm text-muted-foreground">Дети в кабинете</p>
+                    <p className="mt-2 text-3xl font-semibold text-foreground">
                       {children.length}
                     </p>
                   </div>
                   <div className="flex w-full flex-col gap-3 sm:max-w-xl sm:flex-row sm:items-center sm:justify-end">
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                       <DialogTrigger asChild>
-                        <Button className="bg-slate-900 text-white hover:bg-slate-800">
+                        <Button>
                           <Plus className="size-4" />
                           Добавить ребенка
                         </Button>
@@ -198,7 +198,7 @@ export function ParentDashboard() {
                             />
                           </div>
                           {childEmailError ? (
-                            <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                            <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-danger">
                               {childEmailError}
                             </div>
                           ) : null}
@@ -211,7 +211,6 @@ export function ParentDashboard() {
                               Отмена
                             </Button>
                             <Button
-                              className="bg-slate-900 text-white hover:bg-slate-800"
                               disabled={isAddingChild}
                               type="submit"
                             >
@@ -244,22 +243,22 @@ export function ParentDashboard() {
               </Card>
 
               <section className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-                <Card className="rounded-3xl border-slate-200 shadow-sm">
+                <Card>
                   <CardContent className="space-y-3 p-5">
-                    <p className="text-lg font-semibold text-slate-400">
+                    <p className="text-lg font-semibold text-quiet">
                       Последнее занятие
                     </p>
                     {lastLesson ? (
                       <>
                         <div>
-                          <p className="text-2xl font-semibold text-slate-900">
+                          <p className="text-2xl font-semibold text-foreground">
                             {formatLessonTitle(lastLesson.subject, lastLesson.topic)}
                           </p>
-                          <p className="mt-2 text-sm text-slate-500">
+                          <p className="mt-2 text-sm text-muted-foreground">
                             {lastLesson.studentName || "Ученик не указан"} •{" "}
                             {formatDateTime(lastLesson.date, lastLesson.time)}
                           </p>
-                          <p className="mt-1 text-sm text-slate-500">
+                          <p className="mt-1 text-sm text-muted-foreground">
                             Репетитор: {lastLesson.tutorName || "не указан"}
                           </p>
                         </div>
@@ -269,7 +268,7 @@ export function ParentDashboard() {
                             <span
                               className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
                                 lastLessonDeadlineMissed
-                                  ? "bg-rose-100 text-rose-700"
+                                  ? "bg-danger-soft text-danger"
                                   : getHomeworkStatusClasses(lastLesson.homeworkStatus)
                               }`}
                             >
@@ -279,29 +278,28 @@ export function ParentDashboard() {
                             </span>
                           </div>
                           <Button
-                            className="bg-slate-900 text-white hover:bg-slate-800"
                             onClick={() => navigate(`/parent/lessons/${lastLesson.id}`)}
                           >
                             Открыть занятие
                           </Button>
                         </div>
                         {lastLesson.submission?.comment ? (
-                          <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
+                          <div className="rounded-2xl bg-canvas p-4 text-sm text-muted-foreground">
                             {lastLesson.submission.comment}
                           </div>
                         ) : null}
                       </>
                     ) : (
-                      <p className="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-sm text-slate-500">
+                      <p className="rounded-2xl border border-dashed border-quiet/40 px-4 py-8 text-sm text-muted-foreground">
                         Прошедших занятий пока нет.
                       </p>
                     )}
                   </CardContent>
                 </Card>
 
-                <Card className="rounded-3xl border-slate-200 shadow-sm">
+                <Card>
                   <CardContent className="flex h-full flex-col gap-5 p-5">
-                    <p className="text-lg font-semibold text-slate-400">
+                    <p className="text-lg font-semibold text-quiet">
                       Ближайшее занятие
                     </p>
                     {nearestLesson ? (
@@ -310,22 +308,22 @@ export function ParentDashboard() {
                         onClick={() => navigate(`/parent/lessons/${nearestLesson.id}`)}
                         type="button"
                       >
-                        <p className="text-2xl font-semibold text-slate-900">
+                        <p className="text-2xl font-semibold text-foreground">
                           {formatLessonTitle(nearestLesson.subject, nearestLesson.topic)}
                         </p>
 
                         <div className="mt-auto">
-                          <p className="inline-flex items-center gap-2 text-base font-semibold text-slate-900">
-                            <Clock3 className="size-4 text-slate-500" />
+                          <p className="inline-flex items-center gap-2 text-base font-semibold text-foreground">
+                            <Clock3 className="size-4 text-muted-foreground" />
                             {formatDateTime(nearestLesson.date, nearestLesson.time)}
                           </p>
-                          <p className="mt-1 text-sm text-slate-500">
+                          <p className="mt-1 text-sm text-muted-foreground">
                             Репетитор: {nearestLesson.tutorName || "не указан"}
                           </p>
                         </div>
                       </button>
                     ) : (
-                      <p className="rounded-2xl border border-dashed border-slate-300 px-4 py-8 text-sm text-slate-500">
+                      <p className="rounded-2xl border border-dashed border-quiet/40 px-4 py-8 text-sm text-muted-foreground">
                         Запланированных занятий пока нет.
                       </p>
                     )}
@@ -334,11 +332,11 @@ export function ParentDashboard() {
               </section>
 
               <section
-                className="rounded-[32px] border border-slate-200 bg-white shadow-sm"
+                className="rounded-2xl border border-border bg-white shadow-soft"
                 id="parent-history"
               >
-                <div className="border-b border-slate-200 px-6 py-5">
-                  <p className="text-lg font-semibold text-slate-900">История занятий</p>
+                <div className="border-b border-border px-6 py-5">
+                  <p className="text-lg font-semibold text-foreground">История занятий</p>
                 </div>
                 <div className="p-6">
                   <LessonProgressTimeline
