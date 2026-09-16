@@ -95,7 +95,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-[5px] after:bg-[image:var(--brand-gradient-x)] after:content-['']">
+    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-[4px] after:bg-[image:var(--brand-gradient-x)] after:content-['']">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <button
           className="text-left"
