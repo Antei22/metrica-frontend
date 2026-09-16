@@ -95,17 +95,17 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-border bg-white/95 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <button
           className="text-left"
           onClick={() => navigate(getHomePathForRole(user.role))}
           type="button"
         >
-          <span className="block text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">
-            Онлайн-платформа
+          <span className="eyebrow block">Онлайн-платформа</span>
+          <span className="block text-[20px] leading-tight tracking-[-0.035em] text-foreground">
+            МЕТРИКА
           </span>
-          <span className="block text-2xl font-semibold text-slate-900">МЕТРИКА</span>
         </button>
 
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
@@ -117,12 +117,9 @@ export function Header() {
                 <Button
                   key={item.path}
                   type="button"
-                  variant={isActive ? "default" : "ghost"}
-                  className={`rounded-full px-4 ${
-                    isActive
-                      ? "bg-slate-900 text-white hover:bg-slate-800"
-                      : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
-                  }`}
+                  variant={isActive ? "default" : "secondary"}
+                  size="sm"
+                  className="rounded-full px-4"
                   onClick={() => navigate(item.path)}
                 >
                   {item.label}
@@ -144,18 +141,18 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="h-auto rounded-full border border-slate-200 bg-slate-50 px-3 py-2 hover:bg-slate-100"
+                className="h-auto min-h-0 rounded-full border border-border bg-secondary px-3 py-2 hover:bg-accent"
               >
                 <Avatar className="size-9">
-                  <AvatarFallback className="bg-slate-900 text-white">
+                  <AvatarFallback className="bg-primary text-primary-foreground">
                     {initials || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="text-left">
-                  <div className="text-sm font-medium text-slate-900">{user.fullName}</div>
-                  <div className="text-xs text-slate-500">{getRoleLabel(user.role)}</div>
+                  <div className="text-sm font-medium text-foreground">{user.fullName}</div>
+                  <div className="text-xs text-muted-foreground">{getRoleLabel(user.role)}</div>
                 </div>
-                <ChevronDown className="size-4 text-slate-400" />
+                <ChevronDown className="size-4 text-quiet" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -170,24 +167,24 @@ export function Header() {
             <DialogTitle>Прогресс накопления</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-              <p className="text-sm text-amber-800">Накоплено</p>
-              <p className="mt-2 text-2xl font-semibold text-slate-900">
+            <div className="rounded-2xl border border-warning/20 bg-warning-soft p-4">
+              <p className="text-sm text-warning">Накоплено</p>
+              <p className="mt-2 text-2xl tracking-[-0.035em] text-foreground">
                 {studentStars.toLocaleString("ru-RU")} / {studentGoal.toLocaleString("ru-RU")}
               </p>
               <div className="mt-4 h-2 overflow-hidden rounded-full bg-white">
                 <div
-                  className="h-full rounded-full bg-amber-400"
+                  className="h-full rounded-full bg-star"
                   style={{ width: `${studentProgress}%` }}
                 />
               </div>
             </div>
             {activeStudentRewards.map((item) => (
               <div
-                className="rounded-2xl border border-slate-200 p-4 text-sm text-slate-600"
+                className="rounded-2xl border border-border bg-canvas p-4 text-sm text-muted-foreground"
                 key={item.tutorStudentId}
               >
-                <p className="font-medium text-slate-900">
+                <p className="font-medium text-foreground">
                   {item.tutorName || "Репетитор"}
                 </p>
                 <p className="mt-1">

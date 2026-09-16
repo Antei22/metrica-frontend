@@ -1,0 +1,88 @@
+/* Типографика рабочего UI — DESIGN_SYSTEM.md §2.
+   Один вес (500); иерархия — размером и отрицательным letter-spacing:
+   чем крупнее текст, тем сильнее трекинг (-0.03em … -0.045em), тело — без трекинга. */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-synthesis: none;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+    line-height: 1.1;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+
+  h2 {
+    font-size: var(--text-2xl);
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  h3 {
+    font-size: var(--text-xl);
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+  }
+
+  h4 {
+    font-size: var(--text-lg);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+  }
+
+  p,
+  label,
+  button,
+  input,
+  select,
+  textarea {
+    font-size: var(--text-base);
+    line-height: 1.4;
+  }
+
+  /* §7 — все анимации должны иметь мгновенный fallback */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@utility eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--quiet);
+}
+
+@utility brand-gradient {
+  background: var(--brand-gradient);
+  color: var(--white);
+}
+
+@utility brand-gradient-text {
+  background: var(--brand-gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

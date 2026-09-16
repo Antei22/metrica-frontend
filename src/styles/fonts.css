@@ -1,0 +1,9 @@
+/* Metrica brand font — DESIGN_SYSTEM.md §2.1.
+   Единственное начертание (Medium/500); иерархия строится размером и letter-spacing, не весом. */
+@font-face {
+  font-family: "Retni Sans";
+  src: url("../assets/fonts/RetniSans-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
