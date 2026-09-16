@@ -20,6 +20,8 @@
   --gradient-cyan: #61faff;
   --brand-gradient: linear-gradient(180deg, var(--gradient-blue) 0%, var(--gradient-blue) 58%, var(--gradient-cyan) 100%);
   --brand-gradient-text: linear-gradient(180deg, var(--gradient-blue), var(--gradient-cyan));
+  /* горизонтальный вариант для тонких линий/полос (те же две точки градиента) */
+  --brand-gradient-x: linear-gradient(90deg, var(--gradient-blue), var(--gradient-cyan));
   /* §1.2 — дополнительные оттенки из разметки лендинга */
   --skel-blue: #dbeafe;
   --progress-track: #dce8fb;
