@@ -98,37 +98,37 @@ export function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(15,23,42,0.08),_transparent_45%),linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-10">
+    <div className="min-h-screen bg-[linear-gradient(180deg,var(--warm)_0%,var(--panel-blue)_100%)] px-4 py-10">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-5xl items-center justify-center">
-        <div className="grid w-full overflow-hidden rounded-2xl border border-border bg-white shadow-[0_30px_80px_-40px_rgba(15,23,42,0.45)] lg:grid-cols-[1.1fr_0.9fr]">
-          <section className="hidden flex-col bg-primary p-10 text-white lg:flex">
+        <div className="grid w-full overflow-hidden rounded-3xl border border-border bg-white shadow-float lg:grid-cols-[1.1fr_0.9fr]">
+          <section className="hidden flex-col brand-gradient p-10 text-primary-foreground lg:flex">
             <div className="-mt-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-quiet">
+              <p className="text-xs uppercase tracking-[0.13em] text-white/70">
                 Онлайн-платформа
               </p>
-              <h1 className="mt-4 text-5xl font-semibold leading-tight">МЕТРИКА</h1>
-              <p className="mt-6 max-w-md text-base text-quiet">
+              <h1 className="mt-4 text-5xl leading-[1.05] tracking-[-0.045em]">МЕТРИКА</h1>
+              <p className="mt-6 max-w-md text-base text-white/80">
                 Личный кабинет для репетитора, ученика и родителя с расписанием,
                 материалами занятия и проверкой домашних заданий.
               </p>
             </div>
 
             <div className="mt-7 grid gap-4">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <div className="rounded-2xl border border-white/15 bg-white/15 p-5">
                 <p className="text-sm font-medium text-white">Для репетитора</p>
-                <p className="mt-2 text-sm text-quiet">
+                <p className="mt-2 text-sm text-white/80">
                   Добавление учеников, создание занятий и проверка домашних заданий.
                 </p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <div className="rounded-2xl border border-white/15 bg-white/15 p-5">
                 <p className="text-sm font-medium text-white">Для ученика</p>
-                <p className="mt-2 text-sm text-quiet">
+                <p className="mt-2 text-sm text-white/80">
                   Просмотр занятий, доступ к материалам и отправка выполненных работ.
                 </p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <div className="rounded-2xl border border-white/15 bg-white/15 p-5">
                 <p className="text-sm font-medium text-white">Для родителя</p>
-                <p className="mt-2 text-sm text-quiet">
+                <p className="mt-2 text-sm text-white/80">
                   Последние оценки, история занятий и расписание ребенка.
                 </p>
               </div>
@@ -137,7 +137,7 @@ export function AuthPage() {
 
           <section className="p-6 sm:p-8 lg:p-10">
             <div className="mb-8 lg:hidden">
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-quiet">
+              <p className="text-xs uppercase tracking-[0.13em] text-white/70">
                 Онлайн-платформа
               </p>
               <h1 className="mt-3 text-3xl font-semibold text-foreground">МЕТРИКА</h1>

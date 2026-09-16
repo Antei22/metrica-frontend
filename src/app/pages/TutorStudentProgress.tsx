@@ -909,7 +909,7 @@ export function TutorStudentProgress() {
                   <Card
                     className={`${
                       isGoalReached
-                        ? "border-warning/20 bg-gradient-to-r from-amber-100 via-yellow-50 to-orange-100"
+                        ? "border-warning/20 bg-warning-soft"
                         : "border-border"
                     }`}
                   >

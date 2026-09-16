@@ -46,7 +46,8 @@ export function ErrorState({
       <p className="mx-auto mt-2 max-w-lg text-sm text-danger">{description}</p>
       {actionLabel && onAction ? (
         <Button
-          className="mt-5 rounded-full bg-danger text-white hover:bg-danger/90"
+          className="mt-5 rounded-full"
+          variant="destructive"
           onClick={onAction}
         >
           {actionLabel}

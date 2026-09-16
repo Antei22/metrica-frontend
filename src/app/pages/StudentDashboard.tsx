@@ -252,12 +252,12 @@ export function StudentDashboard() {
       {!loading && !error ? (
         <>
           {activeBonusTasks.length > 0 ? (
-            <section className="relative overflow-hidden rounded-[34px] bg-gradient-to-r from-rose-100 via-sky-100 to-indigo-100 p-2.5 shadow-[0_0_36px_rgba(251,113,133,0.22)]">
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-rose-200/50 via-transparent to-indigo-200/50 blur-2xl" />
+            <section className="relative overflow-hidden rounded-3xl brand-gradient p-2.5">
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10" />
               <div className="relative rounded-2xl bg-white px-6 py-5">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="flex size-11 items-center justify-center rounded-2xl bg-danger-soft text-danger">
+                    <span className="flex size-11 items-center justify-center rounded-2xl bg-accent text-primary">
                       <Gift className="size-5" />
                     </span>
                     <div>

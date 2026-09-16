@@ -202,7 +202,7 @@ export function TutorLessonDetailsDialog({
               <AlertDialogFooter>
                 <AlertDialogCancel>Отмена</AlertDialogCancel>
                 <AlertDialogAction
-                  className="bg-danger text-white hover:bg-danger/90"
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   disabled={isDeleting}
                   onClick={() => onDelete(lesson)}
                 >
