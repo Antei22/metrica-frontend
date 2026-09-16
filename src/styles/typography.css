@@ -11,7 +11,7 @@
   }
 
   body {
-    @apply bg-panel-blue text-foreground;
+    @apply bg-background text-foreground;
     font-family: var(--font-sans);
     font-weight: 500;
     font-synthesis: none;

@@ -15,7 +15,7 @@ export function AppLayout({
   children,
 }: AppLayoutProps) {
   return (
-    <div className="min-h-screen bg-panel-blue text-foreground">
+    <div className="min-h-screen bg-canvas text-foreground">
       <Header />
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8">
         <section className="flex flex-col gap-4 rounded-2xl border border-border bg-white p-6 shadow-soft sm:flex-row sm:items-end sm:justify-between">

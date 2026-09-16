@@ -4,7 +4,7 @@ import type { UserRole } from "../types/domain";
 
 function LoadingScreen() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-panel-blue px-4">
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-4">
       <div className="w-full max-w-sm rounded-2xl border border-border bg-white p-8 text-center shadow-soft">
         <p className="text-sm font-medium text-muted-foreground">Загружаем данные аккаунта...</p>
       </div>

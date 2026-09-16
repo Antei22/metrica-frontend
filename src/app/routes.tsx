@@ -18,7 +18,7 @@ function PublicEntry() {
 
   if (status === "loading") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-panel-blue">
+      <div className="flex min-h-screen items-center justify-center bg-canvas">
         <p className="text-sm text-muted-foreground">Проверяем сессию...</p>
       </div>
     );
