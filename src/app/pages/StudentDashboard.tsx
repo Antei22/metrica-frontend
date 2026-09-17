@@ -69,20 +69,20 @@ function hasHomeworkTask(lesson: Lesson) {
   return Boolean(lesson.homeworkDeadline || lesson.homeworkTaskFiles.length > 0);
 }
 
-function getHomeworkStatusTextClass(lesson: Lesson) {
+function getHomeworkStatusPillClass(lesson: Lesson) {
   if (lesson.homeworkStatus === "checked") {
-    return "text-success";
+    return "border-success/20 bg-success-soft text-ink";
   }
 
   if (lesson.homeworkStatus === "sent") {
-    return "text-warning";
+    return "border-warning/20 bg-warning-soft text-ink";
   }
 
   if (isHomeworkDeadlineMissed(lesson)) {
-    return "text-danger";
+    return "border-danger/20 bg-danger-soft text-ink";
   }
 
-  return "text-muted-foreground";
+  return "border-border bg-panel text-muted-foreground";
 }
 
 function getHomeworkStatusText(lesson: Lesson) {
@@ -252,7 +252,16 @@ export function StudentDashboard() {
       {!loading && !error ? (
         <>
           {activeBonusTasks.length > 0 ? (
-            <section className="relative overflow-hidden rounded-3xl brand-gradient p-2.5">
+            <section
+              className="relative overflow-hidden rounded-[20px] brand-gradient p-1"
+              // Окно градиента сдвинуто к циановому концу: --brand-gradient держит сплошной синий
+              // на 58% длины (hero-паттерн), для тонкой 4px рамки это слишком тёмно.
+              // `to bottom right` (а не 135deg) — на широкой карточке ход угол-в-угол.
+              style={{
+                backgroundImage:
+                  "linear-gradient(to bottom right, var(--gradient-blue) -50%, var(--gradient-cyan) 100%)",
+              }}
+            >
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10" />
               <div className="relative rounded-2xl bg-white px-6 py-5">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -290,7 +299,7 @@ export function StudentDashboard() {
                           {task.starRewardsEnabled ? (
                             <StarValue value={task.stars} />
                           ) : task.rewardTitle ? (
-                            <span className="rounded-full bg-success-soft px-3 py-1 text-xs font-semibold text-success">
+                            <span className="rounded-full border border-success/20 bg-success-soft px-2 py-0.5 text-xs text-ink">
                               {task.rewardTitle}
                             </span>
                           ) : null}
@@ -312,7 +321,7 @@ export function StudentDashboard() {
                     <div className="flex flex-1 flex-col gap-7">
                       <p
                         className={`max-w-full whitespace-nowrap text-2xl font-semibold leading-tight ${
-                          homeworkOverdue ? "text-danger" : "text-foreground"
+                          homeworkOverdue ? "text-danger-foreground" : "text-foreground"
                         }`}
                       >
                         Дедлайн ДЗ:{" "}
@@ -437,13 +446,13 @@ export function StudentDashboard() {
                           {formatDateTime(lesson.date, lesson.time)}
                         </p>
                         {homeworkStatusVisible ? (
-                          <p
-                            className={`mt-2 text-sm font-semibold ${getHomeworkStatusTextClass(
+                          <span
+                            className={`mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs ${getHomeworkStatusPillClass(
                               lesson,
                             )}`}
                           >
                             {getHomeworkStatusText(lesson)}
-                          </p>
+                          </span>
                         ) : null}
                       </div>
                     </button>
@@ -478,10 +487,10 @@ export function StudentDashboard() {
                 <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <CardTitle>Домашнее задание</CardTitle>
                   <span
-                    className={`rounded-full px-3 py-1 text-sm font-medium ${
+                    className={`rounded-full border px-2 py-0.5 text-xs ${
                       homeworkOverdue
-                        ? "bg-danger-soft text-danger"
-                        : "bg-panel text-foreground"
+                        ? "border-danger/20 bg-danger-soft text-ink"
+                        : "border-border bg-panel text-foreground"
                     }`}
                   >
                     Дедлайн:{" "}
@@ -518,7 +527,7 @@ export function StudentDashboard() {
                           {activeHomeworkLesson.submission?.submittedAt ? (
                             <p
                               className={
-                                homeworkSubmittedLate ? "font-medium text-danger" : undefined
+                                homeworkSubmittedLate ? "font-medium text-danger-foreground" : undefined
                               }
                             >
                               Отправлено в{" "}

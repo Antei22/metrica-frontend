@@ -27,18 +27,22 @@
   --progress-track: #dce8fb;
   --line-blue: #dce6f8;
 
-  /* ---------- Семантические цвета (дополнение к DESIGN_SYSTEM) ----------
-     В дизайн-системе нет статусных цветов и цвета звёзд геймификации.
-     Подобраны приглушёнными, контраст текста на *-soft фоне ≥ 4.5:1 (WCAG AA). */
-  --success: #166534;
-  --success-foreground: #ffffff;
-  --success-soft: #e7f5ec;
-  --warning: #a35a00;
-  --warning-foreground: #ffffff;
-  --warning-soft: #fff3e0;
-  --danger: #c2273a;
-  --danger-foreground: #ffffff;
-  --danger-soft: #fdecee;
+  /* ---------- Семантические цвета — DESIGN_SYSTEM.md §1.1 (семантика) ----------
+     Насыщенные, той же «громкости», что --gradient-cyan. Правило применения:
+       --danger/--warning/--success — только некрупные заливки: иконки, точки, бордеры,
+         тонкие полосы. Никогда как цвет текста и никогда как фон под белый текст.
+       текст на *-soft пилюлях и на сплошной заливке — --ink (14–16:1 на soft, 5–9.5:1 на заливке).
+       инлайн-статус без подложки — *-foreground (ровно ≥ 4.5:1 на белом).
+     --star — отдельная сущность геймификации, не связана с --warning. */
+  --success: #22c58b;
+  --success-foreground: #17865f;
+  --success-soft: #dcfaf0;
+  --warning: #ffb020;
+  --warning-foreground: #a56a00;
+  --warning-soft: #fff1d6;
+  --danger: #ff4436;
+  --danger-foreground: #eb1000;
+  --danger-soft: #ffe3e0;
   --star: #f5b400;
 
   /* ---------- shadcn semantic tokens → brand ---------- */
@@ -58,8 +62,11 @@
   --muted-foreground: var(--ink-muted);
   --accent: var(--panel-blue);
   --accent-foreground: var(--ink);
-  --destructive: var(--danger);
-  --destructive-foreground: var(--danger-foreground);
+  /* ui/button `destructive` и ui/form ошибки используют --destructive и как текст на белом,
+     и как фон под белый текст. Насыщенный --danger не проходит AA ни там, ни там (3.4:1 под белым),
+     поэтому shadcn-токен привязан к --danger-foreground: 4.5:1 на белом и 4.6:1 под белым текстом. */
+  --destructive: var(--danger-foreground);
+  --destructive-foreground: var(--white);
   --border: #e5e8ef;
   --input: var(--border);
   --input-background: var(--canvas);

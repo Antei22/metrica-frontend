@@ -1,4 +1,5 @@
-import { ChevronDown } from "lucide-react";
+import { CalendarDays, ChevronDown, ClipboardCheck, Users } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { listStudentGamification } from "../api/gamification";
@@ -62,12 +63,12 @@ export function Header() {
     return null;
   }
 
-  const navigationItems =
+  const navigationItems: { label: string; path: string; icon?: LucideIcon }[] =
     user.role === "tutor"
       ? [
-          { label: "Занятия", path: "/tutor/dashboard" },
-          { label: "Ученики", path: "/tutor/students" },
-          { label: "Проверка ДЗ", path: "/tutor/homework" },
+          { label: "Занятия", path: "/tutor/dashboard", icon: CalendarDays },
+          { label: "Ученики", path: "/tutor/students", icon: Users },
+          { label: "Проверка ДЗ", path: "/tutor/homework", icon: ClipboardCheck },
         ]
       : user.role === "parent"
         ? [{ label: "Кабинет", path: "/parent/dashboard" }]
@@ -103,8 +104,61 @@ export function Header() {
           type="button"
         >
           <span className="eyebrow block">Онлайн-платформа</span>
-          <span className="block text-[20px] leading-tight tracking-[-0.035em] text-foreground">
-            МЕТРИКА
+          <span className="flex items-center gap-0.5">
+            {/* Фирменный знак: тот же вертикальный градиент, растянутый на ink значка (y 3…21). */}
+            <svg
+              aria-hidden="true"
+              className="size-[22px] shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <defs>
+                <linearGradient
+                  gradientUnits="userSpaceOnUse"
+                  id="metrica-mark-gradient"
+                  x1="0"
+                  x2="0"
+                  y1="3"
+                  y2="21"
+                >
+                  <stop offset="0" stopColor="var(--gradient-blue)" />
+                  <stop offset="1" stopColor="var(--gradient-cyan)" />
+                </linearGradient>
+              </defs>
+              <rect
+                height="18"
+                rx="5.5"
+                stroke="url(#metrica-mark-gradient)"
+                strokeWidth="2.4"
+                width="18"
+                x="3"
+                y="3"
+              />
+              <rect
+                fill="url(#metrica-mark-gradient)"
+                height="6.5"
+                rx="2.2"
+                width="6.5"
+                x="8.75"
+                y="8.75"
+              />
+            </svg>
+            <span
+              className="brand-gradient-text block text-[24px] leading-tight tracking-[-0.035em]"
+              style={{
+                // Родной вес 500; плотность добирается прозрачным stroke: он расширяет маску
+                // background-clip: text без сплошной обводки поверх градиента (цветной stroke
+                // рисуется над заливкой и гасит её).
+                WebkitTextStroke: "0.6px transparent",
+                // Стопы прижаты к фактическому ink строки «Метрика» у Retni Sans: верх «М» 0.25em …
+                // низ нисходящего «р» 1.2em. Иначе градиент растянут на ascent+descent (0…1.25em),
+                // и буквы видят только его середину.
+                backgroundImage:
+                  "linear-gradient(180deg, var(--gradient-blue) 0.25em, var(--gradient-cyan) 1.2em)",
+              }}
+            >
+              Метрика
+            </span>
           </span>
         </button>
 
@@ -122,6 +176,11 @@ export function Header() {
                   className="rounded-full px-4"
                   onClick={() => navigate(item.path)}
                 >
+                  {item.icon ? (
+                    <item.icon
+                      className={isActive ? "text-primary-foreground" : "text-primary"}
+                    />
+                  ) : null}
                   {item.label}
                 </Button>
               );
@@ -168,7 +227,7 @@ export function Header() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="rounded-2xl border border-warning/20 bg-warning-soft p-4">
-              <p className="text-sm text-warning">Накоплено</p>
+              <p className="text-sm text-ink">Накоплено</p>
               <p className="mt-2 text-2xl tracking-[-0.035em] text-foreground">
                 {studentStars.toLocaleString("ru-RU")} / {studentGoal.toLocaleString("ru-RU")}
               </p>

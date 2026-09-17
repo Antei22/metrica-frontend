@@ -195,23 +195,23 @@ export function LessonDetails() {
             <CardContent className="space-y-4">
               {lesson.homeworkStatus === "checked" ? (
                 <div className="rounded-2xl border border-success/20 bg-success-soft p-5">
-                  <p className="font-medium text-success">Работа проверена</p>
-                  <p className="mt-2 text-sm text-success">
+                  <p className="font-medium text-ink">Работа проверена</p>
+                  <p className="mt-2 text-sm text-ink">
                     {lesson.submission?.comment ||
                       "Комментарий преподавателя пока не добавлен."}
                   </p>
                   {submittedFiles.length > 0 ? (
                     <div className="mt-4 space-y-2">
-                      <p className="text-sm text-success">
+                      <p className="text-sm text-ink">
                         Дедлайн ДЗ:{" "}
                         {lesson.homeworkDeadline ? formatDate(lesson.homeworkDeadline) : "не задан"}
                       </p>
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-success">
-                        <p className="font-semibold text-success">Решение ученика:</p>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink">
+                        <p className="font-semibold text-ink">Решение ученика:</p>
                         {lesson.submission?.submittedAt ? (
                           <p
                             className={
-                              homeworkSubmittedLate ? "font-medium text-danger" : undefined
+                              homeworkSubmittedLate ? "font-medium text-danger-foreground" : undefined
                             }
                           >
                             Отправлено в {formatDateClock(lesson.submission.submittedAt)}
@@ -224,14 +224,14 @@ export function LessonDetails() {
                         ))}
                       </div>
                       {lesson.submission?.studentComment ? (
-                        <p className="rounded-2xl bg-white/80 p-3 text-sm text-success">
+                        <p className="rounded-2xl bg-white/80 p-3 text-sm text-ink">
                           {lesson.submission.studentComment}
                         </p>
                       ) : null}
                     </div>
                   ) : null}
                   <div className="mt-4 space-y-2">
-                    <p className="text-sm font-semibold text-success">
+                    <p className="text-sm font-semibold text-ink">
                       Проверенные файлы репетитором:
                     </p>
                     <div className="flex flex-col items-start gap-2">
@@ -246,8 +246,8 @@ export function LessonDetails() {
 
               {lesson.homeworkStatus === "sent" ? (
                 <div className="rounded-2xl border border-warning/20 bg-warning-soft p-5">
-                  <p className="font-medium text-warning">Работа отправлена на проверку</p>
-                  <p className="mt-2 text-sm text-warning">
+                  <p className="font-medium text-ink">Работа отправлена на проверку</p>
+                  <p className="mt-2 text-sm text-ink">
                     Ожидайте комментарий от преподавателя или измените файлы до проверки.
                   </p>
                 </div>
@@ -279,7 +279,7 @@ export function LessonDetails() {
                         {lesson.submission?.submittedAt ? (
                           <p
                             className={
-                              homeworkSubmittedLate ? "font-medium text-danger" : undefined
+                              homeworkSubmittedLate ? "font-medium text-danger-foreground" : undefined
                             }
                           >
                             Отправлено в {formatDateClock(lesson.submission.submittedAt)}

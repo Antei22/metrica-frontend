@@ -201,7 +201,7 @@ export function TutorLessonFormDialog({
 
         <form className="space-y-5" onSubmit={onSubmit}>
           {formError ? (
-            <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-danger">
+            <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-ink">
               {formError}
             </div>
           ) : null}

@@ -13,7 +13,7 @@ export function StarValue({ value, muted = false, className = "" }: StarValuePro
       className={`inline-flex h-7 items-center gap-1 rounded-full border px-3 text-xs font-semibold ${
         value == null || muted
           ? "border-border bg-canvas text-muted-foreground"
-          : "border-warning/20 bg-warning-soft text-warning"
+          : "border-warning/20 bg-warning-soft text-ink"
       } ${className}`}
     >
       <Star

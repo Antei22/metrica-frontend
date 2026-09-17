@@ -86,7 +86,7 @@ function getHomeworkStatusView(lesson: Lesson | null): HomeworkStatusView {
   if (lesson?.homeworkStatus === "checked") {
     return {
       label: "Проверено",
-      className: "bg-success-soft text-success",
+      className: "border-success/20 bg-success-soft text-ink",
       isPendingReview: false,
     };
   }
@@ -94,7 +94,7 @@ function getHomeworkStatusView(lesson: Lesson | null): HomeworkStatusView {
   if (lesson?.homeworkStatus === "sent") {
     return {
       label: "На проверке",
-      className: "bg-warning-soft text-warning",
+      className: "border-warning/20 bg-warning-soft text-ink",
       isPendingReview: true,
     };
   }
@@ -102,14 +102,14 @@ function getHomeworkStatusView(lesson: Lesson | null): HomeworkStatusView {
   if (lesson && isHomeworkDeadlineMissed(lesson)) {
     return {
       label: "Еще не отправлено",
-      className: "bg-danger-soft text-danger",
+      className: "border-danger/20 bg-danger-soft text-ink",
       isPendingReview: false,
     };
   }
 
   return {
     label: "Еще не отправлено",
-    className: "bg-panel text-muted-foreground",
+    className: "border-border bg-panel text-muted-foreground",
     isPendingReview: false,
   };
 }
@@ -458,7 +458,7 @@ export function TutorStudents() {
             </div>
 
             {studentEmailError ? (
-              <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-danger">
+              <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-ink">
                 {studentEmailError}
               </div>
             ) : null}
@@ -556,7 +556,7 @@ export function TutorStudents() {
             </div>
 
             {editStudentError ? (
-              <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-danger">
+              <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-ink">
                 {editStudentError}
               </div>
             ) : null}
@@ -565,7 +565,7 @@ export function TutorStudents() {
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
-                    className="text-danger hover:text-danger"
+                    className="text-danger-foreground hover:text-danger-foreground"
                     disabled={!editingStudent || isDeletingStudent}
                     type="button"
                     variant="ghost"
@@ -707,7 +707,7 @@ export function TutorStudents() {
 
           {lessonsWarning ? (
             <Card className="border-warning/20 bg-warning-soft">
-              <CardContent className="p-6 text-sm text-warning">{lessonsWarning}</CardContent>
+              <CardContent className="p-6 text-sm text-ink">{lessonsWarning}</CardContent>
             </Card>
           ) : null}
 
@@ -756,7 +756,7 @@ export function TutorStudents() {
                           ) : null}
                         </div>
                         <span
-                          className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${homeworkStatus.className}`}
+                          className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-medium ${homeworkStatus.className}`}
                         >
                           {homeworkStatus.label}
                         </span>

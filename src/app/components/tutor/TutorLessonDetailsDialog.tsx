@@ -187,7 +187,7 @@ export function TutorLessonDetailsDialog({
         <div className="flex flex-wrap justify-end gap-3">
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button className="text-danger hover:text-danger" type="button" variant="ghost">
+              <Button className="text-danger-foreground hover:text-danger-foreground" type="button" variant="ghost">
                 <Trash2 className="size-4" />
                 Удалить занятие
               </Button>

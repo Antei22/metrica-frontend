@@ -833,13 +833,13 @@ export function TutorStudentProgress() {
         <>
           {lessonsWarning ? (
             <Card className="border-warning/20 bg-warning-soft">
-              <CardContent className="p-6 text-sm text-warning">{lessonsWarning}</CardContent>
+              <CardContent className="p-6 text-sm text-ink">{lessonsWarning}</CardContent>
             </Card>
           ) : null}
 
           {gamificationWarning ? (
             <Card className="border-warning/20 bg-warning-soft">
-              <CardContent className="p-6 text-sm text-warning">
+              <CardContent className="p-6 text-sm text-ink">
                 {gamificationWarning}
               </CardContent>
             </Card>
@@ -969,7 +969,7 @@ export function TutorStudentProgress() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {!canAssignBonusTasks ? (
-                      <div className="rounded-2xl border border-warning/20 bg-warning-soft px-4 py-3 text-sm text-warning">
+                      <div className="rounded-2xl border border-warning/20 bg-warning-soft px-4 py-3 text-sm text-ink">
                         Сначала укажите и сохраните глобальную цель.
                       </div>
                     ) : null}
@@ -1058,7 +1058,7 @@ export function TutorStudentProgress() {
                                 {isStarRewardsEnabled ? (
                                   <StarValue value={task.stars} />
                                 ) : task.rewardTitle ? (
-                                  <span className="rounded-full bg-success-soft px-3 py-1 font-medium text-success">
+                                  <span className="rounded-full border border-success/20 bg-success-soft px-2 py-0.5 text-xs font-medium text-ink">
                                     {task.rewardTitle}
                                   </span>
                                 ) : null}
@@ -1075,7 +1075,7 @@ export function TutorStudentProgress() {
                               className={
                                 task.isCompleted
                                   ? ""
-                                  : "bg-success text-white hover:bg-success/90"
+                                  : "bg-success text-ink hover:bg-success/90"
                               }
                             >
                               {task.isCompleted ? "Вернуть в работу" : "Начислить"}

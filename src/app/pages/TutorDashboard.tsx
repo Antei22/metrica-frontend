@@ -5,6 +5,7 @@ import {
   ChevronRight,
   Clock3,
   ExternalLink,
+  Plus,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
@@ -188,6 +189,15 @@ export function TutorDashboard() {
     setCreateFormError(null);
     setCreateMaterialFiles([]);
     setCreateHomeworkFiles([]);
+  }
+
+  function openCreateDialogForDay(day: Date) {
+    setCreateForm({
+      ...getDefaultCreateLessonFormValues(),
+      date: format(day, "yyyy-MM-dd"),
+    });
+    setCreateFormError(null);
+    setIsCreateDialogOpen(true);
   }
 
   function closeCreateDialog(open: boolean) {
@@ -499,7 +509,7 @@ export function TutorDashboard() {
                             <Clock3 className="size-4 text-muted-foreground" />
                             {formatDate(nearestLesson.date)} в {formatTime(nearestLesson.time)}
                           </span>
-                          <span className="inline-flex rounded-full bg-success-soft px-3 py-1 text-sm text-success">
+                          <span className="inline-flex rounded-full bg-accent px-3 py-1 text-sm text-primary">
                             Еще занятий в расписании: {upcomingLessons.length}
                           </span>
                         </div>
@@ -548,7 +558,7 @@ export function TutorDashboard() {
 
           {lessonsWarning ? (
             <Card className="border-warning/20 bg-warning-soft">
-              <CardContent className="p-6 text-sm text-warning">{lessonsWarning}</CardContent>
+              <CardContent className="p-6 text-sm text-ink">{lessonsWarning}</CardContent>
             </Card>
           ) : null}
 
@@ -622,21 +632,29 @@ export function TutorDashboard() {
 
                         <div className="mt-4 space-y-3">
                           {calendarTimeSlots.length === 0 ? (
-                            <div className="min-h-[88px] rounded-2xl border border-dashed border-quiet/40 px-3 py-6 text-center text-sm text-quiet">
+                            <button
+                              className="flex min-h-[88px] w-full items-center justify-center gap-1.5 rounded-2xl text-sm text-quiet transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                              onClick={() => openCreateDialogForDay(day)}
+                              type="button"
+                            >
+                              <Plus className="size-3.5" />
                               Свободно
-                            </div>
+                            </button>
                           ) : (
                             calendarTimeSlots.map((timeSlot, index) => {
                               const slotLessons = lessonsByTime.get(timeSlot) || [];
 
                               if (slotLessons.length === 0) {
                                 return dayLessons.length === 0 && index === 0 ? (
-                                  <div
-                                    className="min-h-[88px] rounded-2xl border border-dashed border-quiet/40 px-3 py-6 text-center text-sm text-quiet"
+                                  <button
+                                    className="flex min-h-[88px] w-full items-center justify-center gap-1.5 rounded-2xl text-sm text-quiet transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
                                     key={timeSlot}
+                                    onClick={() => openCreateDialogForDay(day)}
+                                    type="button"
                                   >
+                                    <Plus className="size-3.5" />
                                     Свободно
-                                  </div>
+                                  </button>
                                 ) : (
                                   <div
                                     aria-hidden="true"

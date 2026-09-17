@@ -61,7 +61,7 @@ export function StarRatingInput({
       <span
         className={cn(
           "rounded-full px-3 py-1 text-sm font-medium",
-          value == null ? "bg-panel text-muted-foreground" : "bg-warning-soft text-warning",
+          value == null ? "bg-panel text-muted-foreground" : "bg-warning-soft text-ink",
         )}
       >
         {formatRating(value)}

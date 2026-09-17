@@ -198,7 +198,7 @@ export function ParentDashboard() {
                             />
                           </div>
                           {childEmailError ? (
-                            <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-danger">
+                            <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-ink">
                               {childEmailError}
                             </div>
                           ) : null}
@@ -266,9 +266,9 @@ export function ParentDashboard() {
                           <div className="flex flex-wrap gap-3">
                             <StarValue value={lastLesson.homeworkGrade} />
                             <span
-                              className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
+                              className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-medium ${
                                 lastLessonDeadlineMissed
-                                  ? "bg-danger-soft text-danger"
+                                  ? "border-danger/20 bg-danger-soft text-ink"
                                   : getHomeworkStatusClasses(lastLesson.homeworkStatus)
                               }`}
                             >

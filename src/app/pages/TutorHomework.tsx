@@ -69,7 +69,7 @@ function SubmissionFilesBlock({
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
         <p className="font-medium text-foreground">{title}:</p>
         {submittedTime ? (
-          <p className={submittedLate ? "font-medium text-danger" : undefined}>
+          <p className={submittedLate ? "font-medium text-danger-foreground" : undefined}>
             Отправлено в {submittedTime}
           </p>
         ) : null}
@@ -224,7 +224,7 @@ export function TutorHomework() {
             {checked ? (
               <StarValue value={submission.grade} />
             ) : (
-              <span className="inline-flex rounded-full bg-warning-soft px-3 py-1 text-xs font-medium text-warning">
+              <span className="inline-flex rounded-full border border-warning/20 bg-warning-soft px-2 py-0.5 text-xs font-medium text-ink">
                 На проверке
               </span>
             )}

@@ -42,8 +42,8 @@ export function ErrorState({
 }: MessageStateProps) {
   return (
     <div className="rounded-2xl border border-danger/20 bg-danger-soft p-10 text-center shadow-soft">
-      <h2 className="text-lg font-semibold text-danger">{title}</h2>
-      <p className="mx-auto mt-2 max-w-lg text-sm text-danger">{description}</p>
+      <h2 className="text-lg font-semibold text-ink">{title}</h2>
+      <p className="mx-auto mt-2 max-w-lg text-sm text-ink">{description}</p>
       {actionLabel && onAction ? (
         <Button
           className="mt-5 rounded-full"

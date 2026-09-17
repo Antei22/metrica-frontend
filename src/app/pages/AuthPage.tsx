@@ -190,7 +190,7 @@ export function AuthPage() {
                   </div>
 
                   {loginError ? (
-                    <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-danger">
+                    <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-ink">
                       {loginError}
                     </div>
                   ) : null}
@@ -298,7 +298,7 @@ export function AuthPage() {
                   </div>
 
                   {registerError ? (
-                    <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-danger">
+                    <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-ink">
                       {registerError}
                     </div>
                   ) : null}
