@@ -3,6 +3,8 @@ import { useAuth } from "./auth/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { getHomePathForRole } from "./lib/routes";
 import { AuthPage } from "./pages/AuthPage";
+import { InviteRegisterPage } from "./pages/InviteRegisterPage";
+import { VerifyEmailPage } from "./pages/VerifyEmailPage";
 import { LessonDetails } from "./pages/LessonDetails";
 import { ParentDashboard } from "./pages/ParentDashboard";
 import { ParentLessonDetails } from "./pages/ParentLessonDetails";
@@ -35,6 +37,14 @@ export const router = createBrowserRouter([
   {
     path: "/",
     Component: PublicEntry,
+  },
+  {
+    path: "/verify-email",
+    Component: VerifyEmailPage,
+  },
+  {
+    path: "/register/invite/:token",
+    Component: InviteRegisterPage,
   },
   {
     element: <ProtectedRoute allowedRoles={["tutor"]} />,

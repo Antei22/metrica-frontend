@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
+import { resendVerification } from "../api/auth";
+import { ApiError } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { getErrorMessage } from "../lib/errors";
 import {
@@ -26,6 +28,8 @@ export function AuthPage() {
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [loginNeedsVerification, setLoginNeedsVerification] = useState(false);
+  const [resendState, setResendState] = useState<"idle" | "sending" | "sent">("idle");
 
   const [registerRole, setRegisterRole] = useState<"student" | "tutor" | "parent">("student");
   const [registerEmail, setRegisterEmail] = useState("");
@@ -33,6 +37,7 @@ export function AuthPage() {
   const [registerLastName, setRegisterLastName] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerError, setRegisterError] = useState<string | null>(null);
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
 
   const [submitMode, setSubmitMode] = useState<SubmitMode>(null);
 
@@ -43,6 +48,8 @@ export function AuthPage() {
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoginError(null);
+    setLoginNeedsVerification(false);
+    setResendState("idle");
 
     const loginValidationError =
       validateEmail(loginEmail) || validatePassword(loginPassword);
@@ -58,9 +65,24 @@ export function AuthPage() {
       const user = await login(loginEmail.trim(), loginPassword);
       navigate(redirectPath || getHomePathForRole(user.role), { replace: true });
     } catch (error) {
-      setLoginError(getErrorMessage(error, "Не удалось войти в аккаунт."));
+      if (error instanceof ApiError && error.detail === "EMAIL_NOT_VERIFIED") {
+        setLoginNeedsVerification(true);
+        setLoginError("Почта не подтверждена. Проверьте письмо со ссылкой подтверждения.");
+      } else {
+        setLoginError(getErrorMessage(error, "Не удалось войти в аккаунт."));
+      }
     } finally {
       setSubmitMode(null);
+    }
+  }
+
+  async function handleResendVerification() {
+    setResendState("sending");
+    try {
+      await resendVerification(loginEmail.trim());
+      setResendState("sent");
+    } catch {
+      setResendState("idle");
     }
   }
 
@@ -82,14 +104,16 @@ export function AuthPage() {
     setSubmitMode("register");
 
     try {
-      const user = await register({
-        email: registerEmail.trim(),
+      const email = registerEmail.trim();
+      await register({
+        email,
         password: registerPassword,
         firstName: registerFirstName.trim(),
         lastName: registerLastName.trim(),
         role: registerRole,
       });
-      navigate(getHomePathForRole(user.role), { replace: true });
+      // Регистрация больше не логинит сразу — почту нужно подтвердить письмом.
+      setRegisteredEmail(email);
     } catch (error) {
       setRegisterError(getErrorMessage(error, "Не удалось создать аккаунт."));
     } finally {
@@ -191,7 +215,21 @@ export function AuthPage() {
 
                   {loginError ? (
                     <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                      {loginError}
+                      <p>{loginError}</p>
+                      {loginNeedsVerification ? (
+                        <button
+                          className="mt-2 font-medium underline disabled:opacity-60"
+                          disabled={resendState !== "idle"}
+                          onClick={() => void handleResendVerification()}
+                          type="button"
+                        >
+                          {resendState === "sending"
+                            ? "Отправляем..."
+                            : resendState === "sent"
+                              ? "Письмо отправлено повторно"
+                              : "Отправить письмо ещё раз"}
+                        </button>
+                      ) : null}
                     </div>
                   ) : null}
 
@@ -206,6 +244,25 @@ export function AuthPage() {
               </TabsContent>
 
               <TabsContent value="register">
+                {registeredEmail ? (
+                  <div className="mt-6 space-y-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-6 text-center">
+                    <p className="text-base font-semibold text-emerald-900">
+                      Почти готово!
+                    </p>
+                    <p className="text-sm text-emerald-800">
+                      Мы отправили письмо со ссылкой подтверждения на{" "}
+                      <span className="font-medium">{registeredEmail}</span>. Перейдите
+                      по ней, чтобы войти в аккаунт.
+                    </p>
+                    <button
+                      className="text-sm font-medium text-emerald-900 underline"
+                      onClick={() => setRegisteredEmail(null)}
+                      type="button"
+                    >
+                      Зарегистрировать ещё один аккаунт
+                    </button>
+                  </div>
+                ) : (
                 <form className="mt-6 space-y-4" onSubmit={handleRegister}>
                   <div className="space-y-2">
                     <Label>Роль</Label>
@@ -311,6 +368,7 @@ export function AuthPage() {
                     {submitMode === "register" ? "Создаём аккаунт..." : "Зарегистрироваться"}
                   </Button>
                 </form>
+                )}
               </TabsContent>
             </Tabs>
           </section>

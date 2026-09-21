@@ -1,8 +1,9 @@
-import { Plus, Search, Settings, Trash2 } from "lucide-react";
+import { Copy, Plus, Search, Settings, Trash2, UserPlus } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { uploadTutorFile } from "../api/files";
+import { createStudentInvite, type InviteLink } from "../api/invites";
 import { createTutorLesson, listTutorLessons } from "../api/lessons";
 import {
   addTutorStudent,
@@ -127,6 +128,10 @@ export function TutorStudents() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [studentEmail, setStudentEmail] = useState("");
   const [studentEmailError, setStudentEmailError] = useState<string | null>(null);
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
+  const [isCreatingInvite, setIsCreatingInvite] = useState(false);
+  const [inviteLink, setInviteLink] = useState<InviteLink | null>(null);
+  const [inviteError, setInviteError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -315,6 +320,35 @@ export function TutorStudents() {
     }
   }
 
+  async function handleOpenInviteDialog() {
+    setIsInviteDialogOpen(true);
+    setInviteError(null);
+    setInviteLink(null);
+    setIsCreatingInvite(true);
+
+    try {
+      const link = await createStudentInvite();
+      setInviteLink(link);
+    } catch (createError) {
+      setInviteError(getErrorMessage(createError, "Не удалось создать ссылку-приглашение."));
+    } finally {
+      setIsCreatingInvite(false);
+    }
+  }
+
+  async function handleCopyInviteLink() {
+    if (!inviteLink) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(inviteLink.url);
+      toast.success("Ссылка скопирована");
+    } catch {
+      toast.error("Не удалось скопировать ссылку — скопируйте вручную.");
+    }
+  }
+
   async function handleUpdateStudent(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -435,6 +469,55 @@ export function TutorStudents() {
       title="Мои ученики"
       description="Нажмите на карточку ученика, чтобы открыть отдельный экран с прогрессом занятий."
     >
+      <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Пригласить ученика</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-slate-500">
+              Отправьте эту одноразовую ссылку ученику — он сам зарегистрируется и
+              сразу появится у вас в списке, без ручного добавления по email.
+            </p>
+
+            {isCreatingInvite ? (
+              <p className="text-sm text-slate-500">Создаём ссылку...</p>
+            ) : null}
+
+            {inviteError ? (
+              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {inviteError}
+              </div>
+            ) : null}
+
+            {inviteLink ? (
+              <div className="flex items-center gap-2">
+                <Input readOnly className="text-sm" value={inviteLink.url} />
+                <Button
+                  className="shrink-0"
+                  onClick={() => void handleCopyInviteLink()}
+                  size="icon"
+                  type="button"
+                  variant="outline"
+                >
+                  <Copy className="size-4" />
+                </Button>
+              </div>
+            ) : null}
+
+            <div className="flex justify-end">
+              <Button
+                onClick={() => setIsInviteDialogOpen(false)}
+                type="button"
+                variant="outline"
+              >
+                Закрыть
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -681,13 +764,25 @@ export function TutorStudents() {
                   </div>
                   <div className="flex gap-2">
                     <Button
-                      aria-label="Добавить ученика"
+                      aria-label="Добавить ученика по email"
                       className="rounded-full bg-slate-900 text-white hover:bg-slate-800"
                       onClick={() => setIsDialogOpen(true)}
                       size="icon"
+                      title="Добавить ученика по email"
                       type="button"
                     >
                       <Plus className="size-5" />
+                    </Button>
+                    <Button
+                      aria-label="Пригласить ученика ссылкой"
+                      className="rounded-full"
+                      onClick={() => void handleOpenInviteDialog()}
+                      size="icon"
+                      title="Пригласить ученика ссылкой"
+                      type="button"
+                      variant="outline"
+                    >
+                      <UserPlus className="size-5" />
                     </Button>
                     <Button
                       aria-label="Настройки учеников"

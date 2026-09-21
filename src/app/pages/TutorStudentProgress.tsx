@@ -1,4 +1,13 @@
-﻿import { ArrowLeft, ChevronDown, Gift, Plus, Save, Settings } from "lucide-react";
+﻿import {
+  ArrowLeft,
+  ChevronDown,
+  Copy,
+  Gift,
+  Plus,
+  Save,
+  Settings,
+  UserPlus,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
@@ -18,6 +27,7 @@ import {
 } from "../api/lessons";
 import { listTutorStudents, updateTutorStudent } from "../api/students";
 import { AppLayout } from "../components/AppLayout";
+import { createParentInvite, type InviteLink } from "../api/invites";
 import { EmptyState, ErrorState, LoadingState } from "../components/DataState";
 import { LessonProgressTimeline } from "../components/LessonProgressTimeline";
 import { StarValue } from "../components/StarValue";
@@ -96,6 +106,10 @@ export function TutorStudentProgress() {
   const [parentMessage, setParentMessage] = useState("");
   const [parentMessageFiles, setParentMessageFiles] = useState<File[]>([]);
   const [isSendingParentMessage, setIsSendingParentMessage] = useState(false);
+  const [isParentInviteDialogOpen, setIsParentInviteDialogOpen] = useState(false);
+  const [isCreatingParentInvite, setIsCreatingParentInvite] = useState(false);
+  const [parentInviteLink, setParentInviteLink] = useState<InviteLink | null>(null);
+  const [parentInviteError, setParentInviteError] = useState<string | null>(null);
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isCreateSubmitting, setIsCreateSubmitting] = useState(false);
@@ -274,6 +288,41 @@ export function TutorStudentProgress() {
   function openCreateDialog() {
     resetCreateState();
     setIsCreateDialogOpen(true);
+  }
+
+  async function handleOpenParentInviteDialog() {
+    if (!id) {
+      return;
+    }
+
+    setIsParentInviteDialogOpen(true);
+    setParentInviteError(null);
+    setParentInviteLink(null);
+    setIsCreatingParentInvite(true);
+
+    try {
+      const link = await createParentInvite(id);
+      setParentInviteLink(link);
+    } catch (createError) {
+      setParentInviteError(
+        getErrorMessage(createError, "Не удалось создать ссылку-приглашение."),
+      );
+    } finally {
+      setIsCreatingParentInvite(false);
+    }
+  }
+
+  async function handleCopyParentInviteLink() {
+    if (!parentInviteLink) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(parentInviteLink.url);
+      toast.success("Ссылка скопирована");
+    } catch {
+      toast.error("Не удалось скопировать ссылку — скопируйте вручную.");
+    }
   }
 
   async function handleCreateLesson(event: React.FormEvent<HTMLFormElement>) {
@@ -581,9 +630,69 @@ export function TutorStudentProgress() {
           >
             <Settings className="size-5" />
           </Button>
+          <Button
+            aria-label="Пригласить родителя ссылкой"
+            className="rounded-full"
+            onClick={() => void handleOpenParentInviteDialog()}
+            size="icon"
+            title="Пригласить родителя ссылкой"
+            type="button"
+            variant="outline"
+          >
+            <UserPlus className="size-5" />
+          </Button>
         </>
       }
     >
+      <Dialog open={isParentInviteDialogOpen} onOpenChange={setIsParentInviteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Пригласить родителя</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-slate-500">
+              Отправьте эту одноразовую ссылку родителю — он зарегистрируется и сразу
+              получит доступ к этому ученику, без отдельного одобрения запроса.
+            </p>
+
+            {isCreatingParentInvite ? (
+              <p className="text-sm text-slate-500">Создаём ссылку...</p>
+            ) : null}
+
+            {parentInviteError ? (
+              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {parentInviteError}
+              </div>
+            ) : null}
+
+            {parentInviteLink ? (
+              <div className="flex items-center gap-2">
+                <Input readOnly className="text-sm" value={parentInviteLink.url} />
+                <Button
+                  className="shrink-0"
+                  onClick={() => void handleCopyParentInviteLink()}
+                  size="icon"
+                  type="button"
+                  variant="outline"
+                >
+                  <Copy className="size-4" />
+                </Button>
+              </div>
+            ) : null}
+
+            <div className="flex justify-end">
+              <Button
+                onClick={() => setIsParentInviteDialogOpen(false)}
+                type="button"
+                variant="outline"
+              >
+                Закрыть
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <TutorLessonFormDialog
         description="Укажите дату, время и тему занятия для этого ученика."
         form={createForm}

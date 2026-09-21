@@ -22,6 +22,7 @@ interface AuthContextValue {
     lastName: string;
     role: UserRole;
   }) => Promise<CurrentUser>;
+  verifyEmail: (token: string) => Promise<CurrentUser>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -67,7 +68,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
     lastName: string;
     role: UserRole;
   }) {
-    const currentUser = await authApi.register(input);
+    // Регистрация больше не логинит сразу — почту нужно подтвердить письмом,
+    // прежде чем появится рабочая сессия.
+    return authApi.register(input);
+  }
+
+  async function handleVerifyEmail(token: string) {
+    const currentUser = await authApi.verifyEmail(token);
     setUser(currentUser);
     setStatus("authenticated");
     return currentUser;
@@ -89,6 +96,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         user,
         login: handleLogin,
         register: handleRegister,
+        verifyEmail: handleVerifyEmail,
         logout: handleLogout,
         refreshUser,
       }}

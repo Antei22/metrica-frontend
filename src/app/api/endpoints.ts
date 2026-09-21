@@ -2,15 +2,22 @@ export const apiConfig = {
   baseUrl: (import.meta.env.VITE_API_BASE_URL || "/api").replace(/\/$/, ""),
   auth: {
     register: "/auth/register",
+    registerInvite: (token: string) => `/auth/register/invite/${token}`,
     login: "/auth/login",
     logout: "/auth/logout",
     refresh: "/auth/refresh",
     me: "/auth/me",
+    resendVerification: "/auth/resend-verification",
+    verifyEmail: "/auth/verify-email",
+    invitePreview: (token: string) => `/auth/invite/${token}`,
   },
   tutor: {
     students: "/tutor/students",
     studentById: (tutorStudentId: number | string) =>
       `/tutor/students/${tutorStudentId}`,
+    inviteStudent: "/tutor/students/invite",
+    inviteParent: (tutorStudentId: number | string) =>
+      `/tutor/students/${tutorStudentId}/invite-parent`,
     lessons: "/tutor/lessons",
     lessonById: (lessonId: number | string) => `/tutor/lessons/${lessonId}`,
     parentLessonMessage: (lessonId: number | string) =>
