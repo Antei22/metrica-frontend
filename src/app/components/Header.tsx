@@ -1,4 +1,4 @@
-import { CalendarDays, ChevronDown, ClipboardCheck, Users } from "lucide-react";
+import { CalendarDays, ChevronDown, ClipboardCheck, Home, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
@@ -73,8 +73,8 @@ export function Header() {
       : user.role === "parent"
         ? [{ label: "Кабинет", path: "/parent/dashboard" }]
         : [
-          { label: "Кабинет", path: "/student/dashboard" },
-          { label: "История занятий", path: "/student/lessons" },
+          { label: "Кабинет", path: "/student/dashboard", icon: Home },
+          { label: "История занятий", path: "/student/lessons", icon: CalendarDays },
         ];
 
   const initials = user.fullName

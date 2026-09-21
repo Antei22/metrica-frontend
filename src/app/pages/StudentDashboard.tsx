@@ -24,6 +24,7 @@ import { getErrorMessage } from "../lib/errors";
 import { formatDate, formatDateClock, formatDateTime, formatDayMonth, formatLessonTitle } from "../lib/format";
 import {
   getHomeworkStatusLabel,
+  hasHomeworkTask,
   HOMEWORK_FILE_ACCEPT,
   isHomeworkDeadlineMissed,
   isSubmittedAfterHomeworkDeadline,
@@ -63,10 +64,6 @@ function getActiveHomeworkLesson(lessons: Lesson[], nearestLesson: Lesson | null
   }
 
   return [...candidates].sort(sortLessonsByDate)[0];
-}
-
-function hasHomeworkTask(lesson: Lesson) {
-  return Boolean(lesson.homeworkDeadline || lesson.homeworkTaskFiles.length > 0);
 }
 
 function getHomeworkStatusPillClass(lesson: Lesson) {
@@ -252,60 +249,56 @@ export function StudentDashboard() {
       {!loading && !error ? (
         <>
           {activeBonusTasks.length > 0 ? (
-            <section
-              className="relative overflow-hidden rounded-[20px] brand-gradient p-1"
-              // Окно градиента сдвинуто к циановому концу: --brand-gradient держит сплошной синий
-              // на 58% длины (hero-паттерн), для тонкой 4px рамки это слишком тёмно.
-              // `to bottom right` (а не 135deg) — на широкой карточке ход угол-в-угол.
-              style={{
-                backgroundImage:
-                  "linear-gradient(to bottom right, var(--gradient-blue) -50%, var(--gradient-cyan) 100%)",
-              }}
-            >
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10" />
-              <div className="relative rounded-2xl bg-white px-6 py-5">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="flex size-11 items-center justify-center rounded-2xl bg-accent text-primary">
-                      <Gift className="size-5" />
-                    </span>
-                    <div>
-                      <p className="text-lg font-semibold text-foreground">
-                        Бонусные задания
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Активно: {activeBonusTasks.length}
-                      </p>
+            <section className="hw-glow hw-glow-brand rounded-[20px]">
+              <div className="brand-gradient-border homework-gradient-border">
+                <div className="relative rounded-2xl bg-white px-6 py-5">
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="flex size-11 items-center justify-center rounded-2xl bg-accent text-primary">
+                        <Gift className="size-5" />
+                      </span>
+                      <div>
+                        <p className="text-lg font-semibold text-foreground">
+                          Бонусные задания
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Активно: {activeBonusTasks.length}
+                        </p>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="grid flex-1 gap-3 lg:grid-cols-2">
-                    {activeBonusTasks.slice(0, 2).map((task) => (
-                      <div key={task.id} className="rounded-2xl bg-canvas px-4 py-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="font-medium text-foreground">{task.title}</p>
-                            {task.description ? (
-                              <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                                {task.description}
-                              </p>
-                            ) : null}
-                            {task.dueDate ? (
-                              <p className="mt-2 text-xs text-muted-foreground">
-                                До {formatDate(task.dueDate)}
-                              </p>
+                    <div
+                      className={`grid flex-1 gap-3 ${
+                        activeBonusTasks.length > 1 ? "lg:grid-cols-2" : ""
+                      }`}
+                    >
+                      {activeBonusTasks.slice(0, 2).map((task) => (
+                        <div key={task.id} className="rounded-2xl bg-canvas px-4 py-3">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="font-medium text-foreground">{task.title}</p>
+                              {task.description ? (
+                                <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                                  {task.description}
+                                </p>
+                              ) : null}
+                              {task.dueDate ? (
+                                <p className="mt-2 text-xs text-muted-foreground">
+                                  До {formatDate(task.dueDate)}
+                                </p>
+                              ) : null}
+                            </div>
+                            {task.starRewardsEnabled ? (
+                              <StarValue value={task.stars} />
+                            ) : task.rewardTitle ? (
+                              <span className="rounded-full border border-success/20 bg-success-soft px-2 py-0.5 text-xs text-ink">
+                                {task.rewardTitle}
+                              </span>
                             ) : null}
                           </div>
-                          {task.starRewardsEnabled ? (
-                            <StarValue value={task.stars} />
-                          ) : task.rewardTitle ? (
-                            <span className="rounded-full border border-success/20 bg-success-soft px-2 py-0.5 text-xs text-ink">
-                              {task.rewardTitle}
-                            </span>
-                          ) : null}
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>

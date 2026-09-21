@@ -45,7 +45,7 @@ import {
   validateLessonForm,
 } from "../lib/formValidation";
 import { formatDateTime } from "../lib/format";
-import { isHomeworkDeadlineMissed } from "../lib/homework";
+import { getHomeworkStatusView, hasHomeworkTask } from "../lib/homework";
 import {
   getLatestPastLesson,
   getNearestUpcomingLesson,
@@ -60,16 +60,6 @@ import {
 } from "../lib/tutorLessonForm";
 import type { Lesson, LessonCollection, TutorStudent } from "../types/domain";
 
-type HomeworkStatusView = {
-  label: string;
-  className: string;
-  isPendingReview: boolean;
-};
-
-function hasHomeworkTask(lesson: Lesson) {
-  return Boolean(lesson.homeworkDeadline || lesson.homeworkTaskFiles.length > 0);
-}
-
 function getLatestHomeworkLesson(lessons: Lesson[]) {
   for (let index = lessons.length - 1; index >= 0; index -= 1) {
     const lesson = lessons[index];
@@ -80,38 +70,6 @@ function getLatestHomeworkLesson(lessons: Lesson[]) {
   }
 
   return null;
-}
-
-function getHomeworkStatusView(lesson: Lesson | null): HomeworkStatusView {
-  if (lesson?.homeworkStatus === "checked") {
-    return {
-      label: "Проверено",
-      className: "border-success/20 bg-success-soft text-ink",
-      isPendingReview: false,
-    };
-  }
-
-  if (lesson?.homeworkStatus === "sent") {
-    return {
-      label: "На проверке",
-      className: "border-warning/20 bg-warning-soft text-ink",
-      isPendingReview: true,
-    };
-  }
-
-  if (lesson && isHomeworkDeadlineMissed(lesson)) {
-    return {
-      label: "Еще не отправлено",
-      className: "border-danger/20 bg-danger-soft text-ink",
-      isPendingReview: false,
-    };
-  }
-
-  return {
-    label: "Еще не отправлено",
-    className: "border-border bg-panel text-muted-foreground",
-    isPendingReview: false,
-  };
 }
 
 export function TutorStudents() {

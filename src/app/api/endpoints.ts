@@ -13,6 +13,12 @@ export const apiConfig = {
       `/tutor/students/${tutorStudentId}`,
     lessons: "/tutor/lessons",
     lessonById: (lessonId: number | string) => `/tutor/lessons/${lessonId}`,
+    aiReview: (lessonId: number | string) =>
+      `/tutor/lessons/${lessonId}/ai-review`,
+    aiHistory: (lessonId: number | string) =>
+      `/tutor/lessons/${lessonId}/ai-history`,
+    aiProgress: (lessonId: number | string) =>
+      `/tutor/lessons/${lessonId}/ai-progress`,
     parentLessonMessage: (lessonId: number | string) =>
       `/tutor/lessons/${lessonId}/parent-message`,
     submissions: "/tutor/submissions",
@@ -29,6 +35,8 @@ export const apiConfig = {
   student: {
     lessons: "/student/lessons",
     lessonById: (lessonId: number | string) => `/student/lessons/${lessonId}`,
+    aiReview: (lessonId: number | string) =>
+      `/student/lessons/${lessonId}/ai-review`,
     gamification: "/student/gamification",
     submitHomework: (lessonId: number | string) =>
       `/student/lessons/${lessonId}/submit-homework`,

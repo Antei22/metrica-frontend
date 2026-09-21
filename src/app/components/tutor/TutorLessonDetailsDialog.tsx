@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { resolveApiUrl } from "../../api/client";
 import { formatDate, formatDateTime } from "../../lib/format";
 import type { Lesson } from "../../types/domain";
+import { AiHomeworkReportViewer } from "../AiHomeworkReportViewer";
 import { LessonFilesCard } from "../LessonFilesCard";
 import { StarValue } from "../StarValue";
 import {
@@ -140,7 +141,7 @@ export function TutorLessonDetailsDialog({
             <StarValue value={lesson.homeworkGrade} />
           </div>
 
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <div className="mt-4 space-y-3">
             <div className="rounded-2xl border border-border p-4">
               <p className="text-sm font-medium text-foreground">Решение ученика</p>
               {lesson.submission?.fileUrl ? (
@@ -157,6 +158,8 @@ export function TutorLessonDetailsDialog({
                 <p className="mt-2 text-sm text-muted-foreground">Файл еще не отправлен.</p>
               )}
             </div>
+
+            <AiHomeworkReportViewer audience="tutor" lessonId={lesson.id} />
 
             <div className="rounded-2xl border border-border p-4">
               <p className="text-sm font-medium text-foreground">Проверенный файл</p>

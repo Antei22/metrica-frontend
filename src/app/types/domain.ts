@@ -74,6 +74,7 @@ export interface Lesson {
   homeworkDone: boolean;
   homeworkDeadline: string | null;
   homeworkDeadlineMissed: boolean;
+  createdAt: string | null;
   homeworkStatus: HomeworkStatus;
   studentName: string | null;
   tutorName: string | null;
@@ -114,6 +115,71 @@ export interface HomeworkReview {
   homeworkDeadlineMissed: boolean;
   grade: number | null;
   starsAwarded: number;
+}
+
+export interface AiMathError {
+  location: string;
+  student_wrote: string;
+  correct: string;
+  explanation: string;
+  topic: string;
+  severity: "conceptual" | "computational" | "careless";
+}
+
+export interface AiTaskReview {
+  task_label: string;
+  transcription: string;
+  is_correct: boolean;
+  errors: AiMathError[];
+  task_types: string[];
+}
+
+export interface AiPracticeTask {
+  topic: string;
+  question: string;
+  hint: string;
+  answer: string;
+  solution: string;
+}
+
+export interface AiHomeworkResult {
+  readable: boolean;
+  quality_note: string | null;
+  tasks: AiTaskReview[];
+  summary: string;
+  error_topics: string[];
+  practice: AiPracticeTask[];
+}
+
+export interface AiReviewState {
+  id: number | null;
+  lesson_id: number;
+  status: "not_started" | "pending" | "running" | "completed" | "failed";
+  available: boolean;
+  result: AiHomeworkResult | null;
+  error_message: string | null;
+}
+
+export interface AiHomeworkHistoryItem {
+  homework_number: number;
+  homework_label: string;
+  created_at: string;
+}
+
+export interface AiErrorCluster {
+  label: string;
+  description: string;
+  homework_labels: string[];
+  error_count: number;
+}
+
+export interface AiProgressReport {
+  homework_count: number;
+  threshold_reached: boolean;
+  narrative: string;
+  strengths: string[];
+  focus_areas: string[];
+  clusters: AiErrorCluster[];
 }
 
 export interface UploadedFileRef {

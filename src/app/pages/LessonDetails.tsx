@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import { getStudentLesson, submitStudentHomework } from "../api/lessons";
 import { AppLayout } from "../components/AppLayout";
+import { AiHomeworkReportViewer } from "../components/AiHomeworkReportViewer";
 import { EmptyState, ErrorState, LoadingState } from "../components/DataState";
 import { FileLinkButton } from "../components/FileLinkButton";
 import { LessonFilesCard } from "../components/LessonFilesCard";
@@ -196,10 +197,6 @@ export function LessonDetails() {
               {lesson.homeworkStatus === "checked" ? (
                 <div className="rounded-2xl border border-success/20 bg-success-soft p-5">
                   <p className="font-medium text-ink">Работа проверена</p>
-                  <p className="mt-2 text-sm text-ink">
-                    {lesson.submission?.comment ||
-                      "Комментарий преподавателя пока не добавлен."}
-                  </p>
                   {submittedFiles.length > 0 ? (
                     <div className="mt-4 space-y-2">
                       <p className="text-sm text-ink">
@@ -230,6 +227,11 @@ export function LessonDetails() {
                       ) : null}
                     </div>
                   ) : null}
+
+                  <div className="mt-4">
+                    <AiHomeworkReportViewer audience="student" lessonId={lesson.id} />
+                  </div>
+
                   <div className="mt-4 space-y-2">
                     <p className="text-sm font-semibold text-ink">
                       Проверенные файлы репетитором:
@@ -240,6 +242,14 @@ export function LessonDetails() {
                       ))}
                       <StarValue value={lesson.homeworkGrade} />
                     </div>
+                  </div>
+
+                  <div className="mt-4 rounded-2xl bg-white/80 p-4 text-sm text-ink">
+                    <p className="font-semibold">Комментарий репетитора</p>
+                    <p className="mt-2">
+                      {lesson.submission?.comment ||
+                        "Комментарий преподавателя пока не добавлен."}
+                    </p>
                   </div>
                 </div>
               ) : null}

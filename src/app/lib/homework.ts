@@ -1,7 +1,12 @@
-import type { HomeworkStatus, Lesson, SubmissionStatus } from "../types/domain";
+import type {
+  HomeworkReview,
+  HomeworkStatus,
+  Lesson,
+  SubmissionStatus,
+} from "../types/domain";
 
 export const HOMEWORK_FILE_ACCEPT =
-  ".pdf,.jpg,.jpeg,.png,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.rtf";
+  ".pdf,.jpg,.jpeg,.png,.webp,.gif,.heic,.heif,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.rtf";
 
 export const STAR_GRADES = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
 
@@ -135,4 +140,160 @@ export function isSubmittedAfterHomeworkDeadline(
   }
 
   return submitted > deadline;
+}
+
+export type HomeworkStatusView = {
+  label: string;
+  className: string;
+  isPendingReview: boolean;
+};
+
+export function hasHomeworkTask(lesson: Lesson) {
+  return Boolean(lesson.homeworkDeadline || lesson.homeworkTaskFiles.length > 0);
+}
+
+export function getHomeworkStatusView(lesson: Lesson | null): HomeworkStatusView {
+  if (lesson?.homeworkStatus === "checked") {
+    return {
+      label: "Проверено",
+      className: "border-success/20 bg-success-soft text-ink",
+      isPendingReview: false,
+    };
+  }
+
+  if (lesson?.homeworkStatus === "sent") {
+    return {
+      label: "На проверке",
+      className: "border-blue/20 bg-panel-blue text-ink",
+      isPendingReview: true,
+    };
+  }
+
+  if (lesson && isHomeworkDeadlineMissed(lesson)) {
+    return {
+      label: "Еще не отправлено",
+      className: "border-danger/20 bg-danger-soft text-ink",
+      isPendingReview: false,
+    };
+  }
+
+  return {
+    label: "Еще не отправлено",
+    className: "border-border bg-panel text-muted-foreground",
+    isPendingReview: false,
+  };
+}
+
+export type HomeworkCardState = "not_sent" | "overdue" | "sent" | "checked";
+
+export function getHomeworkCardState(lesson: Lesson): HomeworkCardState {
+  if (lesson.homeworkStatus === "checked") {
+    return "checked";
+  }
+
+  if (lesson.homeworkStatus === "sent") {
+    return "sent";
+  }
+
+  if (isHomeworkDeadlineMissed(lesson)) {
+    return "overdue";
+  }
+
+  return "not_sent";
+}
+
+function getCreatedTimestamp(lesson: Lesson) {
+  // createdAt с бэка — naive ISO без TZ; Date.parse трактует как local,
+  // единообразно для всех строк, поэтому сравнение между уроками корректно.
+  const parsed = lesson.createdAt ? Date.parse(lesson.createdAt) : Number.NaN;
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+export function compareLessonsByCreatedDesc(a: Lesson, b: Lesson) {
+  const diff = getCreatedTimestamp(b) - getCreatedTimestamp(a);
+
+  if (diff !== 0) {
+    return diff;
+  }
+
+  return b.id - a.id;
+}
+
+export interface HomeworkStack {
+  tutorStudentId: number;
+  studentName: string;
+  /** По убыванию createdAt: [0] — верхняя (самая свежая) карточка. */
+  lessons: Lesson[];
+}
+
+/**
+ * Стопки актуальных ДЗ по ученикам и плоский список погашенных.
+ * Актуальное = НЕ (проверено И ученику уже назначено более новое ДЗ).
+ * Непроверенное/неотправленное никогда не гаснет автоматически.
+ */
+export function buildHomeworkStacks(lessons: Lesson[]): {
+  active: HomeworkStack[];
+  settled: Lesson[];
+} {
+  const grouped = new Map<number, Lesson[]>();
+
+  for (const lesson of lessons) {
+    if (!hasHomeworkTask(lesson)) {
+      continue;
+    }
+
+    const current = grouped.get(lesson.tutorStudentId) || [];
+    current.push(lesson);
+    grouped.set(lesson.tutorStudentId, current);
+  }
+
+  const active: HomeworkStack[] = [];
+  const settled: Lesson[] = [];
+
+  for (const [tutorStudentId, group] of grouped) {
+    const ordered = [...group].sort(compareLessonsByCreatedDesc);
+    const stackLessons: Lesson[] = [];
+
+    ordered.forEach((lesson, index) => {
+      // index > 0 означает, что есть более новое Lesson с ДЗ (фильтр уже применён).
+      if (index > 0 && lesson.homeworkStatus === "checked") {
+        settled.push(lesson);
+      } else {
+        stackLessons.push(lesson);
+      }
+    });
+
+    active.push({
+      tutorStudentId,
+      studentName: stackLessons[0]?.studentName || "",
+      lessons: stackLessons,
+    });
+  }
+
+  active.sort((a, b) => compareLessonsByCreatedDesc(a.lessons[0], b.lessons[0]));
+  settled.sort(compareLessonsByCreatedDesc);
+
+  return { active, settled };
+}
+
+export function applyReviewToLesson(lesson: Lesson, review: HomeworkReview): Lesson {
+  return {
+    ...lesson,
+    homeworkStatus: "checked",
+    homeworkGrade: review.grade,
+    homeworkStars: review.starsAwarded,
+    checkedFile: review.checkedFiles[0] ?? lesson.checkedFile,
+    submission: lesson.submission
+      ? {
+          ...lesson.submission,
+          status: "checked",
+          comment: review.comment,
+          grade: review.grade,
+          starsAwarded: review.starsAwarded,
+          checkedFiles: review.checkedFiles,
+          checkedFileUrl: review.checkedFileUrl,
+          checkedFileName: review.checkedFileName,
+        }
+      : lesson.submission,
+  };
 }

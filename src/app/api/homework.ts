@@ -1,6 +1,7 @@
 import { apiConfig } from "./endpoints";
 import { apiRequest } from "./client";
 import { mapHomeworkReview } from "./mappers";
+import type { AiHomeworkHistoryItem, AiProgressReport, AiReviewState } from "../types/domain";
 
 export async function listPendingSubmissions() {
   const payload = await apiRequest<unknown[]>(apiConfig.tutor.pendingSubmissions);
@@ -37,4 +38,26 @@ export async function checkSubmission(
   });
 
   return mapHomeworkReview(payload);
+}
+
+export function getAiReviewState(lessonId: number) {
+  return apiRequest<AiReviewState>(apiConfig.tutor.aiReview(lessonId));
+}
+
+export function startAiReview(lessonId: number) {
+  return apiRequest<AiReviewState>(apiConfig.tutor.aiReview(lessonId), {
+    method: "POST",
+  });
+}
+
+export function getAiReviewHistory(lessonId: number) {
+  return apiRequest<AiHomeworkHistoryItem[]>(apiConfig.tutor.aiHistory(lessonId));
+}
+
+export function getAiReviewProgress(lessonId: number) {
+  return apiRequest<AiProgressReport>(apiConfig.tutor.aiProgress(lessonId));
+}
+
+export function getStudentAiReviewState(lessonId: number) {
+  return apiRequest<AiReviewState>(apiConfig.student.aiReview(lessonId));
 }
