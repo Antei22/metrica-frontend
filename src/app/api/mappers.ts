@@ -418,6 +418,7 @@ export function mapLesson(payload: unknown): Lesson {
       pick(record, "submission", "homework_submission", "last_submission"),
     ) ||
     mapHomeworkSubmission({
+      id: pick(record, "submission_id", "submissionId"),
       submission_file: pick(record, "submission_file", "submissionFile"),
       submission_files: pick(record, "submission_files", "submissionFiles"),
       file_url: asRecord(pick(record, "submission_file", "submissionFile"))
@@ -488,6 +489,7 @@ export function mapLesson(payload: unknown): Lesson {
     homeworkDeadlineMissed: asBoolean(
       pick(record, "homework_deadline_missed", "homeworkDeadlineMissed"),
     ),
+    createdAt: asString(pick(record, "created_at", "createdAt")),
     homeworkStatus: normalizeHomeworkStatus(
       pick(record, "homework_status", "homeworkStatus", "submission_status"),
       submission,

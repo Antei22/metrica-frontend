@@ -4,9 +4,9 @@ import type { UserRole } from "../types/domain";
 
 function LoadingScreen() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-        <p className="text-sm font-medium text-slate-500">Загружаем данные аккаунта...</p>
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-4">
+      <div className="w-full max-w-sm rounded-2xl border border-border bg-white p-8 text-center shadow-soft">
+        <p className="text-sm font-medium text-muted-foreground">Загружаем данные аккаунта...</p>
       </div>
     </div>
   );

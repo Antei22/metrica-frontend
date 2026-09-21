@@ -24,6 +24,7 @@ import { getErrorMessage } from "../lib/errors";
 import { formatDate, formatDateClock, formatDateTime, formatDayMonth, formatLessonTitle } from "../lib/format";
 import {
   getHomeworkStatusLabel,
+  hasHomeworkTask,
   HOMEWORK_FILE_ACCEPT,
   isHomeworkDeadlineMissed,
   isSubmittedAfterHomeworkDeadline,
@@ -65,24 +66,20 @@ function getActiveHomeworkLesson(lessons: Lesson[], nearestLesson: Lesson | null
   return [...candidates].sort(sortLessonsByDate)[0];
 }
 
-function hasHomeworkTask(lesson: Lesson) {
-  return Boolean(lesson.homeworkDeadline || lesson.homeworkTaskFiles.length > 0);
-}
-
-function getHomeworkStatusTextClass(lesson: Lesson) {
+function getHomeworkStatusPillClass(lesson: Lesson) {
   if (lesson.homeworkStatus === "checked") {
-    return "text-emerald-700";
+    return "border-success/20 bg-success-soft text-ink";
   }
 
   if (lesson.homeworkStatus === "sent") {
-    return "text-amber-700";
+    return "border-warning/20 bg-warning-soft text-ink";
   }
 
   if (isHomeworkDeadlineMissed(lesson)) {
-    return "text-rose-600";
+    return "border-danger/20 bg-danger-soft text-ink";
   }
 
-  return "text-slate-500";
+  return "border-border bg-panel text-muted-foreground";
 }
 
 function getHomeworkStatusText(lesson: Lesson) {
@@ -252,51 +249,56 @@ export function StudentDashboard() {
       {!loading && !error ? (
         <>
           {activeBonusTasks.length > 0 ? (
-            <section className="relative overflow-hidden rounded-[34px] bg-gradient-to-r from-rose-100 via-sky-100 to-indigo-100 p-2.5 shadow-[0_0_36px_rgba(251,113,133,0.22)]">
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-rose-200/50 via-transparent to-indigo-200/50 blur-2xl" />
-              <div className="relative rounded-[24px] bg-white px-6 py-5">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="flex size-11 items-center justify-center rounded-2xl bg-rose-50 text-rose-500">
-                      <Gift className="size-5" />
-                    </span>
-                    <div>
-                      <p className="text-lg font-semibold text-slate-900">
-                        Бонусные задания
-                      </p>
-                      <p className="text-sm text-slate-500">
-                        Активно: {activeBonusTasks.length}
-                      </p>
+            <section className="hw-glow hw-glow-brand rounded-[20px]">
+              <div className="brand-gradient-border homework-gradient-border">
+                <div className="relative rounded-2xl bg-white px-6 py-5">
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="flex size-11 items-center justify-center rounded-2xl bg-accent text-primary">
+                        <Gift className="size-5" />
+                      </span>
+                      <div>
+                        <p className="text-lg font-semibold text-foreground">
+                          Бонусные задания
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Активно: {activeBonusTasks.length}
+                        </p>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="grid flex-1 gap-3 lg:grid-cols-2">
-                    {activeBonusTasks.slice(0, 2).map((task) => (
-                      <div key={task.id} className="rounded-2xl bg-slate-50 px-4 py-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="font-medium text-slate-900">{task.title}</p>
-                            {task.description ? (
-                              <p className="mt-1 line-clamp-2 text-sm text-slate-500">
-                                {task.description}
-                              </p>
-                            ) : null}
-                            {task.dueDate ? (
-                              <p className="mt-2 text-xs text-slate-500">
-                                До {formatDate(task.dueDate)}
-                              </p>
+                    <div
+                      className={`grid flex-1 gap-3 ${
+                        activeBonusTasks.length > 1 ? "lg:grid-cols-2" : ""
+                      }`}
+                    >
+                      {activeBonusTasks.slice(0, 2).map((task) => (
+                        <div key={task.id} className="rounded-2xl bg-canvas px-4 py-3">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="font-medium text-foreground">{task.title}</p>
+                              {task.description ? (
+                                <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                                  {task.description}
+                                </p>
+                              ) : null}
+                              {task.dueDate ? (
+                                <p className="mt-2 text-xs text-muted-foreground">
+                                  До {formatDate(task.dueDate)}
+                                </p>
+                              ) : null}
+                            </div>
+                            {task.starRewardsEnabled ? (
+                              <StarValue value={task.stars} />
+                            ) : task.rewardTitle ? (
+                              <span className="rounded-full border border-success/20 bg-success-soft px-2 py-0.5 text-xs text-ink">
+                                {task.rewardTitle}
+                              </span>
                             ) : null}
                           </div>
-                          {task.starRewardsEnabled ? (
-                            <StarValue value={task.stars} />
-                          ) : task.rewardTitle ? (
-                            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                              {task.rewardTitle}
-                            </span>
-                          ) : null}
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -305,14 +307,14 @@ export function StudentDashboard() {
 
           <section className="grid gap-4 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)]">
             <div className="grid gap-4">
-              <Card className="h-full rounded-3xl border-slate-200 shadow-sm">
+              <Card className="h-full">
                 <CardContent className="flex h-full flex-col gap-4 p-5">
-                  <p className="text-lg font-semibold text-slate-400">Домашнее задание</p>
+                  <p className="text-lg font-semibold text-quiet">Домашнее задание</p>
                   {activeHomeworkLesson ? (
                     <div className="flex flex-1 flex-col gap-7">
                       <p
                         className={`max-w-full whitespace-nowrap text-2xl font-semibold leading-tight ${
-                          homeworkOverdue ? "text-rose-600" : "text-slate-900"
+                          homeworkOverdue ? "text-danger-foreground" : "text-foreground"
                         }`}
                       >
                         Дедлайн ДЗ:{" "}
@@ -322,8 +324,8 @@ export function StudentDashboard() {
                       </p>
 
                       <div className="mt-auto flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                        <div className="min-w-0 space-y-1 text-sm text-slate-500">
-                          <p className="font-medium text-slate-700">
+                        <div className="min-w-0 space-y-1 text-sm text-muted-foreground">
+                          <p className="font-medium text-foreground">
                             {formatLessonTitle(
                               activeHomeworkLesson.subject,
                               activeHomeworkLesson.topic,
@@ -345,7 +347,7 @@ export function StudentDashboard() {
                       </div>
                     </div>
                   ) : (
-                    <p className="text-sm text-slate-500">
+                    <p className="text-sm text-muted-foreground">
                       Актуального ДЗ пока нет.
                     </p>
                   )}
@@ -353,26 +355,26 @@ export function StudentDashboard() {
               </Card>
             </div>
 
-            <Card className="h-full rounded-3xl border-slate-200 shadow-sm">
+            <Card className="h-full">
               <CardContent className="flex h-full flex-col gap-4 p-5">
-                <p className="text-lg font-semibold text-slate-400">
+                <p className="text-lg font-semibold text-quiet">
                   Ближайшее занятие
                 </p>
                 {dashboardLesson ? (
                   <div className="flex flex-1 flex-col gap-7">
                     <div className="min-w-0">
-                      <p className="text-2xl font-semibold text-slate-900">
+                      <p className="text-2xl font-semibold text-foreground">
                         {formatLessonTitle(dashboardLesson.subject, dashboardLesson.topic)}
                       </p>
                     </div>
 
                     <div className="mt-auto flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
                       <div>
-                        <p className="inline-flex items-center gap-2 text-base font-semibold text-slate-900">
-                          <Clock3 className="size-4 text-slate-500" />
+                        <p className="inline-flex items-center gap-2 text-base font-semibold text-foreground">
+                          <Clock3 className="size-4 text-muted-foreground" />
                           {formatDateTime(dashboardLesson.date, dashboardLesson.time)}
                         </p>
-                        <p className="mt-1 text-sm text-slate-500">
+                        <p className="mt-1 text-sm text-muted-foreground">
                           Репетитор: {dashboardLesson.tutorName || "не указан"}
                         </p>
                       </div>
@@ -406,7 +408,7 @@ export function StudentDashboard() {
           </section>
 
           <section>
-            <Card className="rounded-3xl border-slate-200 shadow-sm">
+            <Card>
               <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <CardTitle>Последние занятия</CardTitle>
                 <Button onClick={() => navigate("/student/lessons")} size="sm" variant="outline">
@@ -415,7 +417,7 @@ export function StudentDashboard() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {recentLessons.length === 0 ? (
-                  <p className="rounded-2xl border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500">
+                  <p className="rounded-2xl border border-dashed border-quiet/40 px-4 py-6 text-sm text-muted-foreground">
                     Последних занятий пока нет.
                   </p>
                 ) : (
@@ -425,25 +427,25 @@ export function StudentDashboard() {
                     return (
                     <button
                       key={lesson.id}
-                      className="flex w-full flex-col gap-3 rounded-2xl border border-slate-200 p-4 text-left transition hover:border-slate-300 hover:shadow-sm sm:flex-row sm:items-center sm:justify-between"
+                      className="flex w-full flex-col gap-3 rounded-2xl border border-border p-4 text-left transition hover:border-quiet/60 hover:shadow-soft sm:flex-row sm:items-center sm:justify-between"
                       onClick={() => navigate(`/student/lessons/${lesson.id}`)}
                       type="button"
                     >
                       <div>
-                        <p className="font-medium text-slate-900">
+                        <p className="font-medium text-foreground">
                           {formatLessonTitle(lesson.subject, lesson.topic)}
                         </p>
-                        <p className="mt-1 text-sm text-slate-500">
+                        <p className="mt-1 text-sm text-muted-foreground">
                           {formatDateTime(lesson.date, lesson.time)}
                         </p>
                         {homeworkStatusVisible ? (
-                          <p
-                            className={`mt-2 text-sm font-semibold ${getHomeworkStatusTextClass(
+                          <span
+                            className={`mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs ${getHomeworkStatusPillClass(
                               lesson,
                             )}`}
                           >
                             {getHomeworkStatusText(lesson)}
-                          </p>
+                          </span>
                         ) : null}
                       </div>
                     </button>
@@ -474,14 +476,14 @@ export function StudentDashboard() {
                 />
               </div>
 
-              <Card className="rounded-3xl border-slate-200 shadow-sm">
+              <Card>
                 <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <CardTitle>Домашнее задание</CardTitle>
                   <span
-                    className={`rounded-full px-3 py-1 text-sm font-medium ${
+                    className={`rounded-full border px-2 py-0.5 text-xs ${
                       homeworkOverdue
-                        ? "bg-rose-100 text-rose-700"
-                        : "bg-slate-100 text-slate-700"
+                        ? "border-danger/20 bg-danger-soft text-ink"
+                        : "border-border bg-panel text-foreground"
                     }`}
                   >
                     Дедлайн:{" "}
@@ -491,8 +493,8 @@ export function StudentDashboard() {
                   </span>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                    <p className="text-sm text-slate-600">
+                  <div className="space-y-4 rounded-2xl border border-border bg-canvas p-5">
+                    <p className="text-sm text-muted-foreground">
                       Прикрепите PDF, изображение или документ с выполненным домашним заданием.
                     </p>
                     <Input
@@ -501,24 +503,24 @@ export function StudentDashboard() {
                       onChange={handleAddHomeworkFiles}
                       type="file"
                     />
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted-foreground">
                       Можно добавлять файлы в несколько подходов. Лишние файлы можно убрать перед отправкой.
                     </p>
 
                     {retainedSubmittedFiles.length > 0 ? (
                       <div className="space-y-2">
-                        <p className="text-sm text-slate-500">
+                        <p className="text-sm text-muted-foreground">
                           Дедлайн ДЗ:{" "}
                           {activeHomeworkLesson.homeworkDeadline
                             ? formatDate(activeHomeworkLesson.homeworkDeadline)
                             : "не задан"}
                         </p>
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
-                          <p className="font-medium text-slate-900">Решение ученика:</p>
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+                          <p className="font-medium text-foreground">Решение ученика:</p>
                           {activeHomeworkLesson.submission?.submittedAt ? (
                             <p
                               className={
-                                homeworkSubmittedLate ? "font-medium text-rose-600" : undefined
+                                homeworkSubmittedLate ? "font-medium text-danger-foreground" : undefined
                               }
                             >
                               Отправлено в{" "}
@@ -542,7 +544,7 @@ export function StudentDashboard() {
                           ))}
                         </div>
                         {activeHomeworkLesson.submission?.studentComment ? (
-                          <p className="rounded-2xl bg-white p-3 text-sm text-slate-600">
+                          <p className="rounded-2xl bg-white p-3 text-sm text-muted-foreground">
                             {activeHomeworkLesson.submission.studentComment}
                           </p>
                         ) : null}
@@ -551,19 +553,19 @@ export function StudentDashboard() {
 
                     {selectedHomeworkFiles.length > 0 ? (
                       <div className="space-y-2">
-                        <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+                        <p className="text-xs font-medium uppercase tracking-[0.2em] text-quiet">
                           Новые файлы для отправки
                         </p>
                         {selectedHomeworkFiles.map((file, index) => (
                           <div
                             key={getPendingFileKey(file)}
-                            className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-3"
+                            className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-quiet/40 bg-white px-4 py-3"
                           >
                             <div className="min-w-0">
-                              <p className="truncate text-sm font-medium text-slate-900">
+                              <p className="truncate text-sm font-medium text-foreground">
                                 {file.name}
                               </p>
-                              <p className="text-xs text-slate-500">{formatFileSize(file)}</p>
+                              <p className="text-xs text-muted-foreground">{formatFileSize(file)}</p>
                             </div>
                             <Button
                               onClick={() => removeSelectedHomeworkFile(index)}
@@ -580,7 +582,7 @@ export function StudentDashboard() {
 
                     <div className="space-y-2">
                       <label
-                        className="text-sm font-medium text-slate-900"
+                        className="text-sm font-medium text-foreground"
                         htmlFor="homework-comment"
                       >
                         Комментарий к ДЗ
@@ -596,7 +598,6 @@ export function StudentDashboard() {
                     </div>
 
                     <Button
-                      className="bg-slate-900 text-white hover:bg-slate-800"
                       disabled={
                         retainedSubmittedFiles.length + selectedHomeworkFiles.length === 0 ||
                         isSubmittingHomework

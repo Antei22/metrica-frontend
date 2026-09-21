@@ -93,25 +93,25 @@ export function InviteRegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(15,23,42,0.08),_transparent_45%),linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-10">
+    <div className="min-h-screen bg-[linear-gradient(180deg,var(--warm)_0%,var(--panel-blue)_100%)] px-4 py-10">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-md items-center justify-center">
-        <div className="w-full overflow-hidden rounded-[32px] border border-slate-200 bg-white p-6 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.45)] sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">
+        <div className="w-full overflow-hidden rounded-3xl border border-border bg-white p-6 shadow-float sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-quiet">
             Онлайн-платформа
           </p>
-          <h1 className="mt-2 text-2xl font-semibold text-slate-900">МЕТРИКА</h1>
+          <h1 className="mt-2 text-2xl font-semibold text-foreground">МЕТРИКА</h1>
 
           {loadState === "loading" ? (
-            <p className="mt-8 text-sm text-slate-500">Проверяем ссылку...</p>
+            <p className="mt-8 text-sm text-muted-foreground">Проверяем ссылку...</p>
           ) : null}
 
           {loadState === "invalid" ? (
             <div className="mt-8">
-              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-ink">
                 {loadError}
               </div>
               <Link
-                className="mt-6 inline-block text-sm font-medium text-slate-900 underline"
+                className="mt-6 inline-block text-sm font-medium text-foreground underline"
                 to="/"
               >
                 Перейти на страницу входа
@@ -121,11 +121,11 @@ export function InviteRegisterPage() {
 
           {loadState === "ready" && invite ? (
             registeredEmail ? (
-              <div className="mt-8 space-y-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-6 text-center">
-                <p className="text-base font-semibold text-emerald-900">
+              <div className="mt-8 space-y-4 rounded-2xl border border-success/20 bg-success-soft px-5 py-6 text-center">
+                <p className="text-base font-semibold text-ink">
                   Почти готово!
                 </p>
-                <p className="text-sm text-emerald-800">
+                <p className="text-sm text-ink">
                   Мы отправили письмо со ссылкой подтверждения на{" "}
                   <span className="font-medium">{registeredEmail}</span>. Перейдите по
                   ней, чтобы войти в аккаунт.
@@ -133,15 +133,15 @@ export function InviteRegisterPage() {
               </div>
             ) : (
               <>
-                <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                <div className="mt-6 rounded-2xl border border-border bg-panel px-4 py-3 text-sm text-muted-foreground">
                   <p>
-                    <span className="font-medium text-slate-900">{invite.tutorName}</span>{" "}
+                    <span className="font-medium text-foreground">{invite.tutorName}</span>{" "}
                     приглашает вас как «{ROLE_LABELS[invite.role]}»
                     {invite.studentName ? (
                       <>
                         {" "}
                         к ученику{" "}
-                        <span className="font-medium text-slate-900">
+                        <span className="font-medium text-foreground">
                           {invite.studentName}
                         </span>
                       </>
@@ -218,13 +218,13 @@ export function InviteRegisterPage() {
                   </div>
 
                   {formError ? (
-                    <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-ink">
                       {formError}
                     </div>
                   ) : null}
 
                   <Button
-                    className="mt-2 h-11 w-full rounded-full bg-slate-900 text-white hover:bg-slate-800"
+                    className="mt-2 h-11 w-full rounded-full"
                     disabled={isSubmitting}
                     type="submit"
                   >

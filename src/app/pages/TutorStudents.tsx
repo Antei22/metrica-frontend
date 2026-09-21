@@ -46,7 +46,7 @@ import {
   validateLessonForm,
 } from "../lib/formValidation";
 import { formatDateTime } from "../lib/format";
-import { isHomeworkDeadlineMissed } from "../lib/homework";
+import { getHomeworkStatusView, hasHomeworkTask } from "../lib/homework";
 import {
   getLatestPastLesson,
   getNearestUpcomingLesson,
@@ -61,16 +61,6 @@ import {
 } from "../lib/tutorLessonForm";
 import type { Lesson, LessonCollection, TutorStudent } from "../types/domain";
 
-type HomeworkStatusView = {
-  label: string;
-  className: string;
-  isPendingReview: boolean;
-};
-
-function hasHomeworkTask(lesson: Lesson) {
-  return Boolean(lesson.homeworkDeadline || lesson.homeworkTaskFiles.length > 0);
-}
-
 function getLatestHomeworkLesson(lessons: Lesson[]) {
   for (let index = lessons.length - 1; index >= 0; index -= 1) {
     const lesson = lessons[index];
@@ -81,38 +71,6 @@ function getLatestHomeworkLesson(lessons: Lesson[]) {
   }
 
   return null;
-}
-
-function getHomeworkStatusView(lesson: Lesson | null): HomeworkStatusView {
-  if (lesson?.homeworkStatus === "checked") {
-    return {
-      label: "Проверено",
-      className: "bg-emerald-100 text-emerald-700",
-      isPendingReview: false,
-    };
-  }
-
-  if (lesson?.homeworkStatus === "sent") {
-    return {
-      label: "На проверке",
-      className: "bg-amber-100 text-amber-700",
-      isPendingReview: true,
-    };
-  }
-
-  if (lesson && isHomeworkDeadlineMissed(lesson)) {
-    return {
-      label: "Еще не отправлено",
-      className: "bg-rose-50 text-rose-600",
-      isPendingReview: false,
-    };
-  }
-
-  return {
-    label: "Еще не отправлено",
-    className: "bg-slate-100 text-slate-600",
-    isPendingReview: false,
-  };
 }
 
 export function TutorStudents() {
@@ -475,17 +433,17 @@ export function TutorStudents() {
             <DialogTitle>Пригласить ученика</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-muted-foreground">
               Отправьте эту одноразовую ссылку ученику — он сам зарегистрируется и
               сразу появится у вас в списке, без ручного добавления по email.
             </p>
 
             {isCreatingInvite ? (
-              <p className="text-sm text-slate-500">Создаём ссылку...</p>
+              <p className="text-sm text-muted-foreground">Создаём ссылку...</p>
             ) : null}
 
             {inviteError ? (
-              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-ink">
                 {inviteError}
               </div>
             ) : null}
@@ -541,7 +499,7 @@ export function TutorStudents() {
             </div>
 
             {studentEmailError ? (
-              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-ink">
                 {studentEmailError}
               </div>
             ) : null}
@@ -551,7 +509,6 @@ export function TutorStudents() {
                 Отмена
               </Button>
               <Button
-                className="bg-slate-900 text-white hover:bg-slate-800"
                 disabled={isSubmitting}
                 type="submit"
               >
@@ -640,7 +597,7 @@ export function TutorStudents() {
             </div>
 
             {editStudentError ? (
-              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-ink">
                 {editStudentError}
               </div>
             ) : null}
@@ -649,7 +606,7 @@ export function TutorStudents() {
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
-                    className="text-red-600 hover:text-red-700"
+                    className="text-danger-foreground hover:text-danger-foreground"
                     disabled={!editingStudent || isDeletingStudent}
                     type="button"
                     variant="ghost"
@@ -668,7 +625,7 @@ export function TutorStudents() {
                   <AlertDialogFooter>
                     <AlertDialogCancel>Отмена</AlertDialogCancel>
                     <AlertDialogAction
-                      className="bg-red-600 text-white hover:bg-red-700"
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       disabled={isDeletingStudent}
                       onClick={() => void handleDeleteStudent()}
                       type="button"
@@ -688,7 +645,6 @@ export function TutorStudents() {
                   Отмена
                 </Button>
                 <Button
-                  className="bg-slate-900 text-white hover:bg-slate-800"
                   disabled={!editingStudent || isEditSubmitting}
                   type="submit"
                 >
@@ -745,18 +701,18 @@ export function TutorStudents() {
 
       {!loading && !error ? (
         <>
-          <Card className="rounded-3xl border-slate-200 shadow-sm">
+          <Card>
             <CardContent className="p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <p className="text-sm text-slate-500">Всего учеников</p>
-                  <p className="text-3xl font-semibold text-slate-900">{students.length}</p>
+                  <p className="text-sm text-muted-foreground">Всего учеников</p>
+                  <p className="text-3xl font-semibold text-foreground">{students.length}</p>
                 </div>
                 <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:max-w-2xl">
                   <div className="relative min-w-0 flex-1">
-                    <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-slate-400" />
+                    <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-quiet" />
                     <Input
-                      className="h-11 rounded-full border-slate-200 bg-slate-100 pl-11 pr-4 text-base shadow-none placeholder:text-slate-400 focus:bg-white"
+                      className="h-11 rounded-full border-border bg-panel pl-11 pr-4 text-base shadow-none placeholder:text-quiet focus:bg-white"
                       placeholder="Поиск"
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
@@ -765,7 +721,7 @@ export function TutorStudents() {
                   <div className="flex gap-2">
                     <Button
                       aria-label="Добавить ученика по email"
-                      className="rounded-full bg-slate-900 text-white hover:bg-slate-800"
+                      className="rounded-full"
                       onClick={() => setIsDialogOpen(true)}
                       size="icon"
                       title="Добавить ученика по email"
@@ -803,8 +759,8 @@ export function TutorStudents() {
           </Card>
 
           {lessonsWarning ? (
-            <Card className="rounded-3xl border-amber-200 bg-amber-50 shadow-sm">
-              <CardContent className="p-6 text-sm text-amber-800">{lessonsWarning}</CardContent>
+            <Card className="border-warning/20 bg-warning-soft">
+              <CardContent className="p-6 text-sm text-ink">{lessonsWarning}</CardContent>
             </Card>
           ) : null}
 
@@ -836,7 +792,7 @@ export function TutorStudents() {
                 return (
                   <Card
                     key={student.id}
-                    className="rounded-3xl border-slate-200 shadow-sm transition-transform hover:-translate-y-0.5"
+                    className="transition-transform hover:-translate-y-0.5"
                     onClick={() => navigate(`/tutor/students/${student.id}`)}
                     onKeyDown={(event) => handleCardKeyDown(event, student.id)}
                     role="button"
@@ -847,13 +803,13 @@ export function TutorStudents() {
                         <div>
                           <CardTitle>{student.fullName}</CardTitle>
                           {student.classInfo ? (
-                            <p className="mt-2 text-sm text-slate-500">
+                            <p className="mt-2 text-sm text-muted-foreground">
                               {student.classInfo}
                             </p>
                           ) : null}
                         </div>
                         <span
-                          className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${homeworkStatus.className}`}
+                          className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-medium ${homeworkStatus.className}`}
                         >
                           {homeworkStatus.label}
                         </span>
@@ -862,17 +818,17 @@ export function TutorStudents() {
                     <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                       <div className="space-y-2">
                         <div className="flex flex-wrap gap-2">
-                          <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                          <span className="inline-flex rounded-full bg-panel px-3 py-1 text-xs font-medium text-muted-foreground">
                             {studentLessons.length > 0
                               ? `Занятий: ${studentLessons.length}`
                               : "Создать занятие"}
                           </span>
                           {nearestLesson ? (
-                            <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                            <span className="inline-flex rounded-full bg-panel px-3 py-1 text-xs font-medium text-muted-foreground">
                               Ближайшее: {formatDateTime(nearestLesson.date, nearestLesson.time)}
                             </span>
                           ) : lastPastLesson ? (
-                            <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                            <span className="inline-flex rounded-full bg-panel px-3 py-1 text-xs font-medium text-muted-foreground">
                               Последнее: {formatDateTime(lastPastLesson.date, lastPastLesson.time)}
                             </span>
                           ) : null}
@@ -892,7 +848,6 @@ export function TutorStudents() {
                         </Button>
                         {homeworkStatus.isPendingReview ? (
                           <Button
-                            className="bg-slate-900 text-white hover:bg-slate-800"
                             onClick={(event) => {
                               event.stopPropagation();
                               navigate("/tutor/homework");

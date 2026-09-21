@@ -82,22 +82,22 @@ export function ParentLessonDetails() {
       ) : null}
 
       {!loading && !error && lesson ? (
-        <Card className="rounded-3xl border-slate-200 shadow-sm">
+        <Card>
           <CardContent className="space-y-6 p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-sm text-slate-500">Оценка за занятие</p>
+                <p className="text-sm text-muted-foreground">Оценка за занятие</p>
                 <div className="mt-2">
                   <StarValue value={lesson.homeworkGrade} />
                 </div>
               </div>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-muted-foreground">
                 {lesson.tutorName ? `Репетитор: ${lesson.tutorName}` : null}
               </p>
             </div>
 
-            <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
-              <p className="font-medium text-slate-900">Комментарий репетитора</p>
+            <div className="rounded-2xl bg-canvas p-4 text-sm text-muted-foreground">
+              <p className="font-medium text-foreground">Комментарий репетитора</p>
               <p className="mt-2 whitespace-pre-wrap">
                 {tutorComment || "Комментарий пока не добавлен."}
               </p>
@@ -105,7 +105,7 @@ export function ParentLessonDetails() {
 
             {lesson.parentMessageFiles.length ? (
               <div className="space-y-3">
-                <p className="text-sm font-medium text-slate-900">Файлы от репетитора</p>
+                <p className="text-sm font-medium text-foreground">Файлы от репетитора</p>
                 <div className="flex flex-col items-start gap-2">
                   {lesson.parentMessageFiles.map((file) => (
                     <FileLinkButton file={file} fallback="Открыть файл" key={file.id} />

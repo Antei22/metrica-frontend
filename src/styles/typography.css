@@ -1,0 +1,148 @@
+/* Типографика рабочего UI — DESIGN_SYSTEM.md §2.
+   Один вес (500); иерархия — размером и отрицательным letter-spacing:
+   чем крупнее текст, тем сильнее трекинг (-0.03em … -0.045em), тело — без трекинга. */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-synthesis: none;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+    line-height: 1.1;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+
+  h2 {
+    font-size: var(--text-2xl);
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  h3 {
+    font-size: var(--text-xl);
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+  }
+
+  h4 {
+    font-size: var(--text-lg);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+  }
+
+  p,
+  label,
+  button,
+  input,
+  select,
+  textarea {
+    font-size: var(--text-base);
+    line-height: 1.4;
+  }
+
+  /* §7 — все анимации должны иметь мгновенный fallback */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@utility eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--quiet);
+}
+
+@utility brand-gradient {
+  background: var(--brand-gradient);
+  color: var(--white);
+}
+
+/* 4px градиентная рамка карточки (StudentDashboard «Бонусные задания»,
+   TutorHomework «Отправлено/Проверено»). Окно градиента сдвинуто к циановому
+   концу (-50%…100%): --brand-gradient держит сплошной синий 58% длины — для
+   тонкой рамки слишком тёмно. `to bottom right`, а не 135deg — на широкой
+   карточке ход угол-в-угол. Внутренний контент: дочерний блок
+   `relative rounded-2xl bg-white`. */
+@utility brand-gradient-border {
+  position: relative;
+  padding: var(--brand-ring, 4px);
+  border-radius: 20px;
+  color: var(--white);
+  background: var(
+    --brand-border-gradient,
+    linear-gradient(to bottom right, var(--gradient-blue) -50%, var(--gradient-cyan) 100%)
+  );
+
+  &::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(to bottom, transparent, transparent, rgb(255 255 255 / 0.1));
+  }
+}
+
+/* Те же цвета и пропорции, что у полосы под хедером, но по диагонали. */
+@utility homework-gradient-border {
+  --brand-border-gradient: var(--brand-gradient-diagonal);
+}
+
+/* Компактный glow статус-карточек ДЗ (стопка HomeworkStack) — паттерн DESIGN_SYSTEM §4
+   (::after + border-color + blur), но отступает от §4 п.5 («glow не для плотного
+   рабочего UI»): отступление подтверждено лидом, дальность сильно урезана под
+   плотную стопку карточек (blur ≤ 12px против 26–43px у hero/CTA). */
+@utility hw-glow {
+  position: relative;
+  isolation: isolate;
+
+  &::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    z-index: -1;
+    inset: calc(-1 * var(--hw-glow-spread, 2px));
+    border-radius: inherit;
+    background: var(--hw-glow-color);
+    filter: blur(var(--hw-glow-blur, 8px));
+    opacity: var(--hw-glow-opacity, 0.4);
+  }
+}
+
+@utility hw-glow-brand {
+  --hw-glow-color: var(--brand-gradient-diagonal);
+}
+
+@utility hw-glow-danger {
+  --hw-glow-color: var(--danger);
+}
+
+@utility brand-gradient-text {
+  background: var(--brand-gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

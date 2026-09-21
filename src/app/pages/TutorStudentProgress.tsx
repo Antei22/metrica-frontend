@@ -609,7 +609,7 @@ export function TutorStudentProgress() {
           </Button>
           <Button
             aria-label="Создать занятие"
-            className="rounded-full bg-slate-900 text-white hover:bg-slate-800"
+            className="rounded-full"
             onClick={openCreateDialog}
             size="icon"
             title="Создать занятие"
@@ -650,17 +650,17 @@ export function TutorStudentProgress() {
             <DialogTitle>Пригласить родителя</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-muted-foreground">
               Отправьте эту одноразовую ссылку родителю — он зарегистрируется и сразу
               получит доступ к этому ученику, без отдельного одобрения запроса.
             </p>
 
             {isCreatingParentInvite ? (
-              <p className="text-sm text-slate-500">Создаём ссылку...</p>
+              <p className="text-sm text-muted-foreground">Создаём ссылку...</p>
             ) : null}
 
             {parentInviteError ? (
-              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <div className="rounded-2xl border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-ink">
                 {parentInviteError}
               </div>
             ) : null}
@@ -772,10 +772,10 @@ export function TutorStudentProgress() {
             <DialogTitle>Настройки ученика</DialogTitle>
           </DialogHeader>
           <div className="space-y-5">
-            <div className="flex items-center justify-between gap-4 rounded-2xl bg-slate-50 p-4">
+            <div className="flex items-center justify-between gap-4 rounded-2xl bg-canvas p-4">
               <div>
-                <p className="text-sm font-medium text-slate-900">Связь с родителем</p>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm font-medium text-foreground">Связь с родителем</p>
+                <p className="text-sm text-muted-foreground">
                   Родитель увидит выбранные занятия, оценку и комментарий репетитора.
                 </p>
               </div>
@@ -785,11 +785,11 @@ export function TutorStudentProgress() {
               />
             </div>
 
-            <div className="space-y-4 rounded-2xl bg-slate-50 p-4">
+            <div className="space-y-4 rounded-2xl bg-canvas p-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm font-medium text-slate-900">Накопление наград</p>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm font-medium text-foreground">Накопление наград</p>
+                  <p className="text-sm text-muted-foreground">
                     Оценки за проверенные ДЗ идут в общий прогресс.
                   </p>
                 </div>
@@ -825,7 +825,6 @@ export function TutorStudentProgress() {
             </div>
             <div className="flex justify-end">
               <Button
-                className="bg-slate-900 text-white hover:bg-slate-800"
                 disabled={isSavingGamification}
                 onClick={handleSaveGamification}
               >
@@ -847,7 +846,7 @@ export function TutorStudentProgress() {
             <DialogTitle>Сообщение родителю</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-muted-foreground">
               {parentMessageLesson
                 ? formatDateTime(parentMessageLesson.date, parentMessageLesson.time)
                 : ""}
@@ -879,7 +878,7 @@ export function TutorStudentProgress() {
                 <div className="space-y-2">
                   {parentMessageFiles.map((file, index) => (
                     <div
-                      className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-2 text-sm"
+                      className="flex items-center justify-between rounded-2xl bg-canvas px-3 py-2 text-sm"
                       key={`${file.name}-${file.lastModified}`}
                     >
                       <span className="truncate">{file.name}</span>
@@ -909,7 +908,6 @@ export function TutorStudentProgress() {
                 Назад к выбору занятия
               </Button>
               <Button
-                className="bg-slate-900 text-white hover:bg-slate-800"
                 disabled={isSendingParentMessage}
                 onClick={() => void handleSendParentMessage()}
               >
@@ -943,14 +941,14 @@ export function TutorStudentProgress() {
       {!loading && !error && currentStudent ? (
         <>
           {lessonsWarning ? (
-            <Card className="rounded-3xl border-amber-200 bg-amber-50 shadow-sm">
-              <CardContent className="p-6 text-sm text-amber-800">{lessonsWarning}</CardContent>
+            <Card className="border-warning/20 bg-warning-soft">
+              <CardContent className="p-6 text-sm text-ink">{lessonsWarning}</CardContent>
             </Card>
           ) : null}
 
           {gamificationWarning ? (
-            <Card className="rounded-3xl border-amber-200 bg-amber-50 shadow-sm">
-              <CardContent className="p-6 text-sm text-amber-800">
+            <Card className="border-warning/20 bg-warning-soft">
+              <CardContent className="p-6 text-sm text-ink">
                 {gamificationWarning}
               </CardContent>
             </Card>
@@ -960,20 +958,20 @@ export function TutorStudentProgress() {
             <>
 
               <section className="grid gap-4 sm:grid-cols-2">
-                <Card className="rounded-3xl border-slate-200 shadow-sm">
+                <Card>
                   <CardContent className="grid gap-4 p-6 sm:grid-cols-2">
                     <div>
-                      <p className="text-sm text-slate-500">Всего занятий</p>
-                      <p className="mt-3 text-3xl font-semibold text-slate-900">
+                      <p className="text-sm text-muted-foreground">Всего занятий</p>
+                      <p className="mt-3 text-3xl font-semibold text-foreground">
                         {studentLessons.length}
                       </p>
                     </div>
                     {currentStudent.parentContactEnabled ? (
                       <div>
-                        <p className="text-sm text-slate-500">
+                        <p className="text-sm text-muted-foreground">
                           {nearestLesson ? "Ближайшее занятие" : "Последнее занятие"}
                         </p>
-                        <p className="mt-3 text-lg font-semibold text-slate-900">
+                        <p className="mt-3 text-lg font-semibold text-foreground">
                           {nearestLesson
                             ? formatDateTime(nearestLesson.date, nearestLesson.time)
                             : lastPastLesson
@@ -986,12 +984,12 @@ export function TutorStudentProgress() {
                 </Card>
 
                 {!currentStudent.parentContactEnabled ? (
-                  <Card className="rounded-3xl border-slate-200 shadow-sm">
+                  <Card>
                     <CardContent className="space-y-3 p-6">
-                      <p className="text-sm text-slate-500">
+                      <p className="text-sm text-muted-foreground">
                         {nearestLesson ? "Ближайшее занятие" : "Последнее занятие"}
                       </p>
-                      <p className="text-lg font-semibold text-slate-900">
+                      <p className="text-lg font-semibold text-foreground">
                         {nearestLesson
                           ? formatDateTime(nearestLesson.date, nearestLesson.time)
                           : lastPastLesson
@@ -1002,15 +1000,15 @@ export function TutorStudentProgress() {
                   </Card>
                 ) : (
                   <button
-                    className="rounded-3xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                    className="rounded-2xl border border-border bg-white p-6 text-left shadow-soft transition hover:-translate-y-0.5 hover:shadow-soft"
                     onClick={() => setIsParentLessonSelectMode(true)}
                     type="button"
                   >
-                    <p className="text-sm text-slate-500">Связь с родителем</p>
-                    <p className="mt-3 text-2xl font-semibold text-slate-900">
+                    <p className="text-sm text-muted-foreground">Связь с родителем</p>
+                    <p className="mt-3 text-2xl font-semibold text-foreground">
                       Написать родителю
                     </p>
-                    <p className="mt-2 text-sm text-slate-500">
+                    <p className="mt-2 text-sm text-muted-foreground">
                       Выберите занятие из истории, чтобы отправить комментарий.
                     </p>
                   </button>
@@ -1018,21 +1016,21 @@ export function TutorStudentProgress() {
 
                 {isStarRewardsEnabled ? (
                   <Card
-                    className={`rounded-3xl shadow-sm ${
+                    className={`${
                       isGoalReached
-                        ? "border-amber-200 bg-gradient-to-r from-amber-100 via-yellow-50 to-orange-100"
-                        : "border-slate-200"
+                        ? "border-warning/20 bg-warning-soft"
+                        : "border-border"
                     }`}
                   >
                     <CardContent className="space-y-3 p-6">
-                      <p className="text-sm text-slate-500">Накоплено</p>
-                      <p className="text-2xl font-semibold text-slate-900">
+                      <p className="text-sm text-muted-foreground">Накоплено</p>
+                      <p className="text-2xl font-semibold text-foreground">
                         {earnedStars.toLocaleString("ru-RU")} /{" "}
                         {starsGoal ? starsGoal.toLocaleString("ru-RU") : "цель не задана"}
                       </p>
-                      <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                      <div className="h-2 overflow-hidden rounded-full bg-panel">
                         <div
-                          className="h-full rounded-full bg-amber-400"
+                          className="h-full rounded-full bg-star"
                           style={{ width: `${starProgress}%` }}
                         />
                       </div>
@@ -1041,17 +1039,17 @@ export function TutorStudentProgress() {
                 ) : null}
 
                 <Card
-                  className={`rounded-3xl border-slate-200 shadow-sm ${
+                  className={`${
                     isStarRewardsEnabled ? "" : "sm:col-span-2"
                   }`}
                 >
                   <CardContent className="flex h-full flex-col justify-between gap-4 p-6">
                     <div>
-                      <p className="flex items-center gap-2 text-sm text-slate-500">
-                        <Gift className="size-4 text-emerald-600" />
+                      <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Gift className="size-4 text-success" />
                         Бонусные задания
                       </p>
-                      <p className="mt-3 text-3xl font-semibold text-slate-900">
+                      <p className="mt-3 text-3xl font-semibold text-foreground">
                         {gamification.bonusTasks.filter((task) => !task.isCompleted).length}
                       </p>
                     </div>
@@ -1071,16 +1069,16 @@ export function TutorStudentProgress() {
               </section>
 
               {isBonusExpanded ? (
-                <Card className="rounded-3xl border-slate-200 shadow-sm">
+                <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Gift className="size-5 text-emerald-600" />
+                      <Gift className="size-5 text-success" />
                       Бонусные задания
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {!canAssignBonusTasks ? (
-                      <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                      <div className="rounded-2xl border border-warning/20 bg-warning-soft px-4 py-3 text-sm text-ink">
                         Сначала укажите и сохраните глобальную цель.
                       </div>
                     ) : null}
@@ -1139,7 +1137,6 @@ export function TutorStudentProgress() {
                           onChange={(event) => setBonusDueDate(event.target.value)}
                         />
                         <Button
-                          className="bg-slate-900 text-white hover:bg-slate-800"
                           disabled={!canAssignBonusTasks || isCreatingBonusTask}
                           type="submit"
                         >
@@ -1150,27 +1147,27 @@ export function TutorStudentProgress() {
 
                     <div className="space-y-2">
                       {gamification.bonusTasks.length === 0 ? (
-                        <p className="rounded-2xl border border-dashed border-slate-300 px-4 py-5 text-sm text-slate-500">
+                        <p className="rounded-2xl border border-dashed border-quiet/40 px-4 py-5 text-sm text-muted-foreground">
                           Бонусных заданий пока нет.
                         </p>
                       ) : (
                         gamification.bonusTasks.map((task) => (
                           <div
                             key={task.id}
-                            className="flex flex-col gap-3 rounded-2xl border border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between"
+                            className="flex flex-col gap-3 rounded-2xl border border-border p-4 sm:flex-row sm:items-center sm:justify-between"
                           >
                             <div>
-                              <p className="font-medium text-slate-900">{task.title}</p>
+                              <p className="font-medium text-foreground">{task.title}</p>
                               {task.description ? (
-                                <p className="mt-1 text-sm text-slate-500">
+                                <p className="mt-1 text-sm text-muted-foreground">
                                   {task.description}
                                 </p>
                               ) : null}
-                              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-quiet">
                                 {isStarRewardsEnabled ? (
                                   <StarValue value={task.stars} />
                                 ) : task.rewardTitle ? (
-                                  <span className="rounded-full bg-emerald-50 px-3 py-1 font-medium text-emerald-700">
+                                  <span className="rounded-full border border-success/20 bg-success-soft px-2 py-0.5 text-xs font-medium text-ink">
                                     {task.rewardTitle}
                                   </span>
                                 ) : null}
@@ -1187,7 +1184,7 @@ export function TutorStudentProgress() {
                               className={
                                 task.isCompleted
                                   ? ""
-                                  : "bg-emerald-600 text-white hover:bg-emerald-700"
+                                  : "bg-success text-ink hover:bg-success/90"
                               }
                             >
                               {task.isCompleted ? "Вернуть в работу" : "Начислить"}
@@ -1203,18 +1200,18 @@ export function TutorStudentProgress() {
           ) : null}
 
           {isParentLessonSelectMode ? (
-            <div className="fixed inset-0 z-20 bg-slate-950/45" />
+            <div className="fixed inset-0 z-20 bg-ink/45" />
           ) : null}
 
-          <section className="relative z-30 rounded-[32px] border border-slate-200 bg-white shadow-sm">
-            <div className="border-b border-slate-200 px-6 py-5">
+          <section className="relative z-30 rounded-2xl border border-border bg-white shadow-soft">
+            <div className="border-b border-border px-6 py-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-lg font-semibold text-slate-900">История занятий</p>
+                <p className="text-lg font-semibold text-foreground">История занятий</p>
                 {isParentLessonSelectMode ? (
                   <div className="flex items-center gap-3 text-sm">
-                    <span className="font-medium text-slate-900">Выберите занятие</span>
+                    <span className="font-medium text-foreground">Выберите занятие</span>
                     <button
-                      className="font-medium text-slate-500 transition hover:text-slate-900"
+                      className="font-medium text-muted-foreground transition hover:text-foreground"
                       onClick={() => setIsParentLessonSelectMode(false)}
                       type="button"
                     >

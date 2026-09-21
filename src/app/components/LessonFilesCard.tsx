@@ -27,22 +27,22 @@ export function LessonFilesCard({
   emptyMessage = "Пока нет прикрепленных файлов.",
 }: LessonFilesCardProps) {
   return (
-    <Card className="rounded-3xl border-slate-200 shadow-sm">
+    <Card>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {files.length === 0 ? (
-          <p className="text-sm text-slate-500">{emptyMessage}</p>
+          <p className="text-sm text-muted-foreground">{emptyMessage}</p>
         ) : (
           files.map((file) => (
             <div
               key={file.id}
-              className="flex flex-col gap-3 rounded-2xl border border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-3 rounded-2xl border border-border p-4 sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
-                <p className="font-medium text-slate-900">{file.name}</p>
-                <p className="mt-1 text-sm text-slate-500">{getFileKindLabel(file.kind)}</p>
+                <p className="font-medium text-foreground">{file.name}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{getFileKindLabel(file.kind)}</p>
               </div>
               {file.url ? (
                 <Button asChild variant="outline">
