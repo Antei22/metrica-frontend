@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { getInvitePreview, registerViaInvite, type InvitePreview } from "../api/auth";
+import { trackGoal } from "../lib/analytics";
 import { getErrorMessage } from "../lib/errors";
 import {
   FIELD_LIMITS,
@@ -84,6 +85,7 @@ export function InviteRegisterPage() {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
       });
+      trackGoal("register_via_invite", { role: invite?.role });
       setRegisteredEmail(trimmedEmail);
     } catch (error) {
       setFormError(getErrorMessage(error, "Не удалось создать аккаунт."));

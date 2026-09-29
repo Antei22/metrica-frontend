@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { uploadTutorFile } from "../api/files";
 import { createStudentInvite, type InviteLink } from "../api/invites";
+import { trackGoal } from "../lib/analytics";
 import { createTutorLesson, listTutorLessons } from "../api/lessons";
 import {
   addTutorStudent,
@@ -286,6 +287,7 @@ export function TutorStudents() {
 
     try {
       const link = await createStudentInvite();
+      trackGoal("invite_student_created");
       setInviteLink(link);
     } catch (createError) {
       setInviteError(getErrorMessage(createError, "Не удалось создать ссылку-приглашение."));

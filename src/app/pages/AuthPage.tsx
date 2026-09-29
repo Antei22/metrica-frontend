@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router";
 import { resendVerification } from "../api/auth";
 import { ApiError } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
+import { trackGoal } from "../lib/analytics";
 import { getErrorMessage } from "../lib/errors";
 import {
   FIELD_LIMITS,
@@ -63,6 +64,7 @@ export function AuthPage() {
 
     try {
       const user = await login(loginEmail.trim(), loginPassword);
+      trackGoal("login", { role: user.role });
       navigate(redirectPath || getHomePathForRole(user.role), { replace: true });
     } catch (error) {
       if (error instanceof ApiError && error.detail === "EMAIL_NOT_VERIFIED") {
@@ -112,6 +114,7 @@ export function AuthPage() {
         lastName: registerLastName.trim(),
         role: registerRole,
       });
+      trackGoal("register", { role: registerRole });
       // Регистрация больше не логинит сразу — почту нужно подтвердить письмом.
       setRegisteredEmail(email);
     } catch (error) {

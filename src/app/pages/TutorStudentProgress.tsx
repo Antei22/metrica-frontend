@@ -28,6 +28,7 @@ import {
 import { listTutorStudents, updateTutorStudent } from "../api/students";
 import { AppLayout } from "../components/AppLayout";
 import { createParentInvite, type InviteLink } from "../api/invites";
+import { trackGoal } from "../lib/analytics";
 import { EmptyState, ErrorState, LoadingState } from "../components/DataState";
 import { LessonProgressTimeline } from "../components/LessonProgressTimeline";
 import { StarValue } from "../components/StarValue";
@@ -302,6 +303,7 @@ export function TutorStudentProgress() {
 
     try {
       const link = await createParentInvite(id);
+      trackGoal("invite_parent_created");
       setParentInviteLink(link);
     } catch (createError) {
       setParentInviteError(

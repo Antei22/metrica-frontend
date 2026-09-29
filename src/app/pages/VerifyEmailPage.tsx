@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { useAuth } from "../auth/AuthContext";
+import { trackGoal } from "../lib/analytics";
 import { getErrorMessage } from "../lib/errors";
 import { getHomePathForRole } from "../lib/routes";
 
@@ -31,6 +32,7 @@ export function VerifyEmailPage() {
     verifyEmail(token)
       .then((user) => {
         setState("success");
+        trackGoal("email_verified", { role: user.role });
         setTimeout(() => {
           navigate(getHomePathForRole(user.role), { replace: true });
         }, 1500);

@@ -1,6 +1,7 @@
 import { Navigate, createBrowserRouter } from "react-router";
 import { useAuth } from "./auth/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { initMetrika, trackPageView } from "./lib/analytics";
 import { getHomePathForRole } from "./lib/routes";
 import { AuthPage } from "./pages/AuthPage";
 import { InviteRegisterPage } from "./pages/InviteRegisterPage";
@@ -102,3 +103,17 @@ export const router = createBrowserRouter([
     element: <Navigate replace to="/" />,
   },
 ]);
+
+// SPA не делает полных перезагрузок страницы, поэтому стандартный
+// сниппет Метрики не увидит переходы между разделами сам по себе —
+// шлём просмотр вручную при каждой смене маршрута.
+initMetrika();
+let lastTrackedPath = "";
+router.subscribe((state) => {
+  const path = state.location.pathname + state.location.search;
+  if (path === lastTrackedPath) {
+    return;
+  }
+  lastTrackedPath = path;
+  trackPageView(path);
+});
