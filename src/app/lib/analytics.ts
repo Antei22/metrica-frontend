@@ -9,7 +9,7 @@ declare global {
 }
 
 const COUNTER_ID_RAW = import.meta.env.VITE_YANDEX_METRIKA_ID as string | undefined;
-const COUNTER_ID = COUNTER_ID_RAW ? Number(COUNTER_ID_RAW) : null;
+const COUNTER_ID = Number(COUNTER_ID_RAW || 113180784);
 
 let isInitialized = false;
 
@@ -35,11 +35,21 @@ export function initMetrika(): void {
     script.async = true;
     script.src = r;
     firstScript.parentNode?.insertBefore(script, firstScript);
-  })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+  })(
+    window,
+    document,
+    "script",
+    `https://mc.yandex.ru/metrika/tag.js?id=${COUNTER_ID}`,
+    "ym",
+  );
   /* eslint-enable */
 
   window.ym?.(COUNTER_ID, "init", {
+    ssr: true,
     clickmap: true,
+    ecommerce: "dataLayer",
+    referrer: document.referrer,
+    url: location.href,
     trackLinks: true,
     accurateTrackBounce: true,
     webvisor: true,
