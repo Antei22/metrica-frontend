@@ -1,4 +1,4 @@
-import { Copy, Plus, Search, Settings, Trash2, UserPlus } from "lucide-react";
+import { Copy, Plus, RefreshCw, Search, Settings, Trash2, UserPlus } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -120,7 +120,7 @@ export function TutorStudents() {
     }
 
     return students.filter((student) =>
-      [student.fullName, student.classInfo]
+      [student.fullName, student.email, student.classInfo]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
@@ -179,6 +179,32 @@ export function TutorStudents() {
 
   useEffect(() => {
     void loadStudentsPageData();
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    let refreshing = false;
+
+    async function refreshStudentsOnReturn() {
+      if (document.visibilityState !== "visible" || refreshing) return;
+      refreshing = true;
+      try {
+        const nextStudents = await listTutorStudents();
+        if (active) setStudents(nextStudents);
+      } catch {
+        // Keep the current list on a background network failure; manual refresh can retry.
+      } finally {
+        refreshing = false;
+      }
+    }
+
+    window.addEventListener("focus", refreshStudentsOnReturn);
+    document.addEventListener("visibilitychange", refreshStudentsOnReturn);
+    return () => {
+      active = false;
+      window.removeEventListener("focus", refreshStudentsOnReturn);
+      document.removeEventListener("visibilitychange", refreshStudentsOnReturn);
+    };
   }, []);
 
   function updateCreateForm<K extends keyof LessonFormValues>(
@@ -715,12 +741,24 @@ export function TutorStudents() {
                     <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-quiet" />
                     <Input
                       className="h-11 rounded-full border-border bg-panel pl-11 pr-4 text-base shadow-none placeholder:text-quiet focus:bg-white"
-                      placeholder="Поиск"
+                      aria-label="Поиск учеников"
+                      placeholder="Имя, email или класс"
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
                     />
                   </div>
                   <div className="flex gap-2">
+                    <Button
+                      aria-label="Обновить список учеников"
+                      className="rounded-full"
+                      onClick={() => void loadStudentsPageData()}
+                      size="icon"
+                      title="Обновить список учеников"
+                      type="button"
+                      variant="outline"
+                    >
+                      <RefreshCw aria-hidden="true" className="size-5" />
+                    </Button>
                     <Button
                       aria-label="Добавить ученика по email"
                       className="rounded-full"
