@@ -54,6 +54,7 @@ export function getDefaultCreateLessonFormValues(
     subject: "",
     topic: "",
     meetLink: getStoredMeetLink(),
+    homeworkText: "",
     homeworkDeadline: "",
   };
 }
@@ -103,6 +104,7 @@ export function buildLessonPayload(
     subject: form.subject.trim(),
     topic: form.topic.trim(),
     meetLink: form.meetLink.trim(),
+    homeworkText: form.homeworkText.trim(),
     homeworkDeadline: form.homeworkDeadline,
     materialFileIds,
     homeworkTaskFileIds,
@@ -117,6 +119,7 @@ export function getLessonFormValues(lesson: Lesson): LessonFormValues {
     subject: lesson.subject || "",
     topic: lesson.topic || "",
     meetLink: lesson.meetLink || "",
+    homeworkText: lesson.homeworkText || "",
     homeworkDeadline: lesson.homeworkDeadline || "",
   };
 }

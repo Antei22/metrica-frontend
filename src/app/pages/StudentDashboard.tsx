@@ -45,7 +45,7 @@ function getActiveHomeworkLesson(lessons: Lesson[], nearestLesson: Lesson | null
   const candidates = lessons.filter(
     (lesson) =>
       lesson.homeworkStatus !== "checked" &&
-      (lesson.homeworkDeadline || lesson.homeworkTaskFiles.length > 0),
+      (lesson.homeworkText?.trim() || lesson.homeworkDeadline || lesson.homeworkTaskFiles.length > 0),
   );
 
   if (candidates.length === 0) {
@@ -471,7 +471,7 @@ export function StudentDashboard() {
                   title="Материалы занятия"
                 />
                 <LessonFilesCard
-                  files={activeHomeworkLesson.homeworkTaskFiles}
+                  files={activeHomeworkLesson.homeworkTaskFiles} text={activeHomeworkLesson.homeworkText}
                   title="Материалы домашнего задания"
                 />
               </div>
@@ -531,7 +531,7 @@ export function StudentDashboard() {
                         <div className="flex flex-col items-start gap-2">
                           {retainedSubmittedFiles.map((file) => (
                             <div className="flex max-w-full items-center gap-2" key={file.id}>
-                              <FileLinkButton file={file} fallback="Открыть файл" />
+                              <FileLinkButton file={file} files={retainedSubmittedFiles} fallback="Открыть файл" />
                               <Button
                                 onClick={() => removeRetainedSubmittedFile(file.id)}
                                 size="icon"

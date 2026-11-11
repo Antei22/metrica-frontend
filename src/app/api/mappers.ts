@@ -482,6 +482,7 @@ export function mapLesson(payload: unknown): Lesson {
     time: asString(pick(record, "time", "lesson_time", "lessonTime")),
     topic: asString(pick(record, "topic", "lesson_topic", "lessonTopic")),
     meetLink: asString(pick(record, "meet_link", "meetLink", "meeting_link")),
+    homeworkText: asString(pick(record, "homework_text", "homeworkText")),
     homeworkDone: asBoolean(pick(record, "homework_done", "homeworkDone")),
     homeworkDeadline: asString(
       pick(record, "homework_deadline", "homeworkDeadline"),

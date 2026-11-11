@@ -10,6 +10,7 @@ export interface TutorLessonInput {
   subject: string;
   topic: string;
   meetLink: string;
+  homeworkText: string;
   homeworkDeadline: string;
   materialFileIds?: number[];
   homeworkTaskFileIds?: number[];
@@ -59,6 +60,7 @@ function buildLessonPayload(input: TutorLessonInput) {
     subject: input.subject || null,
     topic: input.topic,
     meet_link: input.meetLink || null,
+    homework_text: input.homeworkText.trim() || null,
     homework_deadline: input.homeworkDeadline || null,
   };
 

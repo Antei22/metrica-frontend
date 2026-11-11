@@ -1,6 +1,6 @@
 import { ExternalLink, Pencil, Trash2 } from "lucide-react";
 import type { ReactNode } from "react";
-import { resolveApiUrl } from "../../api/client";
+import { FileLinkButton } from "../FileLinkButton";
 import { formatDate, formatDateTime } from "../../lib/format";
 import type { Lesson } from "../../types/domain";
 import { AiHomeworkReportViewer } from "../AiHomeworkReportViewer";
@@ -61,6 +61,11 @@ export function TutorLessonDetailsDialog({
   if (!lesson) {
     return null;
   }
+
+  const submittedFiles = lesson.submission?.files || [];
+  const checkedFiles = lesson.submission?.checkedFiles.length
+    ? lesson.submission.checkedFiles
+    : lesson.checkedFile ? [lesson.checkedFile] : [];
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
@@ -130,7 +135,7 @@ export function TutorLessonDetailsDialog({
         <div className="grid gap-4 xl:grid-cols-2">
           <LessonFilesCard files={lesson.materials} title="Материалы занятия" />
           <LessonFilesCard
-            files={lesson.homeworkTaskFiles}
+            files={lesson.homeworkTaskFiles} text={lesson.homeworkText}
             title="Материалы домашнего задания"
           />
         </div>
@@ -144,38 +149,26 @@ export function TutorLessonDetailsDialog({
           <div className="mt-4 space-y-3">
             <div className="rounded-2xl border border-border p-4">
               <p className="text-sm font-medium text-foreground">Решение ученика</p>
-              {lesson.submission?.fileUrl ? (
-                <Button asChild className="mt-3" variant="outline">
-                  <a
-                    href={resolveApiUrl(lesson.submission.fileUrl)}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    Открыть файл
-                  </a>
-                </Button>
-              ) : (
-                <p className="mt-2 text-sm text-muted-foreground">Файл еще не отправлен.</p>
-              )}
+              {submittedFiles.length ? (
+                <div className="mt-3 flex flex-col items-start gap-2">
+                  {submittedFiles.map((file) => (
+                    <FileLinkButton key={file.id} file={file} files={submittedFiles} fallback="Открыть решение" />
+                  ))}
+                </div>
+              ) : <p className="mt-2 text-sm text-muted-foreground">Файл еще не отправлен.</p>}
             </div>
 
             <AiHomeworkReportViewer audience="tutor" lessonId={lesson.id} />
 
             <div className="rounded-2xl border border-border p-4">
               <p className="text-sm font-medium text-foreground">Проверенный файл</p>
-              {lesson.checkedFile?.url ? (
-                <Button asChild className="mt-3" variant="outline">
-                  <a
-                    href={resolveApiUrl(lesson.checkedFile.url)}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    Открыть файл с правками
-                  </a>
-                </Button>
-              ) : (
-                <p className="mt-2 text-sm text-muted-foreground">Проверенный файл не прикреплен.</p>
-              )}
+              {checkedFiles.length ? (
+                <div className="mt-3 flex flex-col items-start gap-2">
+                  {checkedFiles.map((file) => (
+                    <FileLinkButton key={file.id} file={file} files={checkedFiles} fallback="Открыть проверенный файл" />
+                  ))}
+                </div>
+              ) : <p className="mt-2 text-sm text-muted-foreground">Проверенный файл не прикреплен.</p>}
             </div>
           </div>
 

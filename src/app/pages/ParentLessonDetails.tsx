@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router";
 import { getParentLesson } from "../api/parent";
 import { AppLayout } from "../components/AppLayout";
 import { EmptyState, ErrorState, LoadingState } from "../components/DataState";
+import { HomeworkText } from "../components/HomeworkText";
 import { FileLinkButton } from "../components/FileLinkButton";
 import { StarValue } from "../components/StarValue";
 import { Button } from "../components/ui/button";
@@ -103,12 +104,13 @@ export function ParentLessonDetails() {
               </p>
             </div>
 
+            <HomeworkText text={lesson.homeworkText} />
             {lesson.parentMessageFiles.length ? (
               <div className="space-y-3">
                 <p className="text-sm font-medium text-foreground">Файлы от репетитора</p>
                 <div className="flex flex-col items-start gap-2">
                   {lesson.parentMessageFiles.map((file) => (
-                    <FileLinkButton file={file} fallback="Открыть файл" key={file.id} />
+                    <FileLinkButton file={file} files={lesson.parentMessageFiles} fallback="Открыть файл" key={file.id} />
                   ))}
                 </div>
               </div>

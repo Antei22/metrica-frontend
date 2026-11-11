@@ -209,37 +209,47 @@ export function ReviewResult({ result, onUseSummary }: { result: AiHomeworkResul
       <section>
         <h3>Разбор заданий</h3>
         {result.tasks.length > 0 ? (
-          <Accordion className="mt-3 rounded-2xl border border-border px-4" collapsible type="single">
+          <div className="mt-3 space-y-3">
             {result.tasks.map((task, index) => (
-              <AccordionItem key={`${task.task_label}-${index}`} value={`task-${index}`}>
-                <AccordionTrigger>
-                  <span className="flex flex-wrap items-center gap-2">
-                    <span>{task.task_label || `Задание ${index + 1}`}</span>
-                    <Badge variant={task.is_correct ? "success" : "danger"}>
-                      {task.is_correct ? "Верно" : "Есть ошибки"}
-                    </Badge>
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="space-y-3">
-                  <div className="rounded-xl bg-canvas p-4">
-                    <p className="text-xs uppercase tracking-[0.13em] text-quiet">Распознанное решение</p>
-                    <p className="mt-2 whitespace-pre-wrap text-sm text-foreground">{task.transcription}</p>
-                  </div>
+              <section className="rounded-2xl border border-border p-4" key={`${task.task_label}-${index}`}>
+                <Accordion collapsible type="single">
+                  <AccordionItem value={`task-${index}`}>
+                    <AccordionTrigger>
+                      <span className="flex flex-wrap items-center gap-2">
+                        <span>{task.task_label || `Задание ${index + 1}`}</span>
+                        <Badge variant={task.is_correct ? "success" : "danger"}>
+                          {task.is_correct ? "Верно" : "Есть ошибки"}
+                        </Badge>
+                      </span>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="rounded-xl bg-canvas p-4">
+                        <p className="text-xs uppercase tracking-[0.13em] text-quiet">Распознанное решение</p>
+                        <p className="mt-2 whitespace-pre-wrap text-sm text-foreground">{task.transcription}</p>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+                <div className="space-y-3">
                   {task.errors.map((error, errorIndex) => (
                     <div className="rounded-xl border border-danger/20 bg-danger-soft p-4" key={`${error.location}-${errorIndex}`}>
                       <div className="flex flex-wrap gap-2">
                         <Badge variant="danger">{severityLabel(error.severity)}</Badge>
                         <Badge variant="secondary">{error.topic}</Badge>
                       </div>
-                      <p className="mt-3 text-sm text-foreground">{error.explanation}</p>
-                      <p className="mt-2 text-sm text-muted-foreground">Ученик написал: {error.student_wrote}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">Правильно: {error.correct}</p>
+                      <p className="mt-3 whitespace-pre-wrap text-sm text-foreground">
+                        <strong>Причина ошибки: </strong>
+                        {error.explanation?.trim() || "ИИ не указал причину ошибки. Сравните решение с правильным ответом и уточните у репетитора."}
+                      </p>
+                      {error.location ? <p className="mt-2 text-sm">Где: {error.location}</p> : null}
+                      <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">Ученик написал: {error.student_wrote}</p>
+                      <p className="mt-1 whitespace-pre-wrap text-sm text-muted-foreground">Правильно: {error.correct}</p>
                     </div>
                   ))}
-                </AccordionContent>
-              </AccordionItem>
+                </div>
+              </section>
             ))}
-          </Accordion>
+          </div>
         ) : (
           <p className="mt-2 text-sm text-muted-foreground">Задания не распознаны.</p>
         )}

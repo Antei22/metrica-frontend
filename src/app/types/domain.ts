@@ -72,6 +72,7 @@ export interface Lesson {
   topic: string | null;
   meetLink: string | null;
   homeworkDone: boolean;
+  homeworkText: string | null;
   homeworkDeadline: string | null;
   homeworkDeadlineMissed: boolean;
   createdAt: string | null;

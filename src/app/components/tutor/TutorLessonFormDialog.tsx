@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
+import { Textarea } from "../ui/textarea";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 
@@ -24,6 +25,7 @@ export interface LessonFormValues {
   subject: string;
   topic: string;
   meetLink: string;
+  homeworkText: string;
   homeworkDeadline: string;
 }
 
@@ -34,6 +36,7 @@ export const initialLessonFormValues: LessonFormValues = {
   subject: "",
   topic: "",
   meetLink: "",
+  homeworkText: "",
   homeworkDeadline: "",
 };
 
@@ -331,6 +334,15 @@ export function TutorLessonFormDialog({
               onRemove={onRemoveHomeworkFile}
               title="Новые файлы ДЗ для загрузки"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="lesson-homework-text">Текст домашнего задания и ссылки</Label>
+            <Textarea id="lesson-homework-text" maxLength={10000} rows={5}
+              value={form.homeworkText}
+              onChange={(event) => onFormChange("homeworkText", event.target.value)}
+              placeholder="Опишите задание или вставьте ссылки на упражнения. Файлы необязательны." />
+            <p className="text-xs text-muted-foreground">Ссылки https:// и http:// будут кликабельны у ученика.</p>
           </div>
 
           <div className="space-y-2">

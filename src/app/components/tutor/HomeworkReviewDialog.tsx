@@ -9,6 +9,7 @@ import { getErrorMessage } from "../../lib/errors";
 import { formatDate } from "../../lib/format";
 import { getHomeworkCardState, HOMEWORK_FILE_ACCEPT } from "../../lib/homework";
 import type { HomeworkReview, Lesson, LessonMaterial } from "../../types/domain";
+import { HomeworkText } from "../HomeworkText";
 import { FileLinkButton } from "../FileLinkButton";
 import { StarRatingInput } from "../StarRatingInput";
 import { Button } from "../ui/button";
@@ -60,12 +61,13 @@ function HomeworkTaskInfo({ lesson, compact }: { lesson: Lesson; compact: boolea
         </>
       ) : null}
 
+      <HomeworkText text={lesson.homeworkText} />
       <div className="mt-3">
         <p className="font-medium text-foreground">Файлы задания:</p>
         {lesson.homeworkTaskFiles.length > 0 ? (
           <div className="mt-2 flex max-w-full flex-col items-start gap-2">
             {lesson.homeworkTaskFiles.map((file) => (
-              <FileLinkButton file={file} fallback="Открыть файл" key={file.id} />
+              <FileLinkButton file={file} files={lesson.homeworkTaskFiles} fallback="Открыть файл" key={file.id} />
             ))}
           </div>
         ) : (

@@ -186,7 +186,7 @@ export function LessonDetails() {
         <>
           <div className="grid gap-6 xl:grid-cols-2">
             <LessonFilesCard files={lesson.materials} title="Материалы занятия" />
-            <LessonFilesCard files={lesson.homeworkTaskFiles} title="Материалы домашнего задания" />
+            <LessonFilesCard files={lesson.homeworkTaskFiles} text={lesson.homeworkText} title="Материалы домашнего задания" />
           </div>
 
           <Card>
@@ -217,7 +217,7 @@ export function LessonDetails() {
                       </div>
                       <div className="flex flex-col items-start gap-2">
                         {submittedFiles.map((file) => (
-                          <FileLinkButton file={file} fallback="Открыть мое решение" key={file.id} />
+                          <FileLinkButton file={file} files={submittedFiles} fallback="Открыть мое решение" key={file.id} />
                         ))}
                       </div>
                       {lesson.submission?.studentComment ? (
@@ -238,7 +238,7 @@ export function LessonDetails() {
                     </p>
                     <div className="flex flex-col items-start gap-2">
                       {checkedFiles.map((file) => (
-                        <FileLinkButton file={file} fallback="Открыть проверенный файл" key={file.id} />
+                        <FileLinkButton file={file} files={checkedFiles} fallback="Открыть проверенный файл" key={file.id} />
                       ))}
                       <StarValue value={lesson.homeworkGrade} />
                     </div>
@@ -299,7 +299,7 @@ export function LessonDetails() {
                       <div className="flex flex-col items-start gap-2">
                         {retainedSubmittedFiles.map((file) => (
                           <div className="flex max-w-full items-center gap-2" key={file.id}>
-                            <FileLinkButton file={file} fallback="Открыть файл" />
+                            <FileLinkButton file={file} files={retainedSubmittedFiles} fallback="Открыть файл" />
                             <Button
                               onClick={() => removeRetainedSubmittedFile(file.id)}
                               size="icon"

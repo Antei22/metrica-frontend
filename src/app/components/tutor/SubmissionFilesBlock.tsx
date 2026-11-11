@@ -44,7 +44,7 @@ export function SubmissionFilesBlock({
       </div>
       <div className="flex max-w-full flex-col items-start gap-2">
         {files.map((file) => (
-          <FileLinkButton file={file} fallback="Открыть файл" key={file.id} />
+          <FileLinkButton file={file} files={files} fallback="Открыть файл" key={file.id} />
         ))}
       </div>
     </div>
