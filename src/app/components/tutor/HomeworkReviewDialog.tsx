@@ -1,10 +1,11 @@
 import { FileUp, X } from "lucide-react";
 import type { ChangeEvent } from "react";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { toast } from "sonner";
 import { resolveApiUrl } from "../../api/client";
 import { uploadTutorFile } from "../../api/files";
 import { checkSubmission } from "../../api/homework";
+import { isAnnotatablePhoto } from "../../lib/photoAnnotations";
 import { getErrorMessage } from "../../lib/errors";
 import { formatDate } from "../../lib/format";
 import { getHomeworkCardState, HOMEWORK_FILE_ACCEPT } from "../../lib/homework";
@@ -20,6 +21,8 @@ import { Textarea } from "../ui/textarea";
 import { HomeworkBadge } from "./HomeworkCard";
 import { AiHomeworkReviewControl } from "./AiHomeworkReviewControl";
 import { SubmissionFilesBlock } from "./SubmissionFilesBlock";
+
+const PhotoAnnotationEditor = lazy(() => import("./PhotoAnnotationEditor"));
 
 function getPendingFileKey(file: File) {
   return `${file.name}-${file.size}-${file.lastModified}`;
@@ -100,6 +103,10 @@ function HomeworkReviewForm({
   );
   const [reviewFiles, setReviewFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [annotationFiles, setAnnotationFiles] = useState<Record<string, File>>({});
+  const [editingPhoto, setEditingPhoto] = useState<LessonMaterial | null>(null);
+  const pendingReviewFiles = [...reviewFiles, ...Object.values(annotationFiles)];
+  const photos = selectedSubmission.files.filter(isAnnotatablePhoto);
 
   function handleAddReviewFiles(event: ChangeEvent<HTMLInputElement>) {
     const nextFiles = Array.from(event.target.files || []);
@@ -118,9 +125,16 @@ function HomeworkReviewForm({
   }
 
   function removeReviewFile(index: number) {
-    setReviewFiles((currentFiles) =>
-      currentFiles.filter((_, fileIndex) => fileIndex !== index),
-    );
+    if (index < reviewFiles.length) {
+      setReviewFiles((currentFiles) => currentFiles.filter((_, fileIndex) => fileIndex !== index));
+    } else {
+      const key = Object.keys(annotationFiles)[index - reviewFiles.length];
+      setAnnotationFiles((current) => {
+        const next = { ...current };
+        delete next[key];
+        return next;
+      });
+    }
   }
 
   async function handleCheckSubmission() {
@@ -133,7 +147,7 @@ function HomeworkReviewForm({
 
     try {
       const checkedFileRefs = await Promise.all(
-        reviewFiles.map((file) => uploadTutorFile(file)),
+        pendingReviewFiles.map((file) => uploadTutorFile(file)),
       );
       const retainedReviewFileIds = retainedReviewFiles
         .map((file) => file.fileId)
@@ -188,6 +202,30 @@ function HomeworkReviewForm({
           </p>
         ) : null}
       </div>
+
+      {photos.length > 0 ? (
+        <div className="space-y-2 rounded-2xl border border-border p-4">
+          <p className="text-sm font-medium text-foreground">Пометки на фото ДЗ</p>
+          <p className="text-xs text-muted-foreground">Откройте фото, добавьте пометки и сохраните копию в проверку. После сохранения пометки станут частью изображения.</p>
+          <div className="flex flex-col items-start gap-2">
+            {photos.map((photo) => (
+              <Button key={photo.id} type="button" variant="outline" className="max-w-full" disabled={isSubmitting} onClick={() => setEditingPhoto(photo)}>
+                <span className="truncate">Пометки: {photo.name}</span>
+              </Button>
+            ))}
+          </div>
+        </div>
+      ) : null}
+      {editingPhoto ? (
+        <Suspense fallback={<p role="status">Открываем редактор…</p>}>
+          <PhotoAnnotationEditor key={editingPhoto.id} file={editingPhoto}
+            onClose={() => setEditingPhoto(null)}
+            onSave={(copy) => {
+              setAnnotationFiles((current) => ({ ...current, [editingPhoto.id]: copy }));
+              toast.success("Копия с пометками добавлена. Сохраните проверку, чтобы отправить её ученику.");
+            }} />
+        </Suspense>
+      ) : null}
 
       <AiHomeworkReviewControl
         lessonId={lessonId}
@@ -254,12 +292,12 @@ function HomeworkReviewForm({
           </div>
         ) : null}
 
-        {reviewFiles.length > 0 ? (
+        {pendingReviewFiles.length > 0 ? (
           <div className="space-y-2">
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-quiet">
               Новые проверенные файлы
             </p>
-            {reviewFiles.map((file, index) => (
+            {pendingReviewFiles.map((file, index) => (
               <div
                 key={getPendingFileKey(file)}
                 className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-quiet/40 bg-canvas px-4 py-3"
@@ -326,7 +364,7 @@ export function HomeworkReviewDialog({
         }
       }}
     >
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>
             {submission ? "Проверка домашнего задания" : "Домашнее задание"}
@@ -335,7 +373,7 @@ export function HomeworkReviewDialog({
 
         {lesson ? <HomeworkTaskInfo compact={Boolean(submission)} lesson={lesson} /> : null}
 
-        {submission ? (
+        {submission && lesson ? (
           <HomeworkReviewForm
             key={submission.id}
             lessonId={lesson.id}

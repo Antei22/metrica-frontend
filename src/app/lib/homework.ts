@@ -149,7 +149,7 @@ export type HomeworkStatusView = {
 };
 
 export function hasHomeworkTask(lesson: Lesson) {
-  return Boolean(lesson.homeworkDeadline || lesson.homeworkTaskFiles.length > 0);
+  return Boolean(lesson.homeworkText?.trim() || lesson.homeworkDeadline || lesson.homeworkTaskFiles.length > 0);
 }
 
 export function getHomeworkStatusView(lesson: Lesson | null): HomeworkStatusView {
@@ -282,7 +282,7 @@ export function applyReviewToLesson(lesson: Lesson, review: HomeworkReview): Les
     homeworkStatus: "checked",
     homeworkGrade: review.grade,
     homeworkStars: review.starsAwarded,
-    checkedFile: review.checkedFiles[0] ?? lesson.checkedFile,
+    checkedFile: review.checkedFiles[0] ?? null,
     submission: lesson.submission
       ? {
           ...lesson.submission,
