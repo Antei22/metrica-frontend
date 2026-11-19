@@ -105,6 +105,16 @@ export function ParentLessonDetails() {
             </div>
 
             <HomeworkText text={lesson.homeworkText} />
+            {lesson.homeworkTaskFiles.length ? (
+              <div className="space-y-3">
+                <p className="text-sm font-medium text-foreground">Файлы домашнего задания</p>
+                <div className="flex flex-col items-start gap-2">
+                  {lesson.homeworkTaskFiles.map((file) => (
+                    <FileLinkButton file={file} files={lesson.homeworkTaskFiles} fallback="Открыть файл" key={file.id} />
+                  ))}
+                </div>
+              </div>
+            ) : null}
             {lesson.parentMessageFiles.length ? (
               <div className="space-y-3">
                 <p className="text-sm font-medium text-foreground">Файлы от репетитора</p>

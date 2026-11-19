@@ -23,6 +23,7 @@ import { AiHomeworkReviewControl } from "./AiHomeworkReviewControl";
 import { SubmissionFilesBlock } from "./SubmissionFilesBlock";
 
 const PhotoAnnotationEditor = lazy(() => import("./PhotoAnnotationEditor"));
+const photoAnnotationsEnabled = import.meta.env.VITE_HOMEWORK_PHOTO_ANNOTATIONS === "true";
 
 function getPendingFileKey(file: File) {
   return `${file.name}-${file.size}-${file.lastModified}`;
@@ -106,7 +107,7 @@ function HomeworkReviewForm({
   const [annotationFiles, setAnnotationFiles] = useState<Record<string, File>>({});
   const [editingPhoto, setEditingPhoto] = useState<LessonMaterial | null>(null);
   const pendingReviewFiles = [...reviewFiles, ...Object.values(annotationFiles)];
-  const photos = selectedSubmission.files.filter(isAnnotatablePhoto);
+  const photos = photoAnnotationsEnabled ? selectedSubmission.files.filter(isAnnotatablePhoto) : [];
 
   function handleAddReviewFiles(event: ChangeEvent<HTMLInputElement>) {
     const nextFiles = Array.from(event.target.files || []);
