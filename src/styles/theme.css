@@ -1,68 +1,34 @@
-/* Тёмной темы в дизайн-системе нет. Вариант оставлен привязанным к классу .dark
-   (который никогда не ставится), чтобы `dark:`-утилиты в ui/* не срабатывали
-   от системной prefers-color-scheme. */
+/* Generated from tokens/tokens.json. Run python3 scripts/generate-tokens.py. */
 @custom-variant dark (&:is(.dark *));
-
 :root {
-  /* ---------- Metrica brand palette — DESIGN_SYSTEM.md §1.1 ---------- */
-  --white: #ffffff;
-  --warm: #fcfbf8;
-  --canvas: #f7f8fa;
-  --panel: #eef1f7;
-  --panel-blue: #eff4ff;
-  --ink: #071a31;
-  /* В DESIGN_SYSTEM это `--muted`; переименован, т.к. shadcn-токен --muted — фон, а не текст. */
-  --ink-muted: #4a5066;
-  --quiet: #9098b1;
-  --blue: #2563eb;
-  --blue-hover: #1d4ed8;
-  --gradient-blue: #176cf6;
-  --gradient-cyan: #61faff;
-  --brand-gradient: linear-gradient(180deg, var(--gradient-blue) 0%, var(--gradient-blue) 58%, var(--gradient-cyan) 100%);
-  --brand-gradient-text: linear-gradient(180deg, var(--gradient-blue), var(--gradient-cyan));
-  /* Горизонтальный вариант для тонких линий/полос по фирменному образцу:
-     короткая синяя зона, переход в первой половине и протяжённый светлый циан. */
-  --brand-gradient-x: linear-gradient(
-    90deg,
-    var(--blue) 0%,
-    #4d8df1 18%,
-    #63d8ef 46%,
-    var(--gradient-cyan) 64%,
-    var(--gradient-cyan) 100%
-  );
-  --brand-gradient-diagonal: linear-gradient(
-    to bottom right,
-    var(--blue) 0%,
-    #4d8df1 18%,
-    #63d8ef 46%,
-    var(--gradient-cyan) 64%,
-    var(--gradient-cyan) 100%
-  );
-  /* §1.2 — дополнительные оттенки из разметки лендинга */
-  --skel-blue: #dbeafe;
-  --progress-track: #dce8fb;
-  --line-blue: #dce6f8;
-
-  /* ---------- Семантические цвета — DESIGN_SYSTEM.md §1.1 (семантика) ----------
-     Насыщенные, той же «громкости», что --gradient-cyan. Правило применения:
-       --danger/--warning/--success — только некрупные заливки: иконки, точки, бордеры,
-         тонкие полосы. Никогда как цвет текста и никогда как фон под белый текст.
-       текст на *-soft пилюлях и на сплошной заливке — --ink (14–16:1 на soft, 5–9.5:1 на заливке).
-       инлайн-статус без подложки — *-foreground (ровно ≥ 4.5:1 на белом).
-     --star — отдельная сущность геймификации, не связана с --warning. */
-  --success: #22c58b;
-  --success-foreground: #17865f;
-  --success-soft: #dcfaf0;
-  --warning: #ffb020;
-  --warning-foreground: #a56a00;
-  --warning-soft: #fff1d6;
-  --danger: #ff4436;
-  --danger-foreground: #eb1000;
-  --danger-soft: #ffe3e0;
-  --star: #f5b400;
-
-  /* ---------- shadcn semantic tokens → brand ---------- */
-  --font-size: 16px;
+  --blue: #025BFF;
+  --blue-hover: #0049D6;
+  --violet: #7445F8;
+  --violet-hover: #6134DF;
+  --mint: #44FF9C;
+  --mint-hover: #7AFFB8;
+  --white: #FFFFFF;
+  --warm: #FAFBFF;
+  --canvas: #F3F6FF;
+  --panel: #E9EDFA;
+  --panel-blue: #EAF1FF;
+  --ink: #121A3D;
+  --ink-muted: #4C5677;
+  --quiet: #606C89;
+  --border: #DCE2EF;
+  --success: #1DAD78;
+  --success-foreground: #116644;
+  --success-soft: #E2F8ED;
+  --warning: #FFB020;
+  --warning-foreground: #805000;
+  --warning-soft: #FFF2D6;
+  --danger: #F04438;
+  --danger-foreground: #B42318;
+  --danger-soft: #FFE7E4;
+  --star: #986200;
+  --skel-blue: #DCE8FF;
+  --progress-track: #DAE5FF;
+  --line-blue: #DCE6F8;
   --background: var(--white);
   --foreground: var(--ink);
   --card: var(--white);
@@ -78,51 +44,62 @@
   --muted-foreground: var(--ink-muted);
   --accent: var(--panel-blue);
   --accent-foreground: var(--ink);
-  /* ui/button `destructive` и ui/form ошибки используют --destructive и как текст на белом,
-     и как фон под белый текст. Насыщенный --danger не проходит AA ни там, ни там (3.4:1 под белым),
-     поэтому shadcn-токен привязан к --danger-foreground: 4.5:1 на белом и 4.6:1 под белым текстом. */
   --destructive: var(--danger-foreground);
   --destructive-foreground: var(--white);
-  --border: #e5e8ef;
   --input: var(--border);
-  --input-background: var(--canvas);
+  --input-background: var(--white);
   --switch-background: var(--line-blue);
-  --ring: var(--blue);
-
-  /* §3.1 / §8 п.4 — радиусы рабочего UI: поверхности 16px, контролы 10px */
-  --radius: 16px;
-  --radius-control: 10px;
-  --radius-pill: 999px;
-
-  /* §4 — тени только мягкие и крупные */
-  --shadow-soft: 0 18px 45px rgba(7, 26, 49, 0.06);
-  --shadow-float: 0 16px 42px rgba(0, 0, 0, 0.11);
-
+  --ring: var(--violet);
+  --gradient-blue: var(--blue);
+  --gradient-cyan: var(--mint);
   --chart-1: var(--blue);
-  --chart-2: var(--gradient-cyan);
-  --chart-3: var(--gradient-blue);
-  --chart-4: var(--quiet);
-  --chart-5: var(--progress-track);
-
-  --sidebar: var(--canvas);
+  --chart-2: var(--violet);
+  --chart-3: var(--success-foreground);
+  --chart-4: var(--ink-muted);
+  --chart-5: var(--ink);
+  --sidebar: var(--white);
   --sidebar-foreground: var(--ink);
   --sidebar-primary: var(--blue);
   --sidebar-primary-foreground: var(--white);
   --sidebar-accent: var(--panel-blue);
   --sidebar-accent-foreground: var(--ink);
   --sidebar-border: var(--border);
-  --sidebar-ring: var(--blue);
+  --sidebar-ring: var(--violet);
+  --font-size: 16px;
+  --radius: 16px;
+  --radius-control: 10px;
+  --radius-pill: 999px;
+  --space-0: 0px;
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --control-height: 46px;
+  --control-height-sm: 44px;
+  --control-height-lg: 52px;
+  --font-ui: Inter, sans-serif;
+  --font-display: "Noto Sans Display", sans-serif;
+  --motion-duration: 200ms;
+  --shadow-soft: 0 12px 32px rgb(18 26 61 / 0.06);
+  --shadow-float: 0 20px 50px rgb(18 26 61 / 0.14);
+  --brand-gradient: linear-gradient(135deg, var(--blue), var(--violet));
+  --brand-gradient-text: linear-gradient(135deg, var(--blue), var(--violet));
+  --brand-gradient-x: linear-gradient(90deg, var(--blue), var(--violet) 62%, var(--mint));
+  --brand-gradient-diagonal: linear-gradient(135deg, var(--blue), var(--violet) 62%, var(--mint));
 }
-
 @theme inline {
-  /* Шрифт — Retni Sans, единственное начертание 500. Все веса ≥ 500 сведены к 500,
-     чтобы `font-semibold` / `font-bold` не давали синтезированный псевдо-жирный. */
-  --font-sans: "Retni Sans", sans-serif;
+
+  --font-sans: var(--font-ui);
+  --font-weight-normal: 400;
   --font-weight-medium: 500;
-  --font-weight-semibold: 500;
-  --font-weight-bold: 500;
-  --font-weight-extrabold: 500;
-  --font-weight-black: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
 
   --color-white: var(--white);
   --color-warm: var(--warm);
@@ -133,6 +110,8 @@
   --color-ink-muted: var(--ink-muted);
   --color-quiet: var(--quiet);
   --color-blue: var(--blue);
+  --color-violet: var(--violet);
+  --color-mint: var(--mint);
   --color-gradient-blue: var(--gradient-blue);
   --color-gradient-cyan: var(--gradient-cyan);
   --color-skel-blue: var(--skel-blue);
@@ -186,8 +165,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Шкала rounded-* сведена к брендовой (§3.1): 2xl = карточка 16px, xl = вложенная 14px,
-     lg = контрол 10px, 3xl = промо-поверхность 28px. Страницы подтягиваются без правок JSX. */
+
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: var(--radius-control);

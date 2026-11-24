@@ -1,0 +1,90 @@
+.ds-preview { min-height:100vh; background:var(--canvas); color:var(--ink); }
+.ds-top { display:flex; gap:24px; align-items:center; padding:20px max(24px,calc((100% - 1180px)/2)); background:var(--white); border-bottom:1px solid var(--border); }
+.ds-top>span:not(.metrica-brand-logo) { font-size:13px; color:var(--ink-muted); }
+.ds-top>a { margin-left:auto; color:var(--blue); font-size:14px; }
+.ds-main { max-width:1228px; margin:auto; padding:0 24px; }
+.ds-intro { display:grid; grid-template-columns:1.4fr 1fr; gap:64px; padding:64px 0; align-items:end; }
+.ds-kicker { font-size:12px; color:var(--blue); margin-bottom:20px; }
+.ds-intro h1 { font-size:clamp(40px,5vw,68px); color:var(--blue); }
+.ds-intro h1 em { color:var(--violet); }
+.ds-intro>div>p:last-child { margin-top:24px; max-width:560px; color:var(--ink-muted); font-size:16px; line-height:1.7; }
+.ds-intro-note>span { display:block; font-size:24px; line-height:1.5; }
+.ds-intro-note>span:nth-child(2) { font-family:var(--font-display); font-weight:900; font-stretch:75%; }
+.ds-intro-note>p { font-size:14px!important; }
+.ds-section { margin-bottom:48px; scroll-margin-top:24px; }
+.ds-section-heading { display:flex; gap:16px; align-items:center; margin-bottom:24px; }
+.ds-section-heading>span { color:var(--blue); font-size:12px; }
+.ds-section-heading h2 { font-size:24px; }
+.ds-swatches { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+.ds-swatch { background:white; padding:12px; border-radius:16px; border:1px solid var(--border); }
+.ds-swatch>span { display:block; height:80px; border-radius:10px; }
+.ds-swatch>div { display:flex; flex-direction:column; gap:4px; margin:14px 4px 6px; }
+.ds-swatch code { color:var(--ink-muted); font-size:12px; }
+.ds-panel { padding:28px; background:var(--white); border:1px solid var(--border); border-radius:16px; }
+.ds-buttons { display:flex; gap:12px; flex-wrap:wrap; }
+.ds-caption { margin-top:16px; font-size:13px; line-height:1.7; color:var(--ink-muted); }
+.ds-layout { display:grid; grid-template-columns:1.2fr 1fr; gap:24px; }
+.ds-row { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.ds-row h3 { font-size:20px; }
+.ds-person { display:flex; align-items:center; gap:12px; padding:20px 0; border-bottom:1px solid var(--border); }
+.ds-person>div { flex:1; }
+.ds-person strong { font-size:14px; font-weight:600; }
+.ds-person p { font-size:12px; color:var(--ink-muted); margin-top:4px; }
+.ds-avatar { display:grid; place-items:center; width:40px; height:40px; border-radius:50%; background:var(--panel-blue); color:var(--blue); flex-shrink:0; font-size:12px; font-weight:600; }
+.ds-field { display:grid; gap:8px; }
+.ds-panel>.ds-field { margin-top:24px; }
+.ds-field label,.ds-form label { font-size:14px; font-weight:500; }
+.ds-progress { background:var(--blue); color:white; border-radius:24px; padding:28px; display:flex; flex-direction:column; align-items:flex-start; gap:24px; }
+.ds-progress>.ds-row { width:100%; }
+.ds-progress h3 { font-size:40px; }
+.ds-progress h3 em { color:var(--mint); }
+.ds-progress>p:not(.ds-star-value) { font-size:13px; line-height:1.7; }
+.ds-star-value { display:flex; gap:16px; align-items:baseline; }
+.ds-star-value strong { font-size:64px; letter-spacing:-.04em; line-height:1; }
+.ds-star-value span { font-size:14px; }
+.ds-mint-progress { width:100%; }
+.ds-mint-progress [data-slot=progress] { background:rgb(255 255 255/.24); }
+.ds-mint-progress [data-slot=progress-indicator] { background:var(--mint); }
+.ds-feedback { display:flex; align-items:center; justify-content:space-between; gap:24px; padding-top:24px; }
+.ds-feedback h3 { font-size:22px; margin:20px 0 14px; }
+.ds-feedback p { font-size:14px; line-height:1.8; max-width:600px; }
+.ds-grade { font-family:var(--font-display); font-weight:900; font-size:72px; color:var(--blue); background:var(--panel-blue); width:100px; height:100px; display:grid; place-items:center; border-radius:50%; flex-shrink:0; }
+.ds-form { display:grid; gap:12px; }
+.ds-status-list { display:grid; gap:14px; padding-top:24px; }
+.ds-status-list>div { display:flex; gap:16px; align-items:center; justify-content:space-between; }
+.ds-status-list code { font-size:13px; }
+.ds-fields { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
+.ds-footer { padding:24px 0 40px; border-top:1px solid var(--border); display:flex; gap:24px; justify-content:space-between; color:var(--ink-muted); font-size:12px; }
+.ds-footer a { display:flex; gap:8px; align-items:center; color:var(--blue); }
+.ds-footer svg { width:14px; }
+@media(max-width:800px) {
+ .ds-intro { grid-template-columns:1fr; gap:24px; padding:40px 0; }
+ .ds-intro-note { display:none; }
+ .ds-layout { grid-template-columns:1fr; }
+ .ds-fields { grid-template-columns:1fr; }
+ .ds-top>span:not(.metrica-brand-logo) { display:none; }
+ .ds-main { padding:0 16px; }
+ .ds-top { padding:16px; gap:16px; }
+ .ds-swatches { grid-template-columns:repeat(2,1fr); }
+ .ds-panel { padding:20px; }
+ .ds-progress { padding:24px; }
+ .ds-footer { flex-direction:column; }
+}
+@media(max-width:430px) {
+ .ds-person { flex-wrap:wrap; }
+ .ds-person>[data-slot=badge] { margin-left:52px; }
+ .ds-feedback { flex-direction:column; align-items:flex-start; }
+ .ds-section-heading h2 { font-size:21px; }
+ .ds-panel [data-slot=tabs-list] { flex-wrap:wrap; height:auto; gap:10px; justify-content:flex-start; }
+ .ds-panel [data-slot=tabs-trigger] { flex:none; }
+ .ds-progress h3 { font-size:36px; }
+ .ds-star-value strong { font-size:56px; }
+}
+@media print {
+ .ds-top { position:static; }
+ .ds-section,.ds-panel,.ds-progress,.ds-swatch { break-inside:avoid; }
+ .ds-intro { padding-block:28px; }
+ .ds-section { margin-bottom:24px; }
+ .ds-main { max-width:none; }
+ * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+}

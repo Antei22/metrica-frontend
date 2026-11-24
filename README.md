@@ -8,4 +8,11 @@
   Run `npm i` to install the dependencies.
 
   Run `npm run dev` to start the development server.
-  
+
+## Дизайн-система
+
+Токены третьей концепции подключены глобально через `src/styles/theme.css`.
+Каталог компонентов доступен при локальном запуске по пути
+`/design-system-review/index.html`.
+
+Репозиторий бэкенда — [Taskflame/metrica_backend_2.0](https://github.com/Taskflame/metrica_backend_2.0).

@@ -44,7 +44,7 @@ export function AiHomeworkReportViewer({ audience, lessonId }: AiHomeworkReportV
     <>
       <div className="flex flex-col gap-3 rounded-2xl border border-primary/15 bg-panel-blue p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[image:var(--brand-gradient-diagonal)] text-white">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[image:var(--brand-gradient)] text-white">
             <AiAssistantMark />
           </div>
           <div>

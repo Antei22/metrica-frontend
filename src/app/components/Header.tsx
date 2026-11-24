@@ -1,3 +1,4 @@
+import { BrandLogo } from "./BrandLogo";
 import { CalendarDays, ChevronDown, ClipboardCheck, Home, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -103,63 +104,7 @@ export function Header() {
           onClick={() => navigate(getHomePathForRole(user.role))}
           type="button"
         >
-          <span className="eyebrow block">Онлайн-платформа</span>
-          <span className="flex items-center gap-0.5">
-            {/* Фирменный знак: тот же вертикальный градиент, растянутый на ink значка (y 3…21). */}
-            <svg
-              aria-hidden="true"
-              className="size-[22px] shrink-0"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <defs>
-                <linearGradient
-                  gradientUnits="userSpaceOnUse"
-                  id="metrica-mark-gradient"
-                  x1="0"
-                  x2="0"
-                  y1="3"
-                  y2="21"
-                >
-                  <stop offset="0" stopColor="var(--gradient-blue)" />
-                  <stop offset="1" stopColor="var(--gradient-cyan)" />
-                </linearGradient>
-              </defs>
-              <rect
-                height="18"
-                rx="5.5"
-                stroke="url(#metrica-mark-gradient)"
-                strokeWidth="2.4"
-                width="18"
-                x="3"
-                y="3"
-              />
-              <rect
-                fill="url(#metrica-mark-gradient)"
-                height="6.5"
-                rx="2.2"
-                width="6.5"
-                x="8.75"
-                y="8.75"
-              />
-            </svg>
-            <span
-              className="brand-gradient-text block text-[24px] leading-tight tracking-[-0.035em]"
-              style={{
-                // Родной вес 500; плотность добирается прозрачным stroke: он расширяет маску
-                // background-clip: text без сплошной обводки поверх градиента (цветной stroke
-                // рисуется над заливкой и гасит её).
-                WebkitTextStroke: "0.6px transparent",
-                // Стопы прижаты к фактическому ink строки «Метрика» у Retni Sans: верх «М» 0.25em …
-                // низ нисходящего «р» 1.2em. Иначе градиент растянут на ascent+descent (0…1.25em),
-                // и буквы видят только его середину.
-                backgroundImage:
-                  "linear-gradient(180deg, var(--gradient-blue) 0.25em, var(--gradient-cyan) 1.2em)",
-              }}
-            >
-              Метрика
-            </span>
-          </span>
+          <BrandLogo />
         </button>
 
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
@@ -226,14 +171,14 @@ export function Header() {
             <DialogTitle>Прогресс накопления</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="rounded-2xl border border-warning/20 bg-warning-soft p-4">
-              <p className="text-sm text-ink">Накоплено</p>
-              <p className="mt-2 text-2xl tracking-[-0.035em] text-foreground">
+            <div className="rounded-3xl bg-primary p-5 text-primary-foreground">
+              <p className="text-sm">Звёзды до награды</p>
+              <p className="brand-display mt-2 text-4xl tabular-nums">
                 {studentStars.toLocaleString("ru-RU")} / {studentGoal.toLocaleString("ru-RU")}
               </p>
-              <div className="mt-4 h-2 overflow-hidden rounded-full bg-white">
+              <div className="mt-4 h-2 overflow-hidden rounded-full bg-primary-foreground/25">
                 <div
-                  className="h-full rounded-full bg-star"
+                  className="h-full rounded-full bg-mint"
                   style={{ width: `${studentProgress}%` }}
                 />
               </div>

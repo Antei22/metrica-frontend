@@ -1,9 +1,24 @@
-/* Metrica brand font — DESIGN_SYSTEM.md §2.1.
-   Единственное начертание (Medium/500); иерархия строится размером и letter-spacing, не весом. */
+/* Original Google Fonts files; licenses shipped alongside them. */
 @font-face {
-  font-family: "Retni Sans";
-  src: url("../assets/fonts/RetniSans-Medium.ttf") format("truetype");
-  font-weight: 500;
+  font-family: "Inter";
+  src: url("../assets/fonts/Inter-Variable.ttf") format("truetype");
+  font-weight: 100 900;
   font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Sans Display";
+  src: url("../assets/fonts/NotoSansDisplay-Variable.ttf") format("truetype");
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Sans Display";
+  src: url("../assets/fonts/NotoSansDisplay-Italic-Variable.ttf") format("truetype");
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  font-style: italic;
   font-display: swap;
 }

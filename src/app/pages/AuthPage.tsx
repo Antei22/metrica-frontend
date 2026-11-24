@@ -13,6 +13,7 @@ import {
   validatePassword,
 } from "../lib/formValidation";
 import { getHomePathForRole } from "../lib/routes";
+import { BrandLogo } from "../components/BrandLogo";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -125,37 +126,34 @@ export function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,var(--warm)_0%,var(--panel-blue)_100%)] px-4 py-10">
+    <div className="min-h-screen bg-canvas px-4 py-10">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-5xl items-center justify-center">
         <div className="grid w-full overflow-hidden rounded-3xl border border-border bg-white shadow-float lg:grid-cols-[1.1fr_0.9fr]">
           <section className="hidden flex-col brand-gradient p-10 text-primary-foreground lg:flex">
             <div className="-mt-2">
-              <p className="text-xs uppercase tracking-[0.13em] text-white/70">
-                Онлайн-платформа
-              </p>
-              <h1 className="mt-4 text-5xl leading-[1.05] tracking-[-0.045em]">МЕТРИКА</h1>
-              <p className="mt-6 max-w-md text-base text-white/80">
+              <h1><BrandLogo /></h1>
+              <p className="mt-6 max-w-md text-base text-primary-foreground">
                 Личный кабинет для репетитора, ученика и родителя с расписанием,
                 материалами занятия и проверкой домашних заданий.
               </p>
             </div>
 
             <div className="mt-7 grid gap-4">
-              <div className="rounded-2xl border border-white/15 bg-white/15 p-5">
+              <div className="rounded-2xl border border-white/25 p-5">
                 <p className="text-sm font-medium text-white">Для репетитора</p>
-                <p className="mt-2 text-sm text-white/80">
+                <p className="mt-2 text-sm text-primary-foreground">
                   Добавление учеников, создание занятий и проверка домашних заданий.
                 </p>
               </div>
-              <div className="rounded-2xl border border-white/15 bg-white/15 p-5">
+              <div className="rounded-2xl border border-white/25 p-5">
                 <p className="text-sm font-medium text-white">Для ученика</p>
-                <p className="mt-2 text-sm text-white/80">
+                <p className="mt-2 text-sm text-primary-foreground">
                   Просмотр занятий, доступ к материалам и отправка выполненных работ.
                 </p>
               </div>
-              <div className="rounded-2xl border border-white/15 bg-white/15 p-5">
+              <div className="rounded-2xl border border-white/25 p-5">
                 <p className="text-sm font-medium text-white">Для родителя</p>
-                <p className="mt-2 text-sm text-white/80">
+                <p className="mt-2 text-sm text-primary-foreground">
                   Последние оценки, история занятий и расписание ребенка.
                 </p>
               </div>
@@ -164,10 +162,7 @@ export function AuthPage() {
 
           <section className="p-6 sm:p-8 lg:p-10">
             <div className="mb-8 lg:hidden">
-              <p className="text-xs uppercase tracking-[0.13em] text-white/70">
-                Онлайн-платформа
-              </p>
-              <h1 className="mt-3 text-3xl font-semibold text-foreground">МЕТРИКА</h1>
+              <h1><BrandLogo /></h1>
             </div>
 
             <Tabs className="w-full" defaultValue="login">

@@ -312,7 +312,7 @@ export function AiHomeworkReviewControl({ lessonId, onUseSummary }: AiHomeworkRe
   return (
     <>
       <Button
-        className="h-auto w-full rounded-2xl bg-[image:var(--brand-gradient-diagonal)] px-4 py-4 text-white shadow-none hover:opacity-95 disabled:opacity-50"
+        className="h-auto w-full rounded-2xl bg-[image:var(--brand-gradient)] px-4 py-4 text-white shadow-none hover:opacity-95 disabled:opacity-50"
         disabled={disabled}
         onClick={() => setIsOpen(true)}
         type="button"
@@ -330,7 +330,7 @@ export function AiHomeworkReviewControl({ lessonId, onUseSummary }: AiHomeworkRe
 
           {isLoading || isProcessing || !state ? (
             <div className="flex min-h-72 flex-col items-center justify-center gap-4 text-center">
-              <div className="flex size-16 items-center justify-center rounded-2xl bg-[image:var(--brand-gradient-diagonal)] text-white">
+              <div className="flex size-16 items-center justify-center rounded-2xl bg-[image:var(--brand-gradient)] text-white">
                 <Loader2 className="size-8 animate-spin" />
               </div>
               <div>
