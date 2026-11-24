@@ -8,7 +8,7 @@ import {
   Plus,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { uploadTutorFile } from "../api/files";
 import {
@@ -129,6 +129,9 @@ export function TutorDashboard() {
   const todayLessonsCount = allLessons.filter(
     (lesson) => lesson.date && isToday(parseISO(lesson.date)),
   ).length;
+  const pendingHomeworkCount = new Set(
+    allLessons.filter((lesson) => lesson.homeworkStatus === "sent").map((lesson) => lesson.id),
+  ).size;
   const calendarDays = getWeekDays(calendarWeekStart);
   const calendarWeekLessons = getLessonsForWeek(allLessons, calendarWeekStart);
   const calendarTimeSlots = getLessonTimeSlots(calendarWeekLessons);
@@ -444,23 +447,22 @@ export function TutorDashboard() {
         <>
           <section className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)]">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 lg:grid-rows-2">
-              <Card
-                className="min-h-[116px] cursor-pointer rounded-2xl transition hover:-translate-y-0.5 hover:border-quiet/60 hover:shadow-soft"
-                onClick={() => navigate("/tutor/students")}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    navigate("/tutor/students");
-                  }
-                }}
-                role="button"
-                tabIndex={0}
+              <Link
+                className="block h-full rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                to="/tutor/homework"
               >
-                <CardContent className="flex h-full flex-col justify-center p-6">
-                  <p className="text-lg font-semibold text-quiet">Всего учеников</p>
-                  <p className="mt-3 text-3xl font-semibold text-foreground">{students.length}</p>
-                </CardContent>
-              </Card>
+                <Card className="min-h-[116px] h-full rounded-2xl transition hover:-translate-y-0.5 hover:border-quiet/60 hover:shadow-soft">
+                  <CardContent className="flex h-full flex-col justify-center p-6">
+                    <p className="text-lg font-semibold text-quiet">ДЗ на проверку</p>
+                    {lessonsWarning ? (
+                      <p className="mt-3 text-sm text-muted-foreground">Не удалось загрузить количество</p>
+                    ) : (
+                      <p className="mt-3 text-3xl font-semibold text-foreground">{pendingHomeworkCount}</p>
+                    )}
+                    <p className="mt-2 text-sm text-muted-foreground">Перейти к проверке</p>
+                  </CardContent>
+                </Card>
+              </Link>
 
               <Card
                 className="min-h-[116px] cursor-pointer rounded-2xl transition hover:-translate-y-0.5 hover:border-quiet/60 hover:shadow-soft"
